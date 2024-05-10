@@ -1,5 +1,8 @@
 package com.sandy.capitalyst.algofoundry;
 
+import com.sandy.capitalyst.algofoundry.apiclient.histeod.DayCandle;
+import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
+import com.sandy.capitalyst.algofoundry.apiclient.reco.EquityRecoAPIClient;
 import com.sandy.capitalyst.algofoundry.core.AlgoFoundryConfig;
 import com.sandy.capitalyst.algofoundry.core.bus.EventBus;
 import com.sandy.capitalyst.algofoundry.core.ui.AlgoFoundryFrame;
@@ -9,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -19,9 +21,10 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.swing.*;
+import java.util.List;
 
 @Slf4j
-@SpringBootApplication(exclude={ DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
+@SpringBootApplication
 public class AlgoFoundry
         implements ApplicationContextAware, WebMvcConfigurer {
 
@@ -40,6 +43,10 @@ public class AlgoFoundry
 
     public static EventBus getBus() {
         return GLOBAL_EVENT_BUS ;
+    }
+    
+    public static <T> T getBean( Class<T> type ) {
+        return APP_CTX.getBean( type ) ;
     }
 
     // ---------------- Instance methods start ---------------------------------
@@ -71,6 +78,9 @@ public class AlgoFoundry
         ) ;
 
         log.debug( "<< ## AlgoFoundry initialization complete" ) ;
+        
+        EquityHistEODAPIClient c = new EquityHistEODAPIClient() ;
+        List<DayCandle> candles = c.getHistoricCandles( "TITAN" ) ;
     }
 
     public UITheme getTheme() { return this.uiTheme ; }

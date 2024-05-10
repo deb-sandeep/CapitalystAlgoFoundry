@@ -14,4 +14,6 @@ import java.io.File;
 public class AlgoFoundryConfig {
 
     private File workspacePath = null ;
+    private String serverName = null ;
+    private boolean workOffline = false ;
 }
