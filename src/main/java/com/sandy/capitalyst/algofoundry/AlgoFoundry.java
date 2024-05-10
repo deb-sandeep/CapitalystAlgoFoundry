@@ -2,19 +2,16 @@ package com.sandy.capitalyst.algofoundry;
 
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.DayCandle;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
-import com.sandy.capitalyst.algofoundry.apiclient.reco.EquityRecoAPIClient;
 import com.sandy.capitalyst.algofoundry.core.AlgoFoundryConfig;
 import com.sandy.capitalyst.algofoundry.core.bus.EventBus;
-import com.sandy.capitalyst.algofoundry.core.ui.AlgoFoundryFrame;
-import com.sandy.capitalyst.algofoundry.core.ui.uiutil.DefaultUITheme;
-import com.sandy.capitalyst.algofoundry.core.ui.uiutil.UITheme;
+import com.sandy.capitalyst.algofoundry.ui.AlgoFoundryFrame;
+import com.sandy.capitalyst.algofoundry.core.ui.DefaultUITheme;
+import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -74,7 +71,7 @@ public class AlgoFoundry
 
         log.debug( "- Initializing AlgoFoundryFrame" ) ;
         SwingUtilities.invokeLater( () ->
-            this.frame = new AlgoFoundryFrame( uiTheme, getConfig() )
+            this.frame = new AlgoFoundryFrame( uiTheme )
         ) ;
 
         log.debug( "<< ## AlgoFoundry initialization complete" ) ;

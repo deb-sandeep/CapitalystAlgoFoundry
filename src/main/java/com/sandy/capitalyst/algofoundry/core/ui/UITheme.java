@@ -1,4 +1,4 @@
-package com.sandy.capitalyst.algofoundry.core.ui.uiutil;
+package com.sandy.capitalyst.algofoundry.core.ui;
 
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;

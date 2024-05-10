@@ -1,4 +1,4 @@
-package com.sandy.capitalyst.algofoundry.core.ui.uiutil;
+package com.sandy.capitalyst.algofoundry.core.ui;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Random;
 
 public class SwingUtils {
 

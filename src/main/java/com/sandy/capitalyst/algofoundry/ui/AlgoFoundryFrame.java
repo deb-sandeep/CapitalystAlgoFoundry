@@ -1,8 +1,8 @@
-package com.sandy.capitalyst.algofoundry.core.ui;
+package com.sandy.capitalyst.algofoundry.ui;
 
 import com.sandy.capitalyst.algofoundry.core.AlgoFoundryConfig;
-import com.sandy.capitalyst.algofoundry.core.ui.uiutil.SwingUtils;
-import com.sandy.capitalyst.algofoundry.core.ui.uiutil.UITheme;
+import com.sandy.capitalyst.algofoundry.core.ui.SwingUtils;
+import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -13,7 +13,7 @@ public class AlgoFoundryFrame extends JFrame {
     
     private final Container contentPane ;
 
-    public AlgoFoundryFrame( UITheme theme, AlgoFoundryConfig config ) {
+    public AlgoFoundryFrame( UITheme theme ) {
         super() ;
 
         this.contentPane = super.getContentPane() ;
