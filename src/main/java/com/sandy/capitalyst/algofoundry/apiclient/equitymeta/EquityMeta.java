@@ -1,11 +1,11 @@
-package com.sandy.capitalyst.algofoundry.apiclient.reco;
+package com.sandy.capitalyst.algofoundry.apiclient.equitymeta;
 
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-public class EquityReco {
+public class EquityMeta {
 
     // From Equity Master
     private String isin           = null ;
@@ -49,20 +49,20 @@ public class EquityReco {
     private float macdSignalPrev  = 0 ;
     
     // TTM Perf
-    private Float perf1d = null ;
-    private float perf1w = 0.0F ;
-    private float perf2w = 0.0F ;
-    private float perf1m = 0.0F ;
-    private float perf2m = 0.0F ;
-    private float perf3m = 0.0F ;
-    private float perf4m = 0.0F ;
-    private float perf5m = 0.0F ;
-    private float perf6m = 0.0F ;
-    private float perf7m = 0.0F ;
-    private float perf8m = 0.0F ;
-    private float perf9m = 0.0F ;
+    private Float perf1d  = null ;
+    private float perf1w  = 0.0F ;
+    private float perf2w  = 0.0F ;
+    private float perf1m  = 0.0F ;
+    private float perf2m  = 0.0F ;
+    private float perf3m  = 0.0F ;
+    private float perf4m  = 0.0F ;
+    private float perf5m  = 0.0F ;
+    private float perf6m  = 0.0F ;
+    private float perf7m  = 0.0F ;
+    private float perf8m  = 0.0F ;
+    private float perf9m  = 0.0F ;
     private float perf10m = 0.0F ;
     private float perf11m = 0.0F ;
     private float perf12m = 0.0F ;
-    private float perfFy = 0.0F ;
+    private float perfFy  = 0.0F ;
 }

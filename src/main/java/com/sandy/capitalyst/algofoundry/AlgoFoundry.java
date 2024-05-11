@@ -1,11 +1,8 @@
 package com.sandy.capitalyst.algofoundry;
 
-import com.sandy.capitalyst.algofoundry.apiclient.histeod.DayCandle;
-import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
 import com.sandy.capitalyst.algofoundry.core.AlgoFoundryConfig;
 import com.sandy.capitalyst.algofoundry.core.bus.EventBus;
 import com.sandy.capitalyst.algofoundry.ui.AlgoFoundryFrame;
-import com.sandy.capitalyst.algofoundry.core.ui.DefaultUITheme;
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +15,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.swing.*;
-import java.util.List;
 
 @Slf4j
 @SpringBootApplication
@@ -45,10 +41,9 @@ public class AlgoFoundry
     public static <T> T getBean( Class<T> type ) {
         return APP_CTX.getBean( type ) ;
     }
-
+    
     // ---------------- Instance methods start ---------------------------------
 
-    private UITheme           uiTheme = null ;
     private AlgoFoundryFrame  frame   = null ;
     private AlgoFoundryConfig cfg     = null ;
 
@@ -66,21 +61,13 @@ public class AlgoFoundry
 
         log.debug( "## Initializing AlgoFoundry app. >" ) ;
 
-        log.debug( "- Initializing Theme" ) ;
-        this.uiTheme = new DefaultUITheme() ;
-
         log.debug( "- Initializing AlgoFoundryFrame" ) ;
         SwingUtilities.invokeLater( () ->
-            this.frame = new AlgoFoundryFrame( uiTheme )
+            this.frame = new AlgoFoundryFrame()
         ) ;
 
         log.debug( "<< ## AlgoFoundry initialization complete" ) ;
-        
-        EquityHistEODAPIClient c = new EquityHistEODAPIClient() ;
-        List<DayCandle> candles = c.getHistoricCandles( "TITAN" ) ;
     }
-
-    public UITheme getTheme() { return this.uiTheme ; }
 
     public AlgoFoundryFrame getFrame() { return this.frame; }
 

@@ -5,27 +5,19 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 
 public class UITheme {
-
-    // Screen theme settings
-    public Color getBackgroundColor() {
-        return Color.BLACK ;
-    }
-    public String getDefaultScreenIconName() { return "def_screen_icon" ; }
-
-    // Tile theme settings
-    public Color getTileBorderColor() { return Color.DARK_GRAY.darker() ; }
-    public Border getTileBorder() { return new LineBorder( getTileBorderColor() ) ; }
-    public Color getTileForeground() { return Color.GRAY; }
-
-    // Label theme settings
-    public String getLabelFontName() { return "Courier" ; }
-    public Font getLabelBaseFont() { return new Font( getLabelFontName(), Font.PLAIN, 20 ) ; }
-
-    public Font getLabelFont( int style, int size ) {
-        return getLabelBaseFont().deriveFont( style, size ) ;
-    }
-
-    public Font getLabelFont( int size ) {
-        return getLabelBaseFont().deriveFont( Font.PLAIN, size ) ;
-    }
+    
+    public static Color BACKGROUND_COLOR = Color.LIGHT_GRAY ;
+    
+    public static Color TABLE_GRID_COLOR     = new Color( 230, 230, 230 ) ;
+    public static Color TABLE_EVEN_ROW_COLOR = new Color( 240, 240, 240 ) ;
+    public static Color TABLE_ODD_ROW_COLOR  = Color.white ;
+    public static int   TABLE_ROW_HEIGHT     = 18 ;
+    
+    public static Font TABLE_FONT              = new Font( "Tahoma", Font.PLAIN, 11 ) ;
+    public static Font DLG_FONT                = new Font( "Tahoma", Font.PLAIN, 11 ) ;
+    public static Font DLG_FONT_BOLD           = new Font( "Tahoma", Font.BOLD, 11 ) ;
+    public static Font READ_TXT_AREA_FONT      = new Font( "Courier New", Font.PLAIN, 10 ) ;
+    public static Font CHART_AXIS_FONT         = new Font( "Tahoma", Font.PLAIN, 9 ) ;
+    public static Font CHART_TITLE_FONT        = new Font( "Tahoma", Font.BOLD, 9 ) ;
+    public static Font CHART_PANEL_HDR_FONT    = new Font( "Tahoma", Font.BOLD, 10 ) ;
 }

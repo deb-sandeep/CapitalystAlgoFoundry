@@ -1,9 +1,5 @@
 package com.sandy.capitalyst.algofoundry.apiclient.histeod;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sandy.capitalyst.algofoundry.AlgoFoundry;
-import com.sandy.capitalyst.algofoundry.apiclient.reco.EquityReco;
 import com.sandy.capitalyst.algofoundry.core.util.CapitalystServerUtil;
 import com.sandy.capitalyst.algofoundry.dao.equity.HistoricEQData;
 import com.sandy.capitalyst.algofoundry.dao.equity.repo.HistoricEQDataRepo;
@@ -13,15 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBarSeries;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.sandy.capitalyst.algofoundry.AlgoFoundry.* ;
 
 @Slf4j

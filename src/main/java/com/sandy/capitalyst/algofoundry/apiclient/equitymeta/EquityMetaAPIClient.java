@@ -1,4 +1,4 @@
-package com.sandy.capitalyst.algofoundry.apiclient.reco;
+package com.sandy.capitalyst.algofoundry.apiclient.equitymeta;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,14 +13,14 @@ import java.util.List;
 import static com.fasterxml.jackson.databind.DeserializationFeature.* ;
 
 @Slf4j
-public class EquityRecoAPIClient {
+public class EquityMetaAPIClient {
     
     private static final String RECO_URL = "http://{server}/Equity/Recommendations" ;
 
-    public List<EquityReco> getRecommendations() throws Exception {
+    public List<EquityMeta> getEquityMetaList() throws Exception {
         
-        List<EquityReco> recos = new ArrayList<>() ;
-        String recoJson = CapitalystServerUtil.getResource( RECO_URL ) ;
+        List<EquityMeta> metaList = new ArrayList<>() ;
+        String           recoJson = CapitalystServerUtil.getResource( RECO_URL ) ;
         
         ObjectMapper objMapper = new ObjectMapper() ;
         objMapper.disable( FAIL_ON_UNKNOWN_PROPERTIES ) ;
@@ -29,25 +29,25 @@ public class EquityRecoAPIClient {
         Iterator<JsonNode> recoNodes = jsonRoot.elements() ;
         
         while( recoNodes.hasNext() ) {
-            JsonNode recoNode = recoNodes.next() ;
-            EquityReco reco = new EquityReco() ;
+            JsonNode   recoNode = recoNodes.next() ;
+            EquityMeta meta     = new EquityMeta() ;
             
-            recos.add( populate( recoNode, reco, objMapper ) ) ;
+            metaList.add( populate( recoNode, meta, objMapper ) ) ;
         }
-        return recos ;
+        return metaList ;
     }
     
-    private EquityReco populate( JsonNode node, EquityReco reco, ObjectMapper mapper )
+    private EquityMeta populate( JsonNode node, EquityMeta meta, ObjectMapper mapper )
         throws IOException  {
         
         JsonNode em = node.get( "equityMaster" ) ;
         JsonNode indicators = node.get( "indicators" ) ;
         JsonNode ttmPerf = node.get( "ttmPerf" ) ;
         
-        mapper.readerForUpdating( reco ).readValue( em ) ;
-        mapper.readerForUpdating( reco ).readValue( indicators ) ;
-        mapper.readerForUpdating( reco ).readValue( ttmPerf ) ;
+        mapper.readerForUpdating( meta ).readValue( em ) ;
+        mapper.readerForUpdating( meta ).readValue( indicators ) ;
+        mapper.readerForUpdating( meta ).readValue( ttmPerf ) ;
         
-        return reco ;
+        return meta ;
     }
 }
