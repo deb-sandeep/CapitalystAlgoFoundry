@@ -25,7 +25,7 @@ public class AlgoFoundryFrame extends JFrame {
     
     private void setUpUI() {
         
-        setResizable( false ) ;
+        setResizable( true ) ;
         setTitle( "Capitalyst Algo Foundry" ) ;
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE ) ;
         

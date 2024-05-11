@@ -54,11 +54,22 @@ public class EquityMetaTable extends JTable {
         setSelectionMode( ListSelectionModel.SINGLE_SELECTION ) ;
         setColumnSelectionAllowed( false ) ;
         setRowHeight( TABLE_ROW_HEIGHT ) ;
-        setFont( TABLE_FONT ) ;
+        setFont( META_TABLE_FONT ) ;
+        getTableHeader().setFont( META_TABLE_HDR_FONT ) ;
+        setDoubleBuffered( true ) ;
+        setAutoCreateRowSorter( true ) ;
         
-        setColumnProperties( COL_SYMBOL, 100 ) ;
-        setColumnProperties( COL_NAME,   200 ) ;
-        setColumnProperties( COL_PRICE,  100 ) ;
+        setColumnProperties( COL_SYMBOL,    100 ) ;
+        setColumnProperties( COL_NAME,      350 ) ;
+        setColumnProperties( COL_PRICE,      70 ) ;
+        setColumnProperties( COL_52W_RANGE, 100 ) ;
+        for( int col=COL_PERF_1D; col<=COL_PERF_12M; col++ ) {
+            setColumnProperties( col, 70 ) ;
+        }
+        
+        setDefaultRenderer( String.class,   new EquityMetaTableCellRenderer( this.model ) ) ;
+        setDefaultRenderer( Double.class,   new EquityMetaTableCellRenderer( this.model ) ) ;
+        setDefaultRenderer( Range52W.class, new EquityMetaTableCellRenderer( this.model ) ) ;
     }
     
     private void setColumnProperties( final int colId, final int width ) {
@@ -67,6 +78,7 @@ public class EquityMetaTable extends JTable {
         
         col.setPreferredWidth( width ) ;
         col.setMinWidth( width ) ;
+        col.setMaxWidth( width ) ;
         col.setResizable( true ) ;
     }
 }
