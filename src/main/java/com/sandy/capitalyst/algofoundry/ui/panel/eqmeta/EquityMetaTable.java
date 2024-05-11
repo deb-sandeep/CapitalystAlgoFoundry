@@ -1,5 +1,6 @@
-package com.sandy.capitalyst.algofoundry.ui.panel;
+package com.sandy.capitalyst.algofoundry.ui.panel.eqmeta;
 
+import com.sandy.capitalyst.algofoundry.AlgoFoundry;
 import com.sandy.capitalyst.algofoundry.apiclient.equitymeta.EquityMeta;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,8 +12,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.List;
 
-import static com.sandy.capitalyst.algofoundry.ui.panel.EquityMetaTableModel.* ;
+import static com.sandy.capitalyst.algofoundry.ui.panel.eqmeta.EquityMetaTableModel.* ;
 import static com.sandy.capitalyst.algofoundry.core.ui.UITheme.* ;
+import static com.sandy.capitalyst.algofoundry.EventCatalog.* ;
 
 @Slf4j
 public class EquityMetaTable extends JTable {
@@ -34,21 +36,21 @@ public class EquityMetaTable extends JTable {
                     final EquityMetaTableModel model      = ( EquityMetaTableModel )getModel() ;
                     final EquityMeta           equityMeta = model.getEquityMetaForRow( modelRowId ) ;
                     
-                    log.debug( "Table row for " + equityMeta.getSymbol() + " clicked." ) ;
+                    AlgoFoundry.getBus()
+                               .publishEvent( EVT_SHOW_STOCK_SIM_PANEL,
+                                              equityMeta.getSymbol() );
                 }
             }
         }
     } ;
     
-    private final EquityMetaTableModel model ;
-    
     public EquityMetaTable( List<EquityMeta> metaList ) {
         super() ;
         super.addMouseListener( this.mouseListener ) ;
         
-        this.model = new EquityMetaTableModel( metaList ) ;
+        EquityMetaTableModel model = new EquityMetaTableModel( metaList );
         
-        setModel( this.model ) ;
+        setModel( model ) ;
         setGridColor( TABLE_GRID_COLOR ) ;
         setRowSelectionAllowed( true ) ;
         setSelectionMode( ListSelectionModel.SINGLE_SELECTION ) ;
@@ -61,15 +63,16 @@ public class EquityMetaTable extends JTable {
         
         setColumnProperties( COL_SYMBOL,    100 ) ;
         setColumnProperties( COL_NAME,      350 ) ;
-        setColumnProperties( COL_PRICE,      70 ) ;
-        setColumnProperties( COL_52W_RANGE, 100 ) ;
+        setColumnProperties( COL_MKT_CAP,   100 ) ;
+        setColumnProperties( COL_PRICE,      75 ) ;
+        setColumnProperties( COL_52W_RANGE, 150 ) ;
         for( int col=COL_PERF_1D; col<=COL_PERF_12M; col++ ) {
-            setColumnProperties( col, 70 ) ;
+            setColumnProperties( col, 65 ) ;
         }
         
-        setDefaultRenderer( String.class,   new EquityMetaTableCellRenderer( this.model ) ) ;
-        setDefaultRenderer( Double.class,   new EquityMetaTableCellRenderer( this.model ) ) ;
-        setDefaultRenderer( Range52W.class, new EquityMetaTableCellRenderer( this.model ) ) ;
+        setDefaultRenderer( String.class,   new EquityMetaTableCellRenderer( model ) ) ;
+        setDefaultRenderer( Double.class,   new EquityMetaTableCellRenderer( model ) ) ;
+        setDefaultRenderer( Range52W.class, new EquityMetaTableCellRenderer( model ) ) ;
     }
     
     private void setColumnProperties( final int colId, final int width ) {

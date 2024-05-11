@@ -1,4 +1,4 @@
-package com.sandy.capitalyst.algofoundry.ui.panel;
+package com.sandy.capitalyst.algofoundry.ui.panel.eqmeta;
 
 import javax.swing.*;
 import java.awt.*;

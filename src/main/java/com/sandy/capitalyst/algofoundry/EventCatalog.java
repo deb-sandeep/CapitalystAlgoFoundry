@@ -12,4 +12,6 @@ public class EventCatalog {
     // =============== Core Events [Start] =====================================
     
     // --------------- Core Events [End] ---------------------------------------
+    
+    public static final int EVT_SHOW_STOCK_SIM_PANEL = 201 ;
 }

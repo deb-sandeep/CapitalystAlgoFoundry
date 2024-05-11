@@ -1,4 +1,4 @@
-package com.sandy.capitalyst.algofoundry.ui.panel;
+package com.sandy.capitalyst.algofoundry.ui.panel.eqmeta;
 
 import com.sandy.capitalyst.algofoundry.apiclient.equitymeta.EquityMeta;
 import lombok.Data;
