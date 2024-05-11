@@ -115,7 +115,8 @@ public class EquityMetaTableCellRenderer extends DefaultTableCellRenderer {
             value instanceof Float ) {
             
             label.setFont( TABLE_DECIMAL_FONT ) ;
-            if( modelCol == COL_PRICE ) {
+            if( modelCol == COL_PRICE ||
+                modelCol == COL_MKT_CAP ) {
                 label.setText( PRICE_DF.format( value ) ) ;
             }
             else if( modelCol >= COL_PERF_1D && modelCol <= COL_PERF_12M ) {

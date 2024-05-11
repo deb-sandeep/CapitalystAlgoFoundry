@@ -44,6 +44,7 @@ public class EquityMetaTableModel extends AbstractTableModel {
     public static final Object[][] COL_PROPERTIES = {
             { "Symbol",   String.class },
             { "Name",     String.class },
+            { "Mkt Cap",  Double.class },
             { "Price",    Double.class },
             { "52W Range",Range52W.class },
             { "1D %",     Double.class },
@@ -62,10 +63,11 @@ public class EquityMetaTableModel extends AbstractTableModel {
     } ;
     
     public static final int COL_SYMBOL   = 0 ;
-    public static final int COL_NAME     = 1 ;
-    public static final int COL_PRICE    = 2 ;
-    public static final int COL_52W_RANGE= 3 ;
-    public static final int COL_PERF_1D  = 4 ;
+    public static final int COL_NAME     = COL_SYMBOL + 1 ;
+    public static final int COL_MKT_CAP  = COL_NAME + 1 ;
+    public static final int COL_PRICE    = COL_MKT_CAP + 1 ;
+    public static final int COL_52W_RANGE= COL_PRICE + 1 ;
+    public static final int COL_PERF_1D  = COL_52W_RANGE + 1 ;
     public static final int COL_PERF_1W  = COL_PERF_1D + 1 ;
     public static final int COL_PERF_2W  = COL_PERF_1D + 2 ;
     public static final int COL_PERF_1M  = COL_PERF_1D + 3 ;
@@ -122,6 +124,7 @@ public class EquityMetaTableModel extends AbstractTableModel {
         return switch( columnIndex ) {
             case COL_SYMBOL    -> m.getSymbol();
             case COL_NAME      -> m.getName();
+            case COL_MKT_CAP   -> m.getMarketCap() ;
             case COL_PRICE     -> m.getCurrentPrice();
             case COL_52W_RANGE -> new Range52W( m.getLow52(), m.getHigh52(), m.getCurrentPrice() ) ;
             case COL_PERF_1D   -> m.getPerf1d() ;
