@@ -2,6 +2,7 @@ package com.sandy.capitalyst.algofoundry.ui.panel.eqmeta;
 
 import com.sandy.capitalyst.algofoundry.apiclient.equitymeta.EquityMeta;
 import com.sandy.capitalyst.algofoundry.apiclient.equitymeta.EquityMetaAPIClient;
+import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -34,6 +35,7 @@ public class EquityMetaTablePanel extends JPanel {
     
     private void setUpUI() {
         setLayout( new BorderLayout() ) ;
+        setBackground( UITheme.BACKGROUND_COLOR ) ;
         
         final JScrollPane tableSP = new JScrollPane( this.table ) ;
         tableSP.setHorizontalScrollBarPolicy( JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED ) ;

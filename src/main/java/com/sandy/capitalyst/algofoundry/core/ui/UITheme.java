@@ -7,7 +7,7 @@ public class UITheme {
     private static final String FONT_NAME      = "Helvetica" ;
     private static final String MONO_FONT_NAME = "Courier New" ;
     
-    public static final Color BACKGROUND_COLOR = Color.LIGHT_GRAY ;
+    public static final Color BACKGROUND_COLOR = Color.DARK_GRAY ;
     
     public static final Color TABLE_GRID_COLOR     = new Color( 220, 220, 220 ) ;
     public static final Color TABLE_EVEN_ROW_COLOR = new Color( 240, 240, 240 ) ;
@@ -18,8 +18,11 @@ public class UITheme {
     public static final Font META_TABLE_HDR_FONT     = new Font( MONO_FONT_NAME, Font.BOLD,  12 ) ;
     public static final Font TABLE_DECIMAL_FONT      = new Font( MONO_FONT_NAME, Font.PLAIN, 12 ) ;
     
-    public static final Font CHART_AXIS_FONT         = new Font( FONT_NAME, Font.PLAIN, 8 ) ;
-    public static final Font CHART_LEGEND_FONT       = new Font( FONT_NAME, Font.PLAIN, 8 ) ;
+    public static final Font  CHART_AXIS_FONT       = new Font( FONT_NAME, Font.PLAIN, 9 ) ;
+    public static final Font  CHART_LEGEND_FONT     = new Font( FONT_NAME, Font.PLAIN, 8 ) ;
+    public static final Font  CHART_TITLE_FONT      = new Font( FONT_NAME, Font.PLAIN, 15 ) ;
+    public static final Color CHART_TITLE_COLOR     = Color.GRAY ;
+    public static final Color CHART_AXIS_TICK_COLOR = Color.DARK_GRAY.brighter().brighter() ;
     
     public static final BasicStroke DASHED_STROKE =
             new BasicStroke( 0.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,

@@ -4,6 +4,7 @@ import com.sandy.capitalyst.algofoundry.AlgoFoundry;
 import com.sandy.capitalyst.algofoundry.core.bus.Event;
 import com.sandy.capitalyst.algofoundry.core.bus.EventSubscriber;
 import com.sandy.capitalyst.algofoundry.core.ui.SwingUtils;
+import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 import com.sandy.capitalyst.algofoundry.ui.panel.eqmeta.EquityMetaTablePanel;
 import com.sandy.capitalyst.algofoundry.ui.panel.sim.SimPanel;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +49,10 @@ public class AlgoFoundryFrame extends JFrame implements EventSubscriber {
         contentPane.setLayout( new BorderLayout() ) ;
 
         tabbedPane = new JTabbedPane( JTabbedPane.LEFT ) ;
+        tabbedPane.setBackground( BACKGROUND_COLOR ) ;
+        
         recoPanel = new EquityMetaTablePanel() ;
+        
         tabbedPane.addTab( "Stock List", recoPanel ) ;
 
         contentPane.add( tabbedPane ) ;

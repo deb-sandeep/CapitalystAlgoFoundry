@@ -18,8 +18,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.*;
 
-import static com.sandy.capitalyst.algofoundry.core.ui.UITheme.CHART_AXIS_FONT;
-import static com.sandy.capitalyst.algofoundry.core.ui.UITheme.CHART_LEGEND_FONT;
+import static com.sandy.capitalyst.algofoundry.core.ui.UITheme.*;
 
 public class IndicatorChart extends JPanel
     implements ChartMouseListener, ActionListener {
@@ -55,6 +54,7 @@ public class IndicatorChart extends JPanel
                 this.timeSeriesColl ) ;
         chart.setBackgroundPaint( Color.BLACK ) ;
         
+        configureTitle( title ) ;
         configurePlot() ;
         configureAxes() ;
         configureLegends() ;
@@ -64,6 +64,12 @@ public class IndicatorChart extends JPanel
         chartPanel.setDoubleBuffered( true ) ;
         chartPanel.setFillZoomRectangle( true ) ;
         chartPanel.setMouseWheelEnabled( true ) ;
+    }
+    
+    private void configureTitle( String title ) {
+        chart.setTitle( title ) ;
+        chart.getTitle().setPaint( UITheme.CHART_TITLE_COLOR ) ;
+        chart.getTitle().setFont( UITheme.CHART_TITLE_FONT ) ;
     }
     
     private void configurePlot() {
@@ -89,8 +95,8 @@ public class IndicatorChart extends JPanel
         xAxis.setTickLabelFont( CHART_AXIS_FONT ) ;
         yAxis.setTickLabelFont( CHART_AXIS_FONT ) ;
         
-        xAxis.setTickLabelPaint( Color.LIGHT_GRAY.darker() ) ;
-        yAxis.setTickLabelPaint( Color.LIGHT_GRAY.darker() ) ;
+        xAxis.setTickLabelPaint( CHART_AXIS_TICK_COLOR ) ;
+        yAxis.setTickLabelPaint( CHART_AXIS_TICK_COLOR ) ;
     }
     
     private void configureLegends() {
