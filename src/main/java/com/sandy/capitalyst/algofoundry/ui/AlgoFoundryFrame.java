@@ -27,10 +27,13 @@ public class AlgoFoundryFrame extends JFrame implements EventSubscriber {
     public AlgoFoundryFrame() {
         super() ;
 
+        SeriesUtil.initializeSeriesColorMap() ;
+        
         setUpUI() ;
         setVisible( true ) ;
         
-        AlgoFoundry.getBus().addSubscriberForEventTypes( this, true, EVT_SHOW_STOCK_SIM_PANEL );
+        AlgoFoundry.getBus()
+                   .addSubscriberForEventTypes( this, true, EVT_SHOW_STOCK_SIM_PANEL ) ;
     }
     
     private void setUpUI() {
