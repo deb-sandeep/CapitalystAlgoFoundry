@@ -1,6 +1,7 @@
 package com.sandy.capitalyst.algofoundry.core.ui;
 
 import org.jfree.chart.*;
+import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.entity.LegendItemEntity;
@@ -16,6 +17,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.sandy.capitalyst.algofoundry.core.ui.UITheme.*;
@@ -86,17 +88,19 @@ public class IndicatorChart extends JPanel
     
     private void configureAxes() {
         
-        ValueAxis xAxis = plot.getRangeAxis() ;
-        ValueAxis yAxis = plot.getDomainAxis() ;
+        ValueAxis yAxis = plot.getRangeAxis() ;
+        DateAxis  xAxis = (DateAxis)plot.getDomainAxis() ;
         
-        xAxis.setLabelFont( CHART_AXIS_FONT ) ;
         yAxis.setLabelFont( CHART_AXIS_FONT ) ;
+        xAxis.setLabelFont( CHART_AXIS_FONT ) ;
         
-        xAxis.setTickLabelFont( CHART_AXIS_FONT ) ;
         yAxis.setTickLabelFont( CHART_AXIS_FONT ) ;
+        xAxis.setTickLabelFont( CHART_AXIS_FONT ) ;
         
-        xAxis.setTickLabelPaint( CHART_AXIS_TICK_COLOR ) ;
         yAxis.setTickLabelPaint( CHART_AXIS_TICK_COLOR ) ;
+        xAxis.setTickLabelPaint( CHART_AXIS_TICK_COLOR ) ;
+        
+        xAxis.setDateFormatOverride(new SimpleDateFormat("dd-MMM-yy"));
     }
     
     private void configureLegends() {
