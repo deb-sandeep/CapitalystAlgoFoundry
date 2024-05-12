@@ -3,6 +3,7 @@ package com.sandy.capitalyst.algofoundry.core.ui;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -49,5 +50,42 @@ public class SwingUtils {
             throw new RuntimeException( e ) ;
         }
         return img ;
+    }
+    
+    public static JButton createButton( String iconName, ActionListener actionListener ) {
+        return createButton( null, iconName, actionListener ) ;
+    }
+    
+    public static JButton createButton( String label, String iconName, ActionListener actionListener ) {
+        
+        JButton btn = new JButton() ;
+        if( label != null ) {
+            btn.setText( label ) ;
+        }
+        if( iconName != null ) {
+            btn.setIcon( getIcon( iconName ) ) ;
+            if( label == null ) {
+                btn.setOpaque( true ) ;
+                btn.setBackground( UITheme.BACKGROUND_COLOR ) ;
+                btn.setBorderPainted( false ) ;
+            }
+        }
+        if( actionListener != null ) {
+            btn.addActionListener( actionListener ) ;
+        }
+        
+        return btn ;
+    }
+    
+    public static JPanel getNewJPanel() {
+        JPanel panel = new JPanel() ;
+        initPanelUI( panel ) ;
+        return panel ;
+    }
+
+    public static void initPanelUI( JPanel panel ) {
+        panel.setOpaque( true ) ;
+        panel.setBackground( UITheme.BACKGROUND_COLOR ) ;
+        panel.setLayout( new BorderLayout() ) ;
     }
 }

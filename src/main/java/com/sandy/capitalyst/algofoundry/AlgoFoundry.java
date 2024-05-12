@@ -1,6 +1,7 @@
 package com.sandy.capitalyst.algofoundry;
 
 import com.sandy.capitalyst.algofoundry.core.AlgoFoundryConfig;
+import com.sandy.capitalyst.algofoundry.core.bus.Event;
 import com.sandy.capitalyst.algofoundry.core.bus.EventBus;
 import com.sandy.capitalyst.algofoundry.ui.AlgoFoundryFrame;
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
@@ -62,9 +63,11 @@ public class AlgoFoundry
         log.debug( "## Initializing AlgoFoundry app. >" ) ;
 
         log.debug( "- Initializing AlgoFoundryFrame" ) ;
-        SwingUtilities.invokeLater( () ->
-            this.frame = new AlgoFoundryFrame()
-        ) ;
+        SwingUtilities.invokeLater( () -> {
+            this.frame = new AlgoFoundryFrame();
+            Event e = new Event( EventCatalog.EVT_SHOW_STOCK_SIM_PANEL, "ABBOTINDIA" ) ;
+            this.frame.handleEvent( e ) ;
+        } ) ;
 
         log.debug( "<< ## AlgoFoundry initialization complete" ) ;
     }

@@ -17,18 +17,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.sandy.capitalyst.algofoundry.ui.SeriesUtil.*;
+import static com.sandy.capitalyst.algofoundry.ui.SeriesUtil.* ;
+import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.* ;
 
 @Slf4j
 public class SimPanel extends JPanel {
     
-    private final EquityEODHistory history;
+    private EquityEODHistory history = null ;
     
     private IndicatorChart  mainChart ;
     private SimControlPanel controlPanel ;
     private List<String>    seriesKeys = new ArrayList<>() ;
     
-    private float candleEmitRate = 1.0f ;
+    private int curBarSeriesIndex = 0 ;
     
     public SimPanel( String symbol ) throws Exception {
         this.history = new EquityHistEODAPIClient().getEquityEODHistory( symbol ) ;
@@ -41,7 +42,6 @@ public class SimPanel extends JPanel {
         addSeriesKey( SN_BOLLINGER_MID ) ;
         
         setUpUI() ;
-        startCandlePump() ;
     }
     
     public synchronized void addSeriesKey( String seriesKey ) {
@@ -56,37 +56,31 @@ public class SimPanel extends JPanel {
     
     private void setUpUI() {
         
-        setLayout( new BorderLayout() ) ;
-        setOpaque( true ) ;
-        setBackground( UITheme.BACKGROUND_COLOR ) ;
-        
+        initPanelUI( this ) ;
         add( mainChart, BorderLayout.CENTER ) ;
         add( controlPanel, BorderLayout.EAST ) ;
     }
     
-    private void startCandlePump() {
-        new Thread( () -> {
-            BarSeries barSeries = history.getBarSeries() ;
-            for( int i=0; i<barSeries.getBarCount(); i++ ) {
-                
-                Bar bar = barSeries.getBar( i ) ;
-                Date date = Date.from( bar.getEndTime().toInstant() ) ;
-                
-                int finalI = i;
-                synchronized( SimPanel.this ) {
-                    seriesKeys.forEach( k -> {
-                        Indicator<Num> ind = history.getIndicator( k ) ;
-                        mainChart.addValue( k, date, ind.getValue( finalI ).doubleValue() ) ;
-                    } ) ;
-                }
-                
-                try {
-                    Thread.sleep( (int)(1000/candleEmitRate) ) ;
-                }
-                catch( InterruptedException e ) {
-                    throw new RuntimeException( e ) ;
-                }
+    public boolean playCurrentBarSeriesData() {
+        
+        BarSeries barSeries = history.getBarSeries() ;
+        if( this.curBarSeriesIndex < barSeries.getBarCount() ) {
+            Bar bar = barSeries.getBar( this.curBarSeriesIndex ) ;
+            Date date = Date.from( bar.getEndTime().toInstant() ) ;
+            
+            synchronized( SimPanel.this ) {
+                seriesKeys.forEach( k -> {
+                    Indicator<Num> ind = history.getIndicator( k ) ;
+                    mainChart.addValue( k, date, ind.getValue( this.curBarSeriesIndex )
+                                                    .doubleValue() ) ;
+                } ) ;
             }
-        } ).start() ;
+            this.curBarSeriesIndex++ ;
+            return true ;
+        }
+        return false ;
+    }
+    
+    public void restartSimulation() {
     }
 }
