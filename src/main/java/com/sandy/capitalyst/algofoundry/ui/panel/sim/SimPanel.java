@@ -16,15 +16,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.getNewJPanel;
 import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.initPanelUI;
 import static com.sandy.capitalyst.algofoundry.ui.SeriesUtil.*;
 
 @Slf4j
 public class SimPanel extends JPanel {
     
+    private static final int XAXIS_WINDOW_SZ = 260 ;
+    
     private final EquityEODHistory history ;
     
     private final IndicatorChart  mainChart ;
+    private final FooterChartsPanel footerChartsPanel ;
     private final SimControlPanel controlPanel ;
     private final List<String>    seriesKeys = new ArrayList<>() ;
     
@@ -32,7 +36,8 @@ public class SimPanel extends JPanel {
     
     public SimPanel( String symbol ) throws Exception {
         this.history = new EquityHistEODAPIClient().getEquityEODHistory( symbol ) ;
-        this.mainChart = new IndicatorChart( symbol, 260 ) ;
+        this.mainChart = new IndicatorChart( symbol, "Price", XAXIS_WINDOW_SZ ) ;
+        this.footerChartsPanel = new FooterChartsPanel( XAXIS_WINDOW_SZ ) ;
         this.controlPanel = new SimControlPanel( this ) ;
         
         addSeriesKey( SN_CLOSING_PRICE ) ;
@@ -62,8 +67,15 @@ public class SimPanel extends JPanel {
     private void setUpUI() {
         
         initPanelUI( this ) ;
-        add( mainChart, BorderLayout.CENTER ) ;
+        add( getChartPanel(), BorderLayout.CENTER ) ;
         add( controlPanel, BorderLayout.EAST ) ;
+    }
+    
+    private JPanel getChartPanel() {
+        JPanel panel = getNewJPanel() ;
+        panel.add( mainChart, BorderLayout.CENTER ) ;
+        panel.add( footerChartsPanel, BorderLayout.SOUTH ) ;
+        return panel ;
     }
     
     public boolean playCurrentBarSeriesData() {

@@ -18,10 +18,12 @@ public class UITheme {
     public static final Font META_TABLE_HDR_FONT     = new Font( MONO_FONT_NAME, Font.BOLD,  12 ) ;
     public static final Font TABLE_DECIMAL_FONT      = new Font( MONO_FONT_NAME, Font.PLAIN, 12 ) ;
     
-    public static final Font  CHART_AXIS_FONT       = new Font( FONT_NAME, Font.PLAIN, 9 ) ;
+    public static final Font  CHART_AXIS_LABEL_FONT = new Font( FONT_NAME, Font.PLAIN, 12 ) ;
+    public static final Font  CHART_AXIS_TICK_FONT  = new Font( FONT_NAME, Font.PLAIN, 10 ) ;
     public static final Font  CHART_LEGEND_FONT     = new Font( FONT_NAME, Font.PLAIN, 8 ) ;
     public static final Font  CHART_TITLE_FONT      = new Font( FONT_NAME, Font.PLAIN, 15 ) ;
     public static final Color CHART_TITLE_COLOR     = Color.GRAY ;
+    public static final Color CHART_LABEL_COLOR     = Color.GRAY ;
     public static final Color CHART_AXIS_TICK_COLOR = Color.DARK_GRAY.brighter().brighter() ;
     
     public static final BasicStroke DASHED_STROKE =
