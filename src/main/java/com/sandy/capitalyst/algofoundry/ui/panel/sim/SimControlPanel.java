@@ -1,12 +1,11 @@
 package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
-import com.sandy.capitalyst.algofoundry.core.ui.SwingUtils;
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.* ;
+import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.initPanelUI;
 
 public class SimControlPanel extends JPanel {
     
@@ -17,16 +16,14 @@ public class SimControlPanel extends JPanel {
         }
     }
     
-    private final SimPanel simPanel ;
     private final PlayCtrlWidget playCtrlWidget ;
     
     SimControlPanel( SimPanel simPanel ) {
-        this.simPanel = simPanel ;
         setPreferredSize( new Dimension( 300, 100 ) ) ;
         setOpaque( true ) ;
         setBackground( UITheme.BACKGROUND_COLOR ) ;
         
-        this.playCtrlWidget = new PlayCtrlWidget( this.simPanel ) ;
+        this.playCtrlWidget = new PlayCtrlWidget( simPanel ) ;
         
         setUpUI() ;
     }

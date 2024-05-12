@@ -153,6 +153,10 @@ public class IndicatorChart extends JPanel
         timeSeriesColl.removeSeries( series ) ;
     }
     
+    public void clearSeries( String seriesKey ) {
+        timeSeriesMap.get( seriesKey ).clear() ;
+    }
+    
     public void removeSeries( String key ) {
         TimeSeries timeSeries = timeSeriesMap.remove( key ) ;
         if( timeSeries != null ) {

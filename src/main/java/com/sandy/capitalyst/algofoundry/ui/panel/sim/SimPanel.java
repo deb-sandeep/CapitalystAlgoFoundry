@@ -3,7 +3,6 @@ package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
 import com.sandy.capitalyst.algofoundry.core.ui.IndicatorChart;
-import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.data.time.TimeSeries;
 import org.ta4j.core.Bar;
@@ -17,17 +16,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.sandy.capitalyst.algofoundry.ui.SeriesUtil.* ;
-import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.* ;
+import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.initPanelUI;
+import static com.sandy.capitalyst.algofoundry.ui.SeriesUtil.*;
 
 @Slf4j
 public class SimPanel extends JPanel {
     
-    private EquityEODHistory history = null ;
+    private final EquityEODHistory history ;
     
-    private IndicatorChart  mainChart ;
-    private SimControlPanel controlPanel ;
-    private List<String>    seriesKeys = new ArrayList<>() ;
+    private final IndicatorChart  mainChart ;
+    private final SimControlPanel controlPanel ;
+    private final List<String>    seriesKeys = new ArrayList<>() ;
     
     private int curBarSeriesIndex = 0 ;
     
@@ -52,6 +51,12 @@ public class SimPanel extends JPanel {
     public synchronized void removeSeriesKey( String seriesKey ) {
         this.seriesKeys.remove( seriesKey ) ;
         this.mainChart.removeSeries( seriesKey ) ;
+    }
+    
+    public synchronized void clearChart() {
+        for( String seriesKey : this.seriesKeys ) {
+            this.mainChart.clearSeries( seriesKey ) ;
+        }
     }
     
     private void setUpUI() {
@@ -82,5 +87,7 @@ public class SimPanel extends JPanel {
     }
     
     public void restartSimulation() {
+        this.curBarSeriesIndex = 0 ;
+        this.clearChart() ;
     }
 }

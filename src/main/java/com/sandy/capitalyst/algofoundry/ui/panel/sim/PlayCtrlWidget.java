@@ -8,6 +8,8 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.* ;
 
@@ -15,37 +17,51 @@ import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.* ;
 public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
     implements ActionListener, ChangeListener {
     
-    private enum PlayState { YET_TO_START, PLAYING, PAUSED, ENDED } ;
+    private class PlayDaemonThread extends Thread {
+        public void run() {
+            while( playState != PlayState.ENDED ) {
+                try {
+                    if( playState == PlayState.PLAYING ) {
+                        if( !simPanel.playCurrentBarSeriesData() ) {
+                            playState = PlayState.ENDED ;
+                            refreshButtons() ;
+                        }
+                    }
+                    Thread.sleep( emitDelayMs ) ;
+                }
+                catch( InterruptedException e ) {
+                    throw new RuntimeException( e );
+                }
+            }
+        }
+    }
+    
+    private enum PlayState { YET_TO_START, PLAYING, PAUSED, ENDED }
     private static final int MIN_EMIT_DELAY = 0 ;
     private static final int MAX_EMIT_DELAY = 1000 ;
-
-    private JButton playPauseBtn ;
-    private JButton stepBtn ;
-    private JButton restartBtn ;
-    private JSlider emitDelaySlider ;
     
-    private ImageIcon playIcon ;
-    private ImageIcon pauseIcon ;
+    private static final Map<PlayState, boolean[]> BTN_ENABLE_STATES = new HashMap<>() ;
+    static {
+        // Boolean flags are in the order play, step, stop, reset
+        BTN_ENABLE_STATES.put( PlayState.YET_TO_START, new boolean[]{ true,  false, false, false } ) ;
+        BTN_ENABLE_STATES.put( PlayState.PLAYING,      new boolean[]{ true,  false, true,  false } ) ;
+        BTN_ENABLE_STATES.put( PlayState.PAUSED,       new boolean[]{ true,  true,  true,  false } ) ;
+        BTN_ENABLE_STATES.put( PlayState.ENDED,        new boolean[]{ false, false, false, true  } ) ;
+    }
+    
+    private final JButton playPauseBtn ;
+    private final JButton stepBtn ;
+    private final JButton stopBtn ;
+    private final JButton restartBtn ;
+    private final JSlider emitDelaySlider ;
+    
+    private final ImageIcon playIcon ;
+    private final ImageIcon pauseIcon ;
     
     private PlayState playState = PlayState.YET_TO_START;
     private int emitDelayMs = 250 ;
     
-    private Thread playDaemon = new Thread( () -> {
-        while( true ) {
-            try {
-                if( playState == PlayState.PLAYING ) {
-                    if( !simPanel.playCurrentBarSeriesData() ) {
-                        playState = PlayState.ENDED ;
-                        refreshButtons() ;
-                    }
-                }
-                Thread.sleep( emitDelayMs ) ;
-            }
-            catch( InterruptedException e ) {
-                throw new RuntimeException( e );
-            }
-        }
-    } ) ;
+    private Thread playDaemon ;
     
     PlayCtrlWidget( SimPanel simPanel ) {
         super( simPanel ) ;
@@ -56,6 +72,7 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
         this.playPauseBtn = createButton( "control_play", this ) ;
         this.restartBtn = createButton( "control_restart", this ) ;
         this.stepBtn = createButton( "control_step", this ) ;
+        this.stopBtn = createButton( "control_stop", this ) ;
         
         this.restartBtn.setEnabled( false ) ;
         
@@ -63,6 +80,8 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
                                             MIN_EMIT_DELAY, MAX_EMIT_DELAY,
                                             this.emitDelayMs ) ;
         setUpUI() ;
+        
+        this.playDaemon = new PlayDaemonThread() ;
         this.playDaemon.start() ;
     }
     
@@ -78,9 +97,10 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
     
     private JPanel getPlayPauseBtnPanel() {
         JPanel panel = getNewJPanel() ;
-        panel.setLayout( new GridLayout( 1, 3 ) ) ;
+        panel.setLayout( new GridLayout( 1, 4 ) ) ;
         panel.add( this.playPauseBtn ) ;
         panel.add( this.stepBtn ) ;
+        panel.add( this.stopBtn ) ;
         panel.add( this.restartBtn ) ;
         return panel ;
     }
@@ -115,6 +135,8 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
         else if( src == restartBtn ) {
             simPanel.restartSimulation() ;
             playState = PlayState.YET_TO_START;
+            playDaemon = new PlayDaemonThread() ;
+            playDaemon.start() ;
             refreshButtons() ;
         }
         else if( src == stepBtn ) {
@@ -122,36 +144,21 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
                 playState = PlayState.ENDED ;
             }
         }
+        else if( src == stopBtn ) {
+            playState = PlayState.ENDED ;
+        }
         refreshButtons() ;
     }
     
     private void refreshButtons() {
-        if( playState == PlayState.YET_TO_START ) {
-            this.restartBtn.setEnabled( false ) ;
-            this.stepBtn.setEnabled( false ) ;
-            this.playPauseBtn.setEnabled( true ) ;
-            
-            this.playPauseBtn.setIcon( this.playIcon ) ;
-        }
-        else if( playState == PlayState.PLAYING ) {
-            this.restartBtn.setEnabled( false ) ;
-            this.stepBtn.setEnabled( false ) ;
-            this.playPauseBtn.setEnabled( true ) ;
-            
-            this.playPauseBtn.setIcon( this.pauseIcon ) ;
-        }
-        else if( playState == PlayState.PAUSED ) {
-            this.restartBtn.setEnabled( false ) ;
-            this.stepBtn.setEnabled( true ) ;
-            this.playPauseBtn.setEnabled( true ) ;
-            
-            this.playPauseBtn.setIcon( this.playIcon ) ;
-        }
-        else if( playState == PlayState.ENDED ) {
-            this.restartBtn.setEnabled( true ) ;
-            this.stepBtn.setEnabled( false ) ;
-            this.playPauseBtn.setEnabled( false ) ;
-        }
+        boolean[] enableStates = BTN_ENABLE_STATES.get( playState ) ;
+        playPauseBtn.setEnabled( enableStates[0] ) ;
+        stepBtn.setEnabled     ( enableStates[1] ) ;
+        stopBtn.setEnabled     ( enableStates[2] ) ;
+        restartBtn.setEnabled  ( enableStates[3] ) ;
+        
+        playPauseBtn.setIcon( ( playState == PlayState.PLAYING ) ?
+                              pauseIcon : playIcon ) ;
     }
     
     @Override
