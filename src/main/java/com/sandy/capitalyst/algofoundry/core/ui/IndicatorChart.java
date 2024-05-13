@@ -135,6 +135,7 @@ public class IndicatorChart extends JPanel
         xAxis.setLabelPaint( CHART_LABEL_COLOR ) ;
         
         xAxis.setDateFormatOverride( new SimpleDateFormat( "dd-MMM-yy" ) ) ;
+        
         AxisSpace space = new AxisSpace() ;
         space.setLeft( 50 ) ;
         plot.setFixedRangeAxisSpace( space ) ;
