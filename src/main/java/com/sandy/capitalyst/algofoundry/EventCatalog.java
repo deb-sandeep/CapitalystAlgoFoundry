@@ -14,4 +14,5 @@ public class EventCatalog {
     // --------------- Core Events [End] ---------------------------------------
     
     public static final int EVT_SHOW_STOCK_SIM_PANEL = 201 ;
+    public static final int EVT_INDICATOR_DAY_VALUE  = 202 ;
 }

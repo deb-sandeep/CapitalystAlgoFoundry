@@ -1,7 +1,11 @@
 package com.sandy.capitalyst.algofoundry.apiclient.histeod;
 
-import com.sandy.capitalyst.algofoundry.ui.SeriesUtil;
+import com.sandy.capitalyst.algofoundry.AlgoFoundry;
+import com.sandy.capitalyst.algofoundry.EventCatalog;
+import com.sandy.capitalyst.algofoundry.ui.panel.sim.SimPanel;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.Indicator;
 import org.ta4j.core.indicators.SMAIndicator;
@@ -12,92 +16,94 @@ import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.indicators.statistics.StandardDeviationIndicator;
 import org.ta4j.core.num.Num;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-import static com.sandy.capitalyst.algofoundry.ui.SeriesUtil.* ;
+import static com.sandy.capitalyst.algofoundry.core.util.IndicatorType.* ;
 
+@Slf4j
 public class EquityEODHistory {
     
     @Getter private final BarSeries barSeries ;
+    @Getter private final String symbol ;
     
     private final Map<String, Indicator<Num>> cache = new HashMap<>() ;
     
-    EquityEODHistory( BarSeries barSeries ) {
+    EquityEODHistory( String symbol, BarSeries barSeries ) {
         this.barSeries = barSeries ;
+        this.symbol = symbol ;
     }
     
-    public Indicator<Num> getIndicator( String key ) {
-        switch( key ) {
-            case SN_CLOSING_PRICE -> { return getClosePriceIndicator() ; }
-            case SN_BOLLINGER_LOW -> { return getBollingerLowerIndicator() ; }
-            case SN_BOLLINGER_UP  -> { return getBollingerUpperIndicator() ; }
-            case SN_BOLLINGER_MID -> { return getBollingerMiddleIndicator() ; }
-        }
-        return null;
-    }
-    
-    public Indicator<Num> getClosePriceIndicator() {
-        final String KEY = SN_CLOSING_PRICE ;
-        Indicator<Num> ind = cache.get( KEY ) ;
+    public Indicator<Num> ind( String key ) {
+        Indicator<Num> ind = cache.get( key ) ;
         if( ind == null ) {
-            ind = new ClosePriceIndicator( this.barSeries ) ;
-            cache.put( KEY, ind ) ;
+            switch( key ) {
+                case CLOSING_PRICE -> ind = createClosePriceIndicator() ;
+                case SMA_20        -> ind = createSMAIndicator( 20 ) ;
+                case STDEV_20      -> ind = createStDevIndicator( 20 ) ;
+                case BOLLINGER_LOW -> ind = createBollingerLowerIndicator() ;
+                case BOLLINGER_UP  -> ind = createBollingerUpperIndicator() ;
+                case BOLLINGER_MID -> ind = createBollingerMiddleIndicator() ;
+            }
+            cache.put( key, ind ) ;
         }
         return ind ;
     }
     
-    public Indicator<Num> getSMAIndicator( int period ) {
-        final String KEY = "SMA-" + period ;
-        Indicator<Num> ind = cache.get( KEY ) ;
-        if( ind == null ) {
-            ind = new SMAIndicator( getClosePriceIndicator(), period ) ;
-            cache.put( KEY, ind ) ;
-        }
-        return ind ;
+    public synchronized void emitValues( int index, Collection<String> indNames ) {
+        indNames.forEach( ind -> emitValue( index, ind ) ) ;
     }
     
-    public Indicator<Num> getStdDevIndicator( int period ) {
-        final String KEY = "StdDev-" + period ;
-        Indicator<Num> ind = cache.get( KEY ) ;
-        if( ind == null ) {
-            ind = new StandardDeviationIndicator( getClosePriceIndicator(), period ) ;
-            cache.put( KEY, ind ) ;
+    public synchronized void emitValue( int index, String indName ) {
+        
+        if( index >= barSeries.getBarCount() ) {
+            throw new IllegalArgumentException( "Index is out of bounds." ) ;
         }
-        return ind ;
+        
+        Bar  bar  = barSeries.getBar( index ) ;
+        Date date = Date.from( bar.getEndTime().toInstant() ) ;
+        
+        Indicator<Num> ind = ind( indName ) ;
+        if( ind == null ) {
+            throw new IllegalArgumentException( "Indicator '" + indName + "' does not exist." ) ;
+        }
+        
+        AlgoFoundry.getBus()
+                .publishEvent( EventCatalog.EVT_INDICATOR_DAY_VALUE,
+                        new IndicatorDayValue( symbol, indName, date,
+                                ind.getValue( index )
+                                        .doubleValue() ) ) ;
     }
     
-    public BollingerBandsMiddleIndicator getBollingerMiddleIndicator() {
-        final String KEY = SN_BOLLINGER_MID ;
-        Indicator<Num> ind = cache.get( KEY ) ;
-        if( ind == null ) {
-            ind = new BollingerBandsMiddleIndicator( getSMAIndicator( 20 ) ) ;
-            cache.put( KEY, ind ) ;
-        }
-        return (BollingerBandsMiddleIndicator)ind ;
+    public int getBarCount() {
+        return barSeries.getBarCount() ;
+    }
+
+    private Indicator<Num> createClosePriceIndicator() {
+        return new ClosePriceIndicator( this.barSeries ) ;
     }
     
-    public Indicator<Num> getBollingerUpperIndicator() {
-        final String KEY = SN_BOLLINGER_UP ;
-        Indicator<Num> ind = cache.get( KEY ) ;
-        if( ind == null ) {
-            ind = new BollingerBandsUpperIndicator(
-                            getBollingerMiddleIndicator(),
-                            getStdDevIndicator( 20 ) ) ;
-            cache.put( KEY, ind ) ;
-        }
-        return ind ;
+    private Indicator<Num> createSMAIndicator( int period ) {
+        return new SMAIndicator( ind( CLOSING_PRICE ), period ) ;
     }
     
-    public Indicator<Num> getBollingerLowerIndicator() {
-        final String KEY = SN_BOLLINGER_LOW ;
-        Indicator<Num> ind = cache.get( KEY ) ;
-        if( ind == null ) {
-            ind = new BollingerBandsLowerIndicator(
-                            getBollingerMiddleIndicator(),
-                            getStdDevIndicator( 20 ) ) ;
-            cache.put( KEY, ind ) ;
-        }
-        return ind ;
+    private Indicator<Num> createStDevIndicator( int period ) {
+        return new StandardDeviationIndicator( ind( CLOSING_PRICE ), period ) ;
     }
+    
+    private BollingerBandsMiddleIndicator createBollingerMiddleIndicator() {
+        return new BollingerBandsMiddleIndicator( ind( SMA_20 ) ) ;
+    }
+    
+    private Indicator<Num> createBollingerUpperIndicator() {
+        return new BollingerBandsUpperIndicator(
+                (BollingerBandsMiddleIndicator)ind( BOLLINGER_MID ),
+                ind( STDEV_20 ) ) ;
+    }
+    
+    private Indicator<Num> createBollingerLowerIndicator() {
+        return new BollingerBandsLowerIndicator(
+                (BollingerBandsMiddleIndicator)ind( BOLLINGER_MID ),
+                ind( STDEV_20 ) ) ;
+    }
+    
 }

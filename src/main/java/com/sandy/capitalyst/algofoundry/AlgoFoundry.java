@@ -16,6 +16,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.swing.*;
+import java.lang.ref.Cleaner;
 
 @Slf4j
 @SpringBootApplication
@@ -25,7 +26,8 @@ public class AlgoFoundry
     private static final EventBus GLOBAL_EVENT_BUS = new EventBus() ;
 
     private static ConfigurableApplicationContext APP_CTX = null ;
-    private static AlgoFoundry                    APP     = null;
+    private static AlgoFoundry                    APP     = null ;
+    private static Cleaner                        CLEANER = Cleaner.create() ;
 
     public static AlgoFoundry getApp() {
         return APP;
@@ -42,6 +44,8 @@ public class AlgoFoundry
     public static <T> T getBean( Class<T> type ) {
         return APP_CTX.getBean( type ) ;
     }
+    
+    public static Cleaner getCleaner() { return CLEANER ; }
     
     // ---------------- Instance methods start ---------------------------------
 

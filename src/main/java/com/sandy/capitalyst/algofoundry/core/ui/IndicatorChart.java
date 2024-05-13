@@ -1,5 +1,9 @@
 package com.sandy.capitalyst.algofoundry.core.ui;
 
+import com.sandy.capitalyst.algofoundry.apiclient.histeod.IndicatorDayValue;
+import com.sandy.capitalyst.algofoundry.core.bus.Event;
+import com.sandy.capitalyst.algofoundry.core.bus.EventSubscriber;
+import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.*;
 import org.jfree.chart.axis.AxisSpace;
 import org.jfree.chart.axis.DateAxis;
@@ -12,7 +16,6 @@ import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.ui.RectangleInsets;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,10 +25,14 @@ import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.sandy.capitalyst.algofoundry.AlgoFoundry.getBus;
+import static com.sandy.capitalyst.algofoundry.AlgoFoundry.getCleaner;
+import static com.sandy.capitalyst.algofoundry.EventCatalog.EVT_INDICATOR_DAY_VALUE;
 import static com.sandy.capitalyst.algofoundry.core.ui.UITheme.*;
 
+@Slf4j
 public class IndicatorChart extends JPanel
-    implements ChartMouseListener, ActionListener {
+    implements ChartMouseListener, ActionListener, EventSubscriber {
     
     private JFreeChart       chart      = null ;
     private ChartPanel       chartPanel = null ;
@@ -41,13 +48,31 @@ public class IndicatorChart extends JPanel
     private final TimeSeriesCollection timeSeriesColl = new TimeSeriesCollection() ;
     private final Map<String, TimeSeries> timeSeriesMap = new HashMap<>() ;
     
-    private final int xAxisWindowSize;
+    private final String symbol ;
+    private final int xAxisWindowSize ;
     
-    public IndicatorChart( String title, String yLabel, int windowSize ) {
+    public IndicatorChart( String symbol, String yLabel, int windowSize ) {
+        this( symbol, null, yLabel, windowSize ) ;
+    }
+    
+    public IndicatorChart( String symbol, String title, String yLabel, int windowSize ) {
+        
         this.xAxisWindowSize = windowSize ;
+        this.symbol = symbol ;
+        
         createChart( title, yLabel ) ;
         setLayout( new BorderLayout() ) ;
         add( chartPanel, BorderLayout.CENTER ) ;
+        
+        getBus().addSubscriberForEventTypes( this, false, EVT_INDICATOR_DAY_VALUE );
+        getCleaner().register( this, getCleanerAction() ) ;
+    }
+    
+    public Runnable getCleanerAction() {
+        return () -> {
+            log.debug( "Cleaning chart." ) ;
+            getBus().removeSubscriber( this, EVT_INDICATOR_DAY_VALUE ) ;
+        } ;
     }
     
     private void createChart( String title, String yAxisLabel ) {
@@ -138,11 +163,12 @@ public class IndicatorChart extends JPanel
         legendPopupMenu.add( removeAllSeriesMI ) ;
     }
     
-    public void addSeries( TimeSeries series ) {
+    public void addSeries( String seriesKey ) {
         
-        if( !timeSeriesMap.containsKey( (String)series.getKey() ) ) {
+        if( !timeSeriesMap.containsKey( seriesKey ) ) {
             
-            String seriesKey = ( String ) series.getKey() ;
+            TimeSeries series = new TimeSeries( seriesKey ) ;
+            
             timeSeriesMap.put( seriesKey, series ) ;
             timeSeriesColl.addSeries( series ) ;
             
@@ -156,15 +182,6 @@ public class IndicatorChart extends JPanel
             renderer.setSeriesStroke( seriesIndex,
                                       SeriesRenderingAttributes.getStroke( seriesKey ) ) ;
         }
-    }
-    
-    public TimeSeries getSeries( String key ) {
-        return timeSeriesMap.get( key ) ;
-    }
-    
-    public void removeSeries( TimeSeries series ) {
-        timeSeriesMap.remove( series.getKey() ) ;
-        timeSeriesColl.removeSeries( series ) ;
     }
     
     public void clearSeries( String seriesKey ) {
@@ -182,13 +199,6 @@ public class IndicatorChart extends JPanel
         Collection<String> seriesNames = new ArrayList<>( timeSeriesMap.keySet() );
         for( String key : seriesNames ) {
             removeSeries( key ) ;
-        }
-    }
-    
-    public void addValue( String seriesKey, Date date, double value ) {
-        TimeSeries series = timeSeriesMap.get( seriesKey ) ;
-        if( series != null ) {
-            series.add( new Day(date), value ) ;
         }
     }
     
@@ -219,6 +229,23 @@ public class IndicatorChart extends JPanel
         }
         else if( menu == removeAllSeriesMI ) {
             removeAllSeries() ;
+        }
+    }
+    
+    @Override
+    public void handleEvent( Event event ) {
+        if( event.getEventType() == EVT_INDICATOR_DAY_VALUE ) {
+            IndicatorDayValue val = ( IndicatorDayValue )event.getValue() ;
+            if( val.getSymbol().equals( this.symbol ) ) {
+                addValue( val.getIndicatorName(), val.getDate(), val.getValue() ) ;
+            }
+        }
+    }
+    
+    public void addValue( String seriesKey, Date date, double value ) {
+        TimeSeries series = timeSeriesMap.get( seriesKey ) ;
+        if( series != null ) {
+            series.add( new Day(date), value ) ;
         }
     }
 }

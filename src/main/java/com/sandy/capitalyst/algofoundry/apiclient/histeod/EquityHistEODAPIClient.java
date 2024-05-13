@@ -52,7 +52,7 @@ public class EquityHistEODAPIClient {
         BarSeries series = new BaseBarSeries( symbol ) ;
         List<DayCandle> candles = getHistoricCandles( symbol ) ;
         candles.forEach( c -> series.addBar( c.toBar() ) ) ;
-        return new EquityEODHistory( series ) ;
+        return new EquityEODHistory( symbol, series ) ;
     }
     
     private List<DayCandle> getPrehistoicDayCandles( String symbol, Date endDate ){

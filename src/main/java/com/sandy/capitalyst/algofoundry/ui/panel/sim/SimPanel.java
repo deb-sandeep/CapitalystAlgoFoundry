@@ -4,56 +4,63 @@ import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
 import com.sandy.capitalyst.algofoundry.core.ui.IndicatorChart;
 import lombok.extern.slf4j.Slf4j;
-import org.jfree.data.time.TimeSeries;
-import org.ta4j.core.Bar;
-import org.ta4j.core.BarSeries;
-import org.ta4j.core.Indicator;
-import org.ta4j.core.num.Num;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.getNewJPanel;
 import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.initPanelUI;
-import static com.sandy.capitalyst.algofoundry.ui.SeriesUtil.*;
+import static com.sandy.capitalyst.algofoundry.core.util.IndicatorType.*;
 
 @Slf4j
 public class SimPanel extends JPanel {
     
     private static final int XAXIS_WINDOW_SZ = 260 ;
+    private static final int CHART_HEIGHT = 150 ;
     
     private final EquityEODHistory history ;
     
-    private final IndicatorChart  mainChart ;
-    private final FooterChartsPanel footerChartsPanel ;
+    private final IndicatorChart mainChart ;
+    private final IndicatorChart macdChart ;
+    private final IndicatorChart rsiChart ;
+    private final IndicatorChart adxChart ;
+    
     private final SimControlPanel controlPanel ;
-    private final List<String>    seriesKeys = new ArrayList<>() ;
+    private final List<String> seriesKeys = new ArrayList<>() ;
+    private final Object[][] indChartMapping ;
     
     private int curBarSeriesIndex = 0 ;
     
     public SimPanel( String symbol ) throws Exception {
         this.history = new EquityHistEODAPIClient().getEquityEODHistory( symbol ) ;
-        this.mainChart = new IndicatorChart( symbol, "Price", XAXIS_WINDOW_SZ ) ;
-        this.footerChartsPanel = new FooterChartsPanel( XAXIS_WINDOW_SZ ) ;
+        
+        this.mainChart = new IndicatorChart( symbol, symbol, "Price", XAXIS_WINDOW_SZ ) ;
+        this.macdChart = new IndicatorChart( symbol, "MACD", XAXIS_WINDOW_SZ ) ;
+        this.rsiChart  = new IndicatorChart( symbol, "RSI" , XAXIS_WINDOW_SZ ) ;
+        this.adxChart  = new IndicatorChart( symbol, "ADX" , XAXIS_WINDOW_SZ ) ;
+        
         this.controlPanel = new SimControlPanel( this ) ;
         
-        addSeriesKey( SN_CLOSING_PRICE ) ;
-        addSeriesKey( SN_BOLLINGER_LOW ) ;
-        addSeriesKey( SN_BOLLINGER_UP  ) ;
-        addSeriesKey( SN_BOLLINGER_MID ) ;
+        this.indChartMapping = new Object[][]{
+          {  }
+        } ;
+        
+        addSeries( CLOSING_PRICE ) ;
+        addSeries( BOLLINGER_LOW, BOLLINGER_MID, BOLLINGER_UP ) ;
         
         setUpUI() ;
     }
     
-    public synchronized void addSeriesKey( String seriesKey ) {
-        this.seriesKeys.add( seriesKey ) ;
-        this.mainChart.addSeries( new TimeSeries( seriesKey ) ) ;
+    public synchronized void addSeries( String... seriesKeys ) {
+        for( String seriesKey : seriesKeys ) {
+            this.seriesKeys.add( seriesKey ) ;
+            getCharts( seriesKey ).forEach( c -> c.addSeries( seriesKey ) );
+        }
     }
     
-    public synchronized void removeSeriesKey( String seriesKey ) {
+    public synchronized void removeSeries( String seriesKey ) {
         this.seriesKeys.remove( seriesKey ) ;
         this.mainChart.removeSeries( seriesKey ) ;
     }
@@ -64,8 +71,29 @@ public class SimPanel extends JPanel {
         }
     }
     
+    private List<IndicatorChart> getCharts( String series ) {
+        List<IndicatorChart> chartList = new ArrayList<>() ;
+        for( Object[] mapping : indChartMapping ) {
+            if( mapping.length > 1 ) {
+                for( int j = 1; j < mapping.length; j++ ) {
+                    if( series.equals( mapping[j] ) ) {
+                        chartList.add( ( IndicatorChart )mapping[0] );
+                    }
+                }
+            }
+        }
+        if( chartList.isEmpty() ) {
+            chartList.add( this.mainChart ) ;
+        }
+        return chartList ;
+    }
+    
     private void setUpUI() {
         
+        macdChart.setPreferredSize( new Dimension( 100, CHART_HEIGHT ) ) ;
+        rsiChart.setPreferredSize( new Dimension( 100, CHART_HEIGHT ) ) ;
+        adxChart.setPreferredSize( new Dimension( 100, CHART_HEIGHT ) ) ;
+
         initPanelUI( this ) ;
         add( getChartPanel(), BorderLayout.CENTER ) ;
         add( controlPanel, BorderLayout.EAST ) ;
@@ -74,24 +102,22 @@ public class SimPanel extends JPanel {
     private JPanel getChartPanel() {
         JPanel panel = getNewJPanel() ;
         panel.add( mainChart, BorderLayout.CENTER ) ;
-        panel.add( footerChartsPanel, BorderLayout.SOUTH ) ;
+        panel.add( getFooterChartPanel(), BorderLayout.SOUTH ) ;
+        return panel ;
+    }
+    
+    private JPanel getFooterChartPanel() {
+        JPanel panel = getNewJPanel() ;
+        panel.setLayout( new GridLayout( 3, 1 ) ) ;
+        panel.add( this.macdChart ) ;
+        panel.add( this.rsiChart ) ;
+        panel.add( this.adxChart ) ;
         return panel ;
     }
     
     public boolean playCurrentBarSeriesData() {
-        
-        BarSeries barSeries = history.getBarSeries() ;
-        if( this.curBarSeriesIndex < barSeries.getBarCount() ) {
-            Bar bar = barSeries.getBar( this.curBarSeriesIndex ) ;
-            Date date = Date.from( bar.getEndTime().toInstant() ) ;
-            
-            synchronized( SimPanel.this ) {
-                seriesKeys.forEach( k -> {
-                    Indicator<Num> ind = history.getIndicator( k ) ;
-                    mainChart.addValue( k, date, ind.getValue( this.curBarSeriesIndex )
-                                                    .doubleValue() ) ;
-                } ) ;
-            }
+        if( curBarSeriesIndex < history.getBarCount() ) {
+            history.emitValues( curBarSeriesIndex, seriesKeys ) ;
             this.curBarSeriesIndex++ ;
             return true ;
         }
