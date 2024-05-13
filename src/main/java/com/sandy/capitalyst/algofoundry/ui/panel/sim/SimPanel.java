@@ -12,7 +12,7 @@ import java.util.List;
 
 import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.getNewJPanel;
 import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.initPanelUI;
-import static com.sandy.capitalyst.algofoundry.core.util.IndicatorType.*;
+import static com.sandy.capitalyst.algofoundry.core.indicator.IndicatorType.*;
 
 @Slf4j
 public class SimPanel extends JPanel {
@@ -44,11 +44,12 @@ public class SimPanel extends JPanel {
         this.controlPanel = new SimControlPanel( this ) ;
         
         this.indChartMapping = new Object[][]{
-          {  }
+          { macdChart, MACD, MACD_SIGNAL, MACD_HIST }
         } ;
         
         addSeries( CLOSING_PRICE ) ;
         addSeries( BOLLINGER_LOW, BOLLINGER_MID, BOLLINGER_UP ) ;
+        addSeries( MACD, MACD_SIGNAL, MACD_HIST ) ;
         
         setUpUI() ;
     }

@@ -27,8 +27,8 @@ public class UITheme {
     public static final Color CHART_AXIS_TICK_COLOR = Color.DARK_GRAY.brighter().brighter() ;
     
     public static final BasicStroke DASHED_STROKE =
-            new BasicStroke( 0.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
-                             1.0f, new float[] {1.0f, 2.0f}, 0.0f ) ;
+            new BasicStroke( 0.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
+                             1.0f, new float[] {2.0f, 3.0f}, 0.0f ) ;
     
-    public static final BasicStroke LINE_STROKE = new BasicStroke( 0.3f ) ;
+    public static final BasicStroke LINE_STROKE = new BasicStroke( 0.4f ) ;
 }

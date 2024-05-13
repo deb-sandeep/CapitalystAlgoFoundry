@@ -4,7 +4,6 @@ import com.sandy.capitalyst.algofoundry.AlgoFoundry;
 import com.sandy.capitalyst.algofoundry.core.bus.Event;
 import com.sandy.capitalyst.algofoundry.core.bus.EventSubscriber;
 import com.sandy.capitalyst.algofoundry.core.ui.SwingUtils;
-import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 import com.sandy.capitalyst.algofoundry.ui.panel.eqmeta.EquityMetaTablePanel;
 import com.sandy.capitalyst.algofoundry.ui.panel.sim.SimPanel;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +13,8 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.sandy.capitalyst.algofoundry.core.ui.UITheme.* ;
-import static com.sandy.capitalyst.algofoundry.EventCatalog.* ;
+import static com.sandy.capitalyst.algofoundry.EventCatalog.EVT_SHOW_STOCK_SIM_PANEL;
+import static com.sandy.capitalyst.algofoundry.core.ui.UITheme.BACKGROUND_COLOR;
 
 @Slf4j
 public class AlgoFoundryFrame extends JFrame implements EventSubscriber {
@@ -28,8 +27,6 @@ public class AlgoFoundryFrame extends JFrame implements EventSubscriber {
     public AlgoFoundryFrame() {
         super() ;
 
-        SeriesUtil.initializeSeriesColorMap() ;
-        
         setUpUI() ;
         setVisible( true ) ;
         

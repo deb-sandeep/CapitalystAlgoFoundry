@@ -2,26 +2,32 @@ package com.sandy.capitalyst.algofoundry.apiclient.histeod;
 
 import com.sandy.capitalyst.algofoundry.AlgoFoundry;
 import com.sandy.capitalyst.algofoundry.EventCatalog;
-import com.sandy.capitalyst.algofoundry.ui.panel.sim.SimPanel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.Indicator;
+import org.ta4j.core.indicators.EMAIndicator;
+import org.ta4j.core.indicators.MACDIndicator;
 import org.ta4j.core.indicators.SMAIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsLowerIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsMiddleIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsUpperIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
+import org.ta4j.core.indicators.numeric.NumericIndicator;
 import org.ta4j.core.indicators.statistics.StandardDeviationIndicator;
 import org.ta4j.core.num.Num;
 
 import java.util.*;
 
-import static com.sandy.capitalyst.algofoundry.core.util.IndicatorType.* ;
+import static com.sandy.capitalyst.algofoundry.core.indicator.IndicatorType.* ;
 
 @Slf4j
 public class EquityEODHistory {
+    
+    private static final int MACD_SHORT_WINDOW  = 12 ;
+    private static final int MACD_LONG_WINDOW   = 26 ;
+    private static final int MACD_SIGNAL_WINDOW =  9 ;
     
     @Getter private final BarSeries barSeries ;
     @Getter private final String symbol ;
@@ -43,6 +49,9 @@ public class EquityEODHistory {
                 case BOLLINGER_LOW -> ind = createBollingerLowerIndicator() ;
                 case BOLLINGER_UP  -> ind = createBollingerUpperIndicator() ;
                 case BOLLINGER_MID -> ind = createBollingerMiddleIndicator() ;
+                case MACD          -> ind = createMACDIndicator() ;
+                case MACD_SIGNAL   -> ind = createMACDSignalIndicator() ;
+                case MACD_HIST     -> ind = createMACDHistogramIndicator() ;
             }
             cache.put( key, ind ) ;
         }
@@ -106,4 +115,15 @@ public class EquityEODHistory {
                 ind( STDEV_20 ) ) ;
     }
     
+    private Indicator<Num> createMACDIndicator() {
+        return new MACDIndicator( ind( CLOSING_PRICE ), MACD_SHORT_WINDOW, MACD_LONG_WINDOW ) ;
+    }
+    
+    private Indicator<Num> createMACDSignalIndicator() {
+        return new EMAIndicator( ind(MACD), MACD_SIGNAL_WINDOW ) ;
+    }
+    
+    private Indicator<Num> createMACDHistogramIndicator() {
+        return NumericIndicator.of( ind( MACD ) ).minus( ind( MACD_SIGNAL ) ) ;
+    }
 }

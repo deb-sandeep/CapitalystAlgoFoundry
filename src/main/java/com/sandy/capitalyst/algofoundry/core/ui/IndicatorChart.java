@@ -3,6 +3,7 @@ package com.sandy.capitalyst.algofoundry.core.ui;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.IndicatorDayValue;
 import com.sandy.capitalyst.algofoundry.core.bus.Event;
 import com.sandy.capitalyst.algofoundry.core.bus.EventSubscriber;
+import com.sandy.capitalyst.algofoundry.core.indicator.IndicatorUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.*;
 import org.jfree.chart.axis.AxisSpace;
@@ -178,9 +179,9 @@ public class IndicatorChart extends JPanel
             
             int seriesIndex = timeSeriesColl.getSeriesCount()-1 ;
             renderer.setSeriesPaint( seriesIndex,
-                                     SeriesRenderingAttributes.getColor( seriesKey ) ) ;
+                                     IndicatorUtil.getColor( seriesKey ) ) ;
             renderer.setSeriesStroke( seriesIndex,
-                                      SeriesRenderingAttributes.getStroke( seriesKey ) ) ;
+                                      IndicatorUtil.getStroke( seriesKey ) ) ;
         }
     }
     
