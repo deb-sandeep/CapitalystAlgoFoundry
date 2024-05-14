@@ -3,6 +3,8 @@ package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
 import com.sandy.capitalyst.algofoundry.core.ui.IndicatorChart;
+import com.sandy.capitalyst.algofoundry.ui.indchart.MACDChart;
+import com.sandy.capitalyst.algofoundry.ui.indchart.PriceChart;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -17,15 +19,12 @@ import static com.sandy.capitalyst.algofoundry.core.indicator.IndicatorType.*;
 @Slf4j
 public class SimPanel extends JPanel {
     
-    private static final int XAXIS_WINDOW_SZ = 260 ;
     private static final int CHART_HEIGHT = 150 ;
     
     private final EquityEODHistory history ;
     
     private final IndicatorChart mainChart ;
     private final IndicatorChart macdChart ;
-    private final IndicatorChart rsiChart ;
-    private final IndicatorChart adxChart ;
     
     private final SimControlPanel controlPanel ;
     private final List<String> seriesKeys = new ArrayList<>() ;
@@ -36,10 +35,8 @@ public class SimPanel extends JPanel {
     public SimPanel( String symbol ) throws Exception {
         this.history = new EquityHistEODAPIClient().getEquityEODHistory( symbol ) ;
         
-        this.mainChart = new IndicatorChart( symbol, symbol, "Price", XAXIS_WINDOW_SZ ) ;
-        this.macdChart = new IndicatorChart( symbol, "MACD", XAXIS_WINDOW_SZ ) ;
-        this.rsiChart  = new IndicatorChart( symbol, "RSI" , XAXIS_WINDOW_SZ ) ;
-        this.adxChart  = new IndicatorChart( symbol, "ADX" , XAXIS_WINDOW_SZ ) ;
+        this.mainChart = new PriceChart( symbol ) ;
+        this.macdChart = new MACDChart( symbol ) ;
         
         this.controlPanel = new SimControlPanel( this ) ;
         
@@ -59,11 +56,6 @@ public class SimPanel extends JPanel {
             this.seriesKeys.add( seriesKey ) ;
             getCharts( seriesKey ).forEach( c -> c.addSeries( seriesKey ) );
         }
-    }
-    
-    public synchronized void removeSeries( String seriesKey ) {
-        this.seriesKeys.remove( seriesKey ) ;
-        this.mainChart.removeSeries( seriesKey ) ;
     }
     
     public synchronized void clearChart() {
@@ -92,8 +84,6 @@ public class SimPanel extends JPanel {
     private void setUpUI() {
         
         macdChart.setPreferredSize( new Dimension( 100, CHART_HEIGHT ) ) ;
-        rsiChart.setPreferredSize( new Dimension( 100, CHART_HEIGHT ) ) ;
-        adxChart.setPreferredSize( new Dimension( 100, CHART_HEIGHT ) ) ;
 
         initPanelUI( this ) ;
         add( getChartPanel(), BorderLayout.CENTER ) ;
@@ -109,10 +99,8 @@ public class SimPanel extends JPanel {
     
     private JPanel getFooterChartPanel() {
         JPanel panel = getNewJPanel() ;
-        panel.setLayout( new GridLayout( 3, 1 ) ) ;
+        panel.setLayout( new GridLayout( 1, 1 ) ) ;
         panel.add( this.macdChart ) ;
-        panel.add( this.rsiChart ) ;
-        panel.add( this.adxChart ) ;
         return panel ;
     }
     

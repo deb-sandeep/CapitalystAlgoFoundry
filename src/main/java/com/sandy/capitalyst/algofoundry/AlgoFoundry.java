@@ -47,6 +47,8 @@ public class AlgoFoundry
     
     public static Cleaner getCleaner() { return CLEANER ; }
     
+    public static AlgoFoundryConfig getConfig() { return APP.config() ; }
+    
     // ---------------- Instance methods start ---------------------------------
 
     private AlgoFoundryFrame  frame   = null ;
@@ -76,11 +78,7 @@ public class AlgoFoundry
         log.debug( "<< ## AlgoFoundry initialization complete" ) ;
     }
 
-    public AlgoFoundryFrame getFrame() { return this.frame; }
-
-    public ApplicationContext getCtx() { return AlgoFoundry.APP_CTX ; } ;
-
-    public AlgoFoundryConfig getConfig() {
+    private AlgoFoundryConfig config() {
         if( cfg == null ) {
             if( APP_CTX != null ) {
                 cfg = ( AlgoFoundryConfig )APP_CTX.getBean("config");

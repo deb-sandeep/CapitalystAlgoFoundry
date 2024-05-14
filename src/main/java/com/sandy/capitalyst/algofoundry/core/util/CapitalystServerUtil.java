@@ -8,10 +8,9 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 
 import static com.sandy.capitalyst.algofoundry.core.util.StringUtil.getHash;
+import static com.sandy.capitalyst.algofoundry.AlgoFoundry.getConfig ;
 
 public class CapitalystServerUtil {
-    
-    private static AlgoFoundryConfig cfg = null ;
     
     public static String getResource( String url ) throws Exception {
         
@@ -21,7 +20,7 @@ public class CapitalystServerUtil {
         HTTPResourceDownloader downloader ;
         String response = null ;
         
-        if( config().isWorkOffline() ) {
+        if( getConfig().isWorkOffline() ) {
             if( !urlCacheFile.exists() ) {
                 throw new Exception( "Working offline and cached " +
                                      "response doesn't exist." ) ;
@@ -39,21 +38,14 @@ public class CapitalystServerUtil {
     }
     
     private static String formatUrl( String url ) {
-        return url.replace( "{server}", config().getServerName() ) ;
+        return url.replace( "{server}", getConfig().getServerName() ) ;
     }
     
     private static File getServerCacheDir() {
-        File serverCacheDir = new File( config().getWorkspacePath(), "server-cache" ) ;
+        File serverCacheDir = new File( getConfig().getWorkspacePath(), "server-cache" ) ;
         if( !serverCacheDir.exists() ) {
             serverCacheDir.mkdirs() ;
         }
         return serverCacheDir ;
-    }
-    
-    private static AlgoFoundryConfig config() {
-        if( cfg == null ) {
-            cfg = AlgoFoundry.getApp().getConfig() ;
-        }
-        return cfg ;
     }
 }

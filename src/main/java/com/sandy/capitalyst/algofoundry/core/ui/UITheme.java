@@ -19,8 +19,7 @@ public class UITheme {
     public static final Font TABLE_DECIMAL_FONT      = new Font( MONO_FONT_NAME, Font.PLAIN, 12 ) ;
     
     public static final Font  CHART_AXIS_LABEL_FONT = new Font( FONT_NAME, Font.PLAIN, 12 ) ;
-    public static final Font  CHART_AXIS_TICK_FONT  = new Font( FONT_NAME, Font.PLAIN, 10 ) ;
-    public static final Font  CHART_LEGEND_FONT     = new Font( FONT_NAME, Font.PLAIN, 8 ) ;
+    public static final Font  CHART_AXIS_TICK_FONT  = new Font( FONT_NAME, Font.PLAIN, 11 ) ;
     public static final Font  CHART_TITLE_FONT      = new Font( FONT_NAME, Font.PLAIN, 15 ) ;
     public static final Color CHART_TITLE_COLOR     = Color.GRAY ;
     public static final Color CHART_LABEL_COLOR     = Color.GRAY ;
