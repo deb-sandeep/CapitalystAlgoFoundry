@@ -10,7 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.getNewJPanel;
 import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.initPanelUI;
@@ -27,7 +29,6 @@ public class SimPanel extends JPanel {
     private final IndicatorChart macdChart ;
     
     private final SimControlPanel controlPanel ;
-    private final List<String> seriesKeys = new ArrayList<>() ;
     
     private int curBarSeriesIndex = 0 ;
     
@@ -38,8 +39,6 @@ public class SimPanel extends JPanel {
         this.macdChart = new MACDChart( symbol ) ;
         
         this.controlPanel = new SimControlPanel( this ) ;
-        
-        this.seriesKeys.add( CLOSING_PRICE ) ;
         
         setUpUI() ;
     }
@@ -68,8 +67,14 @@ public class SimPanel extends JPanel {
     }
     
     public boolean playCurrentBarSeriesData() {
+        
+        Set<String> allSubscribedIndicators = new HashSet<>() ;
+        
+        allSubscribedIndicators.addAll( mainChart.getSubscribedIndicators() ) ;
+        allSubscribedIndicators.addAll( macdChart.getSubscribedIndicators() ) ;
+        
         if( curBarSeriesIndex < history.getBarCount() ) {
-            history.emitValues( curBarSeriesIndex, seriesKeys ) ;
+            history.emitValues( curBarSeriesIndex, allSubscribedIndicators ) ;
             this.curBarSeriesIndex++ ;
             return true ;
         }

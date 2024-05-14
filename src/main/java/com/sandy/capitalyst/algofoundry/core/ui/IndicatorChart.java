@@ -46,6 +46,8 @@ public abstract class IndicatorChart extends JPanel
     private final Map<String, TimeSeriesDataset> datasets     = new HashMap<>() ;
     private final Map<String, XYItemRenderer>    renderers    = new HashMap<>() ;
     
+    private final Set<String> allSubscribedIndicators = new HashSet<>() ;
+    
     protected IndicatorChart( String symbol, String yLabel ) {
         this( symbol, null, yLabel ) ;
     }
@@ -203,28 +205,32 @@ public abstract class IndicatorChart extends JPanel
         return renderers.get( name ) ;
     }
     
-    public void addIndicatorTimeSeries( String indicatorName ) {
-        addIndicatorTimeSeries( this.primaryDataset, indicatorName ) ;
+    public void addIndicatorSeries( String... indicatorNames ) {
+        addIndicatorSeries( this.primaryDataset, indicatorNames ) ;
     }
     
-    public void addIndicatorTimeSeries( TimeSeriesDataset dataset, String indicatorName ) {
+    public void addIndicatorSeries( TimeSeriesDataset dataset, String... indicatorNames ) {
         
-        if( !dataset.containsIndicator( indicatorName ) ) {
-            
-            TimeSeries series = new TimeSeries( indicatorName ) ;
-            XYItemRenderer renderer = renderers.get( dataset.getName() ) ;
-            
-            dataset.addSeries( series ) ;
-            
-            if( this.xAxisWindowSize > 0 ) {
-                series.setMaximumItemCount( this.xAxisWindowSize ) ;
+        for( String indicatorName : indicatorNames ) {
+            if( !dataset.containsIndicator( indicatorName ) ) {
+                
+                TimeSeries series = new TimeSeries( indicatorName ) ;
+                XYItemRenderer renderer = renderers.get( dataset.getName() ) ;
+                
+                dataset.addSeries( series ) ;
+                
+                if( this.xAxisWindowSize > 0 ) {
+                    series.setMaximumItemCount( this.xAxisWindowSize ) ;
+                }
+                
+                int seriesIndex = dataset.getSeriesCount()-1 ;
+                renderer.setSeriesPaint( seriesIndex,
+                        IndicatorUtil.getColor( indicatorName ) ) ;
+                renderer.setSeriesStroke( seriesIndex,
+                        IndicatorUtil.getStroke( indicatorName ) ) ;
+                
+                this.allSubscribedIndicators.add( indicatorName ) ;
             }
-            
-            int seriesIndex = dataset.getSeriesCount()-1 ;
-            renderer.setSeriesPaint( seriesIndex,
-                                     IndicatorUtil.getColor( indicatorName ) ) ;
-            renderer.setSeriesStroke( seriesIndex,
-                                      IndicatorUtil.getStroke( indicatorName ) ) ;
         }
     }
     
@@ -248,5 +254,9 @@ public abstract class IndicatorChart extends JPanel
     
     public void addValue( String indicatorName, Date date, double value ) {
         datasets.values().forEach( d -> d.addValue( indicatorName, date, value ) ) ;
+    }
+    
+    public Set<String> getSubscribedIndicators() {
+        return this.allSubscribedIndicators ;
     }
 }
