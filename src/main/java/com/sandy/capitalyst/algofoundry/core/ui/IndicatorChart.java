@@ -12,19 +12,17 @@ import org.jfree.chart.axis.AxisSpace;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.AbstractRenderer;
-import org.jfree.data.time.Day;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
 
 import javax.swing.*;
 import java.awt.*;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.*;
 
-import static com.sandy.capitalyst.algofoundry.AlgoFoundry.getBus;
-import static com.sandy.capitalyst.algofoundry.AlgoFoundry.getCleaner;
-import static com.sandy.capitalyst.algofoundry.AlgoFoundry.getConfig;
+import static com.sandy.capitalyst.algofoundry.AlgoFoundry.*;
 import static com.sandy.capitalyst.algofoundry.EventCatalog.EVT_INDICATOR_DAY_VALUE;
 import static com.sandy.capitalyst.algofoundry.core.ui.UITheme.*;
 
@@ -32,27 +30,35 @@ import static com.sandy.capitalyst.algofoundry.core.ui.UITheme.*;
 public abstract class IndicatorChart extends JPanel
     implements EventSubscriber {
     
-    private JFreeChart       chart      = null ;
-    private ChartPanel       chartPanel = null ;
-    private XYPlot           plot       = null ;
-    private AbstractRenderer renderer   = null ;
+    private static final String PRIMARY_DATASET_NAME = "_PRIMARY_DATASET" ;
     
-    private final TimeSeriesCollection timeSeriesColl = new TimeSeriesCollection() ;
-    private final Map<String, TimeSeries> timeSeriesMap = new HashMap<>() ;
+    protected JFreeChart        chart           = null ;
+    protected ChartPanel        chartPanel      = null ;
+    protected XYPlot            plot            = null ;
+    protected TimeSeriesDataset primaryDataset  = null ;
     
     private final String symbol ;
-    private final int xAxisWindowSize ;
+    private final String title ;
+    private final String yAxisLabel ;
+    private final int    xAxisWindowSize ;
     
-    public IndicatorChart( String symbol, String yLabel ) {
+    private final List<String>                   datasetNames = new ArrayList<>() ;
+    private final Map<String, TimeSeriesDataset> datasets     = new HashMap<>() ;
+    private final Map<String, XYItemRenderer>    renderers    = new HashMap<>() ;
+    
+    protected IndicatorChart( String symbol, String yLabel ) {
         this( symbol, null, yLabel ) ;
     }
     
-    public IndicatorChart( String symbol, String title, String yLabel ) {
+    protected IndicatorChart( String symbol, String title, String yLabel ) {
         
-        this.xAxisWindowSize = getConfig().getDateWindowSize() ;
         this.symbol = symbol ;
+        this.title = title ;
+        this.yAxisLabel = yLabel ;
+        this.xAxisWindowSize = getConfig().getDateWindowSize() ;
         
-        createChart( title, yLabel ) ;
+        initializeChart() ;
+        
         setLayout( new BorderLayout() ) ;
         add( chartPanel, BorderLayout.CENTER ) ;
         
@@ -67,32 +73,55 @@ public abstract class IndicatorChart extends JPanel
         } ;
     }
     
-    private void createChart( String title, String yAxisLabel ) {
+    private void initializeChart() {
         
-        chart = ChartFactory.createTimeSeriesChart(
+        primaryDataset = createPrimaryDataset() ;
+        chart = createChart() ;
+        plot = ( XYPlot )chart.getPlot() ;
+        chartPanel = new ChartPanel( chart ) ;
+        
+        XYItemRenderer renderer = createPrimaryDatasetRenderer() ;
+        if( renderer != null ) {
+            plot.setRenderer( renderer ) ;
+        }
+        
+        // The primary dataset and renderer are already added to the plot
+        // so no need of calling the addDataset method.
+        datasetNames.add( PRIMARY_DATASET_NAME ) ;
+        datasets.put( PRIMARY_DATASET_NAME, primaryDataset ) ;
+        renderers.put( PRIMARY_DATASET_NAME, plot.getRenderer() ) ;
+        
+        configureChart() ;
+        configureTitle() ;
+        configurePlot() ;
+        configureXAxes() ;
+        configureYAxes() ;
+        configureChartPanel() ;
+    }
+    
+    protected JFreeChart createChart() {
+        return ChartFactory.createTimeSeriesChart(
                 title,
                 null,
                 yAxisLabel,
-                this.timeSeriesColl ) ;
-        
-        chart.setBackgroundPaint( Color.BLACK ) ;
-        chart.removeLegend() ;
-        
-        configureTitle( title ) ;
-        configurePlot() ;
-        configureAxes() ;
-        
-        chartPanel = new ChartPanel( chart ) ;
-        chartPanel.setDoubleBuffered( true ) ;
-        chartPanel.setFillZoomRectangle( true ) ;
-        chartPanel.setMouseWheelEnabled( true ) ;
-        chartPanel.setMinimumDrawWidth( 0 ) ;
-        chartPanel.setMaximumDrawWidth( Integer.MAX_VALUE ) ;
-        chartPanel.setMinimumDrawHeight( 0 ) ;
-        chartPanel.setMaximumDrawHeight( Integer.MAX_VALUE ) ;
+                primaryDataset ) ;
     }
     
-    private void configureTitle( String title ) {
+    protected TimeSeriesDataset createPrimaryDataset() {
+        return new TimeSeriesDataset( PRIMARY_DATASET_NAME ) ;
+    }
+    
+    protected XYItemRenderer createPrimaryDatasetRenderer() {
+        // By default, the renderer that comes with TimeSeriesChart is used.
+        return null ;
+    }
+    
+    protected void configureChart() {
+        chart.setBackgroundPaint( Color.BLACK ) ;
+        chart.removeLegend() ;
+    }
+    
+    protected void configureTitle() {
         if( title != null ) {
             chart.setTitle( title ) ;
             chart.getTitle().setPaint( UITheme.CHART_TITLE_COLOR ) ;
@@ -100,31 +129,22 @@ public abstract class IndicatorChart extends JPanel
         }
     }
     
-    private void configurePlot() {
+    protected void configurePlot() {
         
-        plot = ( XYPlot )chart.getPlot() ;
         plot.setBackgroundPaint( Color.BLACK ) ;
         plot.setDomainGridlinePaint( Color.DARK_GRAY.darker() ) ;
         plot.setRangeGridlinePaint( Color.DARK_GRAY.darker() ) ;
         plot.setRangePannable( true ) ;
         plot.setDomainPannable( true ) ;
         
-        renderer = ( AbstractRenderer )plot.getRenderer() ;
-
         AxisSpace space = new AxisSpace() ;
         space.setLeft( 50 ) ;
         plot.setFixedRangeAxisSpace( space ) ;
     }
     
-    private void configureAxes() {
+    protected void configureXAxes() {
         
-        ValueAxis yAxis = plot.getRangeAxis() ;
         DateAxis  xAxis = (DateAxis)plot.getDomainAxis() ;
-        
-        yAxis.setLabelFont( CHART_AXIS_LABEL_FONT ) ;
-        yAxis.setTickLabelFont( CHART_AXIS_TICK_FONT ) ;
-        yAxis.setTickLabelPaint( CHART_AXIS_TICK_COLOR ) ;
-        yAxis.setLabelPaint( CHART_LABEL_COLOR ) ;
         
         xAxis.setLabelFont( CHART_AXIS_LABEL_FONT ) ;
         xAxis.setTickLabelFont( CHART_AXIS_TICK_FONT ) ;
@@ -134,36 +154,86 @@ public abstract class IndicatorChart extends JPanel
         xAxis.setDateFormatOverride( new SimpleDateFormat( "dd-MMM-yy" ) ) ;
     }
     
-    public void addSeries( String seriesKey ) {
+    protected void configureYAxes() {
         
-        if( !timeSeriesMap.containsKey( seriesKey ) ) {
+        ValueAxis yAxis = plot.getRangeAxis() ;
+        
+        yAxis.setLabelFont( CHART_AXIS_LABEL_FONT ) ;
+        yAxis.setTickLabelFont( CHART_AXIS_TICK_FONT ) ;
+        yAxis.setTickLabelPaint( CHART_AXIS_TICK_COLOR ) ;
+        yAxis.setLabelPaint( CHART_LABEL_COLOR ) ;
+    }
+    
+    protected void configureChartPanel() {
+        chartPanel.setDoubleBuffered( true ) ;
+        chartPanel.setFillZoomRectangle( true ) ;
+        chartPanel.setMouseWheelEnabled( true ) ;
+        chartPanel.setMinimumDrawWidth( 0 ) ;
+        chartPanel.setMaximumDrawWidth( Integer.MAX_VALUE ) ;
+        chartPanel.setMinimumDrawHeight( 0 ) ;
+        chartPanel.setMaximumDrawHeight( Integer.MAX_VALUE ) ;
+    }
+    
+    protected TimeSeriesDataset addDataset( String name ) {
+        return addDataset( name, null ) ;
+    }
+    
+    protected TimeSeriesDataset addDataset( String name, XYItemRenderer renderer ) {
+        
+        TimeSeriesDataset dataset = new TimeSeriesDataset( name ) ;
+        
+        int plotIndex = datasetNames.indexOf( name ) + 1 ;
+        if( renderer == null ) {
+            renderer = new XYLineAndShapeRenderer( true, false);
+        }
+        renderers.put( name, renderer ) ;
+        datasets.put( name, dataset ) ;
+        
+        plot.setRenderer( plotIndex, renderer ) ;
+        plot.setDataset( plotIndex, dataset ) ;
+        
+        return dataset ;
+    }
+    
+    protected TimeSeriesDataset getDataset( String name ) {
+        return datasets.get( name ) ;
+    }
+    
+    protected XYItemRenderer getRenderer( String name ) {
+        return renderers.get( name ) ;
+    }
+    
+    public void addIndicatorTimeSeries( String indicatorName ) {
+        addIndicatorTimeSeries( this.primaryDataset, indicatorName ) ;
+    }
+    
+    public void addIndicatorTimeSeries( TimeSeriesDataset dataset, String indicatorName ) {
+        
+        if( !dataset.containsIndicator( indicatorName ) ) {
             
-            TimeSeries series = new TimeSeries( seriesKey ) ;
+            TimeSeries series = new TimeSeries( indicatorName ) ;
+            XYItemRenderer renderer = renderers.get( dataset.getName() ) ;
             
-            timeSeriesMap.put( seriesKey, series ) ;
-            timeSeriesColl.addSeries( series ) ;
+            dataset.addSeries( series ) ;
             
             if( this.xAxisWindowSize > 0 ) {
                 series.setMaximumItemCount( this.xAxisWindowSize ) ;
             }
             
-            int seriesIndex = timeSeriesColl.getSeriesCount()-1 ;
+            int seriesIndex = dataset.getSeriesCount()-1 ;
             renderer.setSeriesPaint( seriesIndex,
-                                     IndicatorUtil.getColor( seriesKey ) ) ;
+                                     IndicatorUtil.getColor( indicatorName ) ) ;
             renderer.setSeriesStroke( seriesIndex,
-                                      IndicatorUtil.getStroke( seriesKey ) ) ;
+                                      IndicatorUtil.getStroke( indicatorName ) ) ;
         }
     }
     
-    public void clearSeries( String seriesKey ) {
-        timeSeriesMap.get( seriesKey ).clear() ;
+    public void clearIndicatorTimeSeries( String indicatorName ) {
+        clearIndicatorTimeSeries( primaryDataset, indicatorName ) ;
     }
     
-    public void removeSeries( String key ) {
-        TimeSeries timeSeries = timeSeriesMap.remove( key ) ;
-        if( timeSeries != null ) {
-            timeSeriesColl.removeSeries( timeSeries ) ;
-        }
+    public void clearIndicatorTimeSeries( TimeSeriesDataset dataset, String indicatorName ) {
+        dataset.getSeries( indicatorName ).clear() ;
     }
     
     @Override
@@ -176,10 +246,7 @@ public abstract class IndicatorChart extends JPanel
         }
     }
     
-    public void addValue( String seriesKey, Date date, double value ) {
-        TimeSeries series = timeSeriesMap.get( seriesKey ) ;
-        if( series != null ) {
-            series.add( new Day(date), value ) ;
-        }
+    public void addValue( String indicatorName, Date date, double value ) {
+        datasets.values().forEach( d -> d.addValue( indicatorName, date, value ) ) ;
     }
 }

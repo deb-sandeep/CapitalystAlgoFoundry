@@ -28,7 +28,6 @@ public class SimPanel extends JPanel {
     
     private final SimControlPanel controlPanel ;
     private final List<String> seriesKeys = new ArrayList<>() ;
-    private final Object[][] indChartMapping ;
     
     private int curBarSeriesIndex = 0 ;
     
@@ -40,45 +39,9 @@ public class SimPanel extends JPanel {
         
         this.controlPanel = new SimControlPanel( this ) ;
         
-        this.indChartMapping = new Object[][]{
-          { macdChart, MACD, MACD_SIGNAL, MACD_HIST }
-        } ;
-        
-        addSeries( CLOSING_PRICE ) ;
-        addSeries( BOLLINGER_LOW, BOLLINGER_MID, BOLLINGER_UP ) ;
-        addSeries( MACD, MACD_SIGNAL, MACD_HIST ) ;
+        this.seriesKeys.add( CLOSING_PRICE ) ;
         
         setUpUI() ;
-    }
-    
-    public synchronized void addSeries( String... seriesKeys ) {
-        for( String seriesKey : seriesKeys ) {
-            this.seriesKeys.add( seriesKey ) ;
-            getCharts( seriesKey ).forEach( c -> c.addSeries( seriesKey ) );
-        }
-    }
-    
-    public synchronized void clearChart() {
-        for( String seriesKey : this.seriesKeys ) {
-            this.mainChart.clearSeries( seriesKey ) ;
-        }
-    }
-    
-    private List<IndicatorChart> getCharts( String series ) {
-        List<IndicatorChart> chartList = new ArrayList<>() ;
-        for( Object[] mapping : indChartMapping ) {
-            if( mapping.length > 1 ) {
-                for( int j = 1; j < mapping.length; j++ ) {
-                    if( series.equals( mapping[j] ) ) {
-                        chartList.add( ( IndicatorChart )mapping[0] );
-                    }
-                }
-            }
-        }
-        if( chartList.isEmpty() ) {
-            chartList.add( this.mainChart ) ;
-        }
-        return chartList ;
     }
     
     private void setUpUI() {
@@ -115,6 +78,5 @@ public class SimPanel extends JPanel {
     
     public void restartSimulation() {
         this.curBarSeriesIndex = 0 ;
-        this.clearChart() ;
     }
 }
