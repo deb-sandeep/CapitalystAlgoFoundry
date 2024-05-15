@@ -19,6 +19,7 @@ public class SimPanel extends JPanel {
     private static final int VOL_CHART_HEIGHT = 100 ;
     private static final int MACD_CHART_HEIGHT = 150 ;
     private static final int RSI_CHART_HEIGHT = 150 ;
+    private static final int ADX_CHART_HEIGHT = 150 ;
     
     private final EquityEODHistory history ;
     
@@ -26,6 +27,7 @@ public class SimPanel extends JPanel {
     private final IndicatorChart volumeChart ;
     private final IndicatorChart macdChart ;
     private final IndicatorChart rsiChart ;
+    private final IndicatorChart adxChart ;
     
     private final IndicatorChart[] charts ;
     
@@ -40,12 +42,14 @@ public class SimPanel extends JPanel {
         this.volumeChart = new VolumeChart( symbol ) ;
         this.macdChart   = new MACDChart( symbol ) ;
         this.rsiChart    = new RSIChart( symbol ) ;
+        this.adxChart    = new ADXChart( symbol ) ;
         
         this.charts = new IndicatorChart[]{
                 priceChart,
                 volumeChart,
                 macdChart,
-                rsiChart
+                rsiChart,
+                adxChart
         } ;
         
         this.controlPanel = new SimControlPanel( this ) ;
@@ -58,10 +62,12 @@ public class SimPanel extends JPanel {
         volumeChart.setPreferredSize( new Dimension( 100, VOL_CHART_HEIGHT ) ) ;
         macdChart.setPreferredSize( new Dimension( 100, MACD_CHART_HEIGHT ) ) ;
         rsiChart.setPreferredSize( new Dimension( 100, RSI_CHART_HEIGHT ) ) ;
+        adxChart.setPreferredSize( new Dimension( 100, ADX_CHART_HEIGHT ) ) ;
         
         priceChart.hideXAxis() ;
         volumeChart.hideXAxis() ;
         macdChart.hideXAxis() ;
+        rsiChart.hideXAxis() ;
 
         initPanelUI( this ) ;
         add( getChartPanel(), BorderLayout.CENTER ) ;
@@ -76,10 +82,17 @@ public class SimPanel extends JPanel {
     }
     
     private JPanel getFooterChartPanel() {
+        
+        JPanel panel1 = getNewJPanel() ;
+        panel1.setLayout( new GridLayout( 3, 1 ) );
+        panel1.add( this.macdChart ) ;
+        panel1.add( this.rsiChart ) ;
+        panel1.add( this.adxChart ) ;
+        
         JPanel panel = getNewJPanel() ;
         panel.add( this.volumeChart, BorderLayout.NORTH ) ;
-        panel.add( this.macdChart, BorderLayout.CENTER ) ;
-        panel.add( this.rsiChart, BorderLayout.SOUTH ) ;
+        panel.add( panel1, BorderLayout.CENTER ) ;
+        
         return panel ;
     }
     

@@ -33,11 +33,11 @@ public class MACDChart extends IndicatorChart {
     
     protected void postInitializeChart() {
         consumedPayloadTypes.add( PayloadType.MACD ) ;
-        attachDifferenceTimeSeries() ;
+        attachSignalTimeSeries() ;
         attachHistogramTimeSeries() ;
     }
     
-    private void attachDifferenceTimeSeries() {
+    private void attachSignalTimeSeries() {
         
         macdTimeSeries = new TimeSeries( "MACD" ) ;
         macdSignalTimeSeries = new TimeSeries( "MACD Signal" ) ;

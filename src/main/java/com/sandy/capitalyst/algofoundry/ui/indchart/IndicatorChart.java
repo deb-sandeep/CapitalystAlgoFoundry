@@ -18,6 +18,7 @@ import org.jfree.data.ComparableObjectSeries;
 import org.jfree.data.general.Series;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.ui.RectangleInsets;
 
 import javax.swing.*;
 import java.awt.*;
@@ -130,6 +131,7 @@ public abstract class IndicatorChart extends JPanel
         plot.setRangeGridlinePaint( Color.DARK_GRAY ) ;
         plot.setRangePannable( true ) ;
         plot.setDomainPannable( true ) ;
+        plot.setInsets( new RectangleInsets( 0, 0, 0, 0 ) );
         
         AxisSpace space = new AxisSpace() ;
         space.setLeft( 70 ) ;
@@ -142,6 +144,8 @@ public abstract class IndicatorChart extends JPanel
         xAxis.setTickLabelFont( CHART_AXIS_TICK_FONT ) ;
         xAxis.setTickLabelPaint( CHART_AXIS_TICK_COLOR ) ;
         xAxis.setLabelPaint( CHART_LABEL_COLOR ) ;
+        xAxis.setLowerMargin( 0 ) ;
+        xAxis.setUpperMargin( 0.01 ) ;
         
         xAxis.setDateFormatOverride( new SimpleDateFormat( "dd-MMM-yy" ) ) ;
     }
@@ -162,6 +166,7 @@ public abstract class IndicatorChart extends JPanel
         chartPanel.setMaximumDrawWidth( Integer.MAX_VALUE ) ;
         chartPanel.setMinimumDrawHeight( 0 ) ;
         chartPanel.setMaximumDrawHeight( Integer.MAX_VALUE ) ;
+        chartPanel.setBorder( BorderFactory.createLineBorder( CHART_BORDER_COLOR, 1 ) );
     }
     
     protected void configureSeries( Series series ) {

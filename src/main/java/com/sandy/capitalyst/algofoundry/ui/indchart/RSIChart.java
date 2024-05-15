@@ -92,6 +92,8 @@ public class RSIChart extends IndicatorChart {
     @Override
     public void clearChart() {
         rsiTimeSeries.clear() ;
+        ceilingTimeSeries.clear() ;
+        floorTimeSeries.clear() ;
     }
     
     @Override

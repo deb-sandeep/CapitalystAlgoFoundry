@@ -30,6 +30,6 @@ public class SimControlPanel extends JPanel {
     
     private void setUpUI() {
         initPanelUI( this ) ;
-        add( this.playCtrlWidget, BorderLayout.NORTH ) ;
+        add( this.playCtrlWidget, BorderLayout.SOUTH ) ;
     }
 }

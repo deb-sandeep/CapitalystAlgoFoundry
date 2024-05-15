@@ -11,6 +11,9 @@ import org.ta4j.core.indicators.EMAIndicator;
 import org.ta4j.core.indicators.MACDIndicator;
 import org.ta4j.core.indicators.RSIIndicator;
 import org.ta4j.core.indicators.SMAIndicator;
+import org.ta4j.core.indicators.adx.ADXIndicator;
+import org.ta4j.core.indicators.adx.MinusDIIndicator;
+import org.ta4j.core.indicators.adx.PlusDIIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsLowerIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsMiddleIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsUpperIndicator;
@@ -34,7 +37,8 @@ public class EquityEODHistory {
         OHLCV,
         BOLLINGER,
         MACD,
-        RSI
+        RSI,
+        ADX
     }
 
     public enum IndicatorName {
@@ -46,13 +50,18 @@ public class EquityEODHistory {
         BOLLINGER_LOW,
         MACD,
         MACD_SIGNAL,
-        RSI
+        RSI,
+        ADX,
+        ADX_PLUS_DMI,
+        ADX_MINUS_DMI
     }
     
     private static final int MACD_SHORT_WINDOW  = 12 ;
     private static final int MACD_LONG_WINDOW   = 26 ;
     private static final int MACD_SIGNAL_WINDOW =  9 ;
     private static final int RSI_WINDOW_SIZE    = 14 ;
+    private static final int ADX_WINDOW_SIZE    = 14 ;
+    private static final int ADX_DI_WINDOW_SIZE = 14 ;
     
     @Getter private final BarSeries barSeries ;
     @Getter private final String symbol ;
@@ -98,6 +107,7 @@ public class EquityEODHistory {
             case BOLLINGER -> payload = buildBollingerPayload( index, date ) ;
             case MACD      -> payload = buildMACDPayload( index, date ) ;
             case RSI       -> payload = buildRSIPayload( index, date ) ;
+            case ADX       -> payload = buildADXPayload( index, date ) ;
         }
         return payload ;
     }
@@ -123,6 +133,13 @@ public class EquityEODHistory {
         return new RSIPayload( date, symbol, getIndVal( RSI, index ) ) ;
     }
     
+    private ADXPayload buildADXPayload( int index, Date date ) {
+        return new ADXPayload( date, symbol,
+                               getIndVal( ADX, index ),
+                               getIndVal( ADX_PLUS_DMI, index ),
+                               getIndVal( ADX_MINUS_DMI, index ) ) ;
+    }
+    
     private double getIndVal( IndicatorName indName, int index ) {
         return ind( indName ).getValue( index ).doubleValue() ;
     }
@@ -140,6 +157,9 @@ public class EquityEODHistory {
                 case MACD          -> ind = createMACDIndicator() ;
                 case MACD_SIGNAL   -> ind = createMACDSignalIndicator() ;
                 case RSI           -> ind = createRSIIndicator() ;
+                case ADX           -> ind = createADXIndicator() ;
+                case ADX_PLUS_DMI  -> ind = createADXPlusDMIIndicator() ;
+                case ADX_MINUS_DMI -> ind = createADXMinusDMIIndicator() ;
             }
             cache.put( key, ind ) ;
         }
@@ -184,5 +204,17 @@ public class EquityEODHistory {
     
     private Indicator<Num> createRSIIndicator() {
         return new RSIIndicator( ind( CLOSING_PRICE ), RSI_WINDOW_SIZE ) ;
+    }
+
+    private Indicator<Num> createADXIndicator() {
+        return new ADXIndicator( barSeries, ADX_DI_WINDOW_SIZE, ADX_WINDOW_SIZE ) ;
+    }
+
+    private Indicator<Num> createADXPlusDMIIndicator() {
+        return new PlusDIIndicator( barSeries, ADX_DI_WINDOW_SIZE ) ;
+    }
+
+    private Indicator<Num> createADXMinusDMIIndicator() {
+        return new MinusDIIndicator( barSeries, ADX_DI_WINDOW_SIZE ) ;
     }
 }

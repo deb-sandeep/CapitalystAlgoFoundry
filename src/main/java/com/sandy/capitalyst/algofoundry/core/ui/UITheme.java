@@ -24,6 +24,7 @@ public class UITheme {
     public static final Color CHART_TITLE_COLOR     = Color.GRAY ;
     public static final Color CHART_LABEL_COLOR     = Color.GRAY ;
     public static final Color CHART_AXIS_TICK_COLOR = Color.DARK_GRAY.brighter().brighter() ;
+    public static final Color CHART_BORDER_COLOR    = new Color( 30, 30, 30 ) ;
     
     public static final BasicStroke DASHED_STROKE =
             new BasicStroke( 0.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
