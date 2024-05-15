@@ -169,13 +169,15 @@ public abstract class IndicatorChart extends JPanel
         chartPanel.setBorder( BorderFactory.createLineBorder( CHART_BORDER_COLOR, 1 ) );
     }
     
-    protected void configureSeries( Series series ) {
-        if( xAxisWindowSize > 0 ) {
-            if( series instanceof TimeSeries ts ) {
-                ts.setMaximumItemCount( xAxisWindowSize ) ;
-            }
-            else if( series instanceof ComparableObjectSeries cos ) {
-                cos.setMaximumItemCount( xAxisWindowSize ) ;
+    protected void configureSeries( Series... seriesList ) {
+        for( Series series : seriesList ) {
+            if( xAxisWindowSize > 0 ) {
+                if( series instanceof TimeSeries ts ) {
+                    ts.setMaximumItemCount( xAxisWindowSize ) ;
+                }
+                else if( series instanceof ComparableObjectSeries cos ) {
+                    cos.setMaximumItemCount( xAxisWindowSize ) ;
+                }
             }
         }
     }
@@ -200,4 +202,10 @@ public abstract class IndicatorChart extends JPanel
     public abstract List<EquityEODHistory.PayloadType> getConsumedPayloadTypes() ;
     
     public abstract void clearChart() ;
+    
+    protected void clearSeries( TimeSeries... serieses ) {
+        for( TimeSeries series : serieses ) {
+            series.clear() ;
+        }
+    }
 }

@@ -48,9 +48,7 @@ public class RSIChart extends IndicatorChart {
         ceilingTimeSeries = new TimeSeries( "RSI Ceiling" ) ;
         floorTimeSeries   = new TimeSeries( "RSI Floor" ) ;
         
-        super.configureSeries( rsiTimeSeries ) ;
-        super.configureSeries( ceilingTimeSeries ) ;
-        super.configureSeries( floorTimeSeries ) ;
+        super.configureSeries( rsiTimeSeries, ceilingTimeSeries, floorTimeSeries ) ;
         
         primaryDataset.addSeries( rsiTimeSeries ) ;
         primaryDataset.addSeries( ceilingTimeSeries ) ;
@@ -91,9 +89,7 @@ public class RSIChart extends IndicatorChart {
     
     @Override
     public void clearChart() {
-        rsiTimeSeries.clear() ;
-        ceilingTimeSeries.clear() ;
-        floorTimeSeries.clear() ;
+        super.clearSeries( rsiTimeSeries, ceilingTimeSeries, floorTimeSeries ) ;
     }
     
     @Override

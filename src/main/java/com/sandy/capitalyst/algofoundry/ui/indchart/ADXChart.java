@@ -51,8 +51,7 @@ public class ADXChart extends IndicatorChart {
         plusDMITimeSeries = new TimeSeries( "ADX +DMI" ) ;
         minusDMITimeSeries = new TimeSeries( "ADX -DMI" ) ;
         
-        super.configureSeries( plusDMITimeSeries ) ;
-        super.configureSeries( minusDMITimeSeries ) ;
+        super.configureSeries( plusDMITimeSeries, minusDMITimeSeries ) ;
         
         primaryDataset.addSeries( plusDMITimeSeries ) ;
         primaryDataset.addSeries( minusDMITimeSeries ) ;
@@ -63,9 +62,9 @@ public class ADXChart extends IndicatorChart {
                                              false ) ;
         
         renderer.setSeriesPaint( 0, PLUS_DMI_PAINT ) ;
-        renderer.setSeriesPaint( 1, MINUS_DMI_PAINT ) ;
-        
         renderer.setSeriesStroke( 0, UITheme.LINE_STROKE_1_5 ) ;
+        
+        renderer.setSeriesPaint( 1, MINUS_DMI_PAINT ) ;
         renderer.setSeriesStroke( 1, UITheme.LINE_STROKE_1_5 ) ;
         
         plot.setRenderer( renderer ) ;
@@ -116,10 +115,10 @@ public class ADXChart extends IndicatorChart {
     
     @Override
     public void clearChart() {
-        adxTimeSeries.clear() ;
-        plusDMITimeSeries.clear() ;
-        minusDMITimeSeries.clear() ;
-        y25TimeSeries.clear() ;
+        super.clearSeries( adxTimeSeries,
+                           plusDMITimeSeries,
+                           minusDMITimeSeries,
+                           y25TimeSeries ) ;
     }
     
     @Override

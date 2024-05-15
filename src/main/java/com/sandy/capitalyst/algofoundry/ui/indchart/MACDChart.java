@@ -42,8 +42,7 @@ public class MACDChart extends IndicatorChart {
         macdTimeSeries = new TimeSeries( "MACD" ) ;
         macdSignalTimeSeries = new TimeSeries( "MACD Signal" ) ;
         
-        super.configureSeries( macdTimeSeries ) ;
-        super.configureSeries( macdSignalTimeSeries ) ;
+        super.configureSeries( macdTimeSeries, macdSignalTimeSeries ) ;
         
         primaryDataset.addSeries( macdTimeSeries ) ;
         primaryDataset.addSeries( macdSignalTimeSeries ) ;
@@ -51,9 +50,9 @@ public class MACDChart extends IndicatorChart {
         XYItemRenderer renderer = plot.getRenderer() ;
         
         renderer.setSeriesPaint( 0, POSITIVE_PAINT ) ;
-        renderer.setSeriesPaint( 1, NEGATIVE_PAINT ) ;
-        
         renderer.setSeriesStroke( 0, UITheme.LINE_STROKE_1_5 ) ;
+        
+        renderer.setSeriesPaint( 1, NEGATIVE_PAINT ) ;
         renderer.setSeriesStroke( 1, UITheme.LINE_STROKE_1_5 ) ;
     }
     
@@ -65,8 +64,7 @@ public class MACDChart extends IndicatorChart {
         macdHistogramTimeSeries = new TimeSeries( "MACD Histogram" ) ;
         y0TimeSeries = new TimeSeries( "X Axis" ) ;
         
-        super.configureSeries( macdHistogramTimeSeries ) ;
-        super.configureSeries( y0TimeSeries ) ;
+        super.configureSeries( macdHistogramTimeSeries, y0TimeSeries ) ;
         
         dataset = new TimeSeriesCollection() ;
         dataset.addSeries( macdHistogramTimeSeries ) ;
@@ -87,10 +85,10 @@ public class MACDChart extends IndicatorChart {
     
     @Override
     public void clearChart() {
-        macdTimeSeries.clear() ;
-        macdSignalTimeSeries.clear() ;
-        macdHistogramTimeSeries.clear() ;
-        y0TimeSeries.clear() ;
+        super.clearSeries( macdTimeSeries,
+                           macdSignalTimeSeries,
+                           macdHistogramTimeSeries,
+                           y0TimeSeries ) ;
     }
     
     @Override
