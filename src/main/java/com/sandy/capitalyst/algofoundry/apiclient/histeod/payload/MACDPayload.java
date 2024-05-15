@@ -7,9 +7,9 @@ import java.util.Date;
 
 public class MACDPayload extends AbstractDayValuePayload {
 
-    @Getter private double macd;
-    @Getter private double signal ;
-    @Getter private double histogramValue ;
+    @Getter private final double macd;
+    @Getter private final double signal ;
+    @Getter private final double histogramValue ;
     
     public MACDPayload( Date date, String symbol,
                         double macdValue, double signalValue ) {

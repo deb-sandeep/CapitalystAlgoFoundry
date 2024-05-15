@@ -19,7 +19,7 @@ import static com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityEODHistor
 public class MACDChart extends IndicatorChart {
     
     private static final Color POSITIVE_PAINT = new Color( 96, 145, 95, 148 ) ;
-    private static final Color NEGATIVE_PAINT = new Color( 176, 82, 87, 187 ) ;
+    private static final Color NEGATIVE_PAINT = new Color( 176, 82, 87, 140 ) ;
     
     private TimeSeries macdTimeSeries ;
     private TimeSeries macdSignalTimeSeries ;

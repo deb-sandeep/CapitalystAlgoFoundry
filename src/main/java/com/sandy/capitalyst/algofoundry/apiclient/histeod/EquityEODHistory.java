@@ -1,11 +1,7 @@
 package com.sandy.capitalyst.algofoundry.apiclient.histeod;
 
 import com.sandy.capitalyst.algofoundry.AlgoFoundry;
-import com.sandy.capitalyst.algofoundry.EventCatalog;
-import com.sandy.capitalyst.algofoundry.apiclient.histeod.payload.AbstractDayValuePayload;
-import com.sandy.capitalyst.algofoundry.apiclient.histeod.payload.BollingerPayload;
-import com.sandy.capitalyst.algofoundry.apiclient.histeod.payload.MACDPayload;
-import com.sandy.capitalyst.algofoundry.apiclient.histeod.payload.OHLCVPayload;
+import com.sandy.capitalyst.algofoundry.apiclient.histeod.payload.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.ta4j.core.Bar;
@@ -13,6 +9,7 @@ import org.ta4j.core.BarSeries;
 import org.ta4j.core.Indicator;
 import org.ta4j.core.indicators.EMAIndicator;
 import org.ta4j.core.indicators.MACDIndicator;
+import org.ta4j.core.indicators.RSIIndicator;
 import org.ta4j.core.indicators.SMAIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsLowerIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsMiddleIndicator;
@@ -22,10 +19,13 @@ import org.ta4j.core.indicators.statistics.StandardDeviationIndicator;
 import org.ta4j.core.num.Num;
 
 import javax.swing.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-import static com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityEODHistory.IndicatorName.* ;
-import static com.sandy.capitalyst.algofoundry.EventCatalog.* ;
+import static com.sandy.capitalyst.algofoundry.EventCatalog.EVT_INDICATOR_DAY_VALUE;
+import static com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityEODHistory.IndicatorName.*;
 
 @Slf4j
 public class EquityEODHistory {
@@ -33,7 +33,8 @@ public class EquityEODHistory {
     public enum PayloadType {
         OHLCV,
         BOLLINGER,
-        MACD
+        MACD,
+        RSI
     }
 
     public enum IndicatorName {
@@ -44,12 +45,14 @@ public class EquityEODHistory {
         BOLLINGER_MID,
         BOLLINGER_LOW,
         MACD,
-        MACD_SIGNAL
+        MACD_SIGNAL,
+        RSI
     }
     
     private static final int MACD_SHORT_WINDOW  = 12 ;
     private static final int MACD_LONG_WINDOW   = 26 ;
     private static final int MACD_SIGNAL_WINDOW =  9 ;
+    private static final int RSI_WINDOW_SIZE    = 14 ;
     
     @Getter private final BarSeries barSeries ;
     @Getter private final String symbol ;
@@ -94,6 +97,7 @@ public class EquityEODHistory {
             case OHLCV     -> payload = buildOHLCVPayload( date, bar ) ;
             case BOLLINGER -> payload = buildBollingerPayload( index, date ) ;
             case MACD      -> payload = buildMACDPayload( index, date ) ;
+            case RSI       -> payload = buildRSIPayload( index, date ) ;
         }
         return payload ;
     }
@@ -115,6 +119,10 @@ public class EquityEODHistory {
                                 getIndVal( MACD_SIGNAL, index ) ) ;
     }
     
+    private RSIPayload buildRSIPayload( int index, Date date ) {
+        return new RSIPayload( date, symbol, getIndVal( RSI, index ) ) ;
+    }
+    
     private double getIndVal( IndicatorName indName, int index ) {
         return ind( indName ).getValue( index ).doubleValue() ;
     }
@@ -131,6 +139,7 @@ public class EquityEODHistory {
                 case BOLLINGER_MID -> ind = createBollingerMiddleIndicator() ;
                 case MACD          -> ind = createMACDIndicator() ;
                 case MACD_SIGNAL   -> ind = createMACDSignalIndicator() ;
+                case RSI           -> ind = createRSIIndicator() ;
             }
             cache.put( key, ind ) ;
         }
@@ -171,5 +180,9 @@ public class EquityEODHistory {
     
     private Indicator<Num> createMACDSignalIndicator() {
         return new EMAIndicator( ind( MACD ), MACD_SIGNAL_WINDOW ) ;
+    }
+    
+    private Indicator<Num> createRSIIndicator() {
+        return new RSIIndicator( ind( CLOSING_PRICE ), RSI_WINDOW_SIZE ) ;
     }
 }

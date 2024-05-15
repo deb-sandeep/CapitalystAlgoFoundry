@@ -7,9 +7,9 @@ import java.util.Date;
 
 public class BollingerPayload extends AbstractDayValuePayload {
 
-    @Getter private double high ;
-    @Getter private double mid ;
-    @Getter private double low ;
+    @Getter private final double high ;
+    @Getter private final double mid ;
+    @Getter private final double low ;
     
     public BollingerPayload( Date date, String symbol,
                              double high, double mid, double low ) {

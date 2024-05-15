@@ -2,10 +2,7 @@ package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
-import com.sandy.capitalyst.algofoundry.ui.indchart.IndicatorChart;
-import com.sandy.capitalyst.algofoundry.ui.indchart.MACDChart;
-import com.sandy.capitalyst.algofoundry.ui.indchart.PriceChart;
-import com.sandy.capitalyst.algofoundry.ui.indchart.VolumeChart;
+import com.sandy.capitalyst.algofoundry.ui.indchart.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -21,12 +18,14 @@ public class SimPanel extends JPanel {
     
     private static final int VOL_CHART_HEIGHT = 100 ;
     private static final int MACD_CHART_HEIGHT = 150 ;
+    private static final int RSI_CHART_HEIGHT = 150 ;
     
     private final EquityEODHistory history ;
     
     private final IndicatorChart priceChart ;
     private final IndicatorChart volumeChart ;
     private final IndicatorChart macdChart ;
+    private final IndicatorChart rsiChart ;
     
     private final IndicatorChart[] charts ;
     
@@ -40,11 +39,13 @@ public class SimPanel extends JPanel {
         this.priceChart  = new PriceChart( symbol ) ;
         this.volumeChart = new VolumeChart( symbol ) ;
         this.macdChart   = new MACDChart( symbol ) ;
+        this.rsiChart    = new RSIChart( symbol ) ;
         
         this.charts = new IndicatorChart[]{
                 priceChart,
                 volumeChart,
-                macdChart
+                macdChart,
+                rsiChart
         } ;
         
         this.controlPanel = new SimControlPanel( this ) ;
@@ -56,9 +57,11 @@ public class SimPanel extends JPanel {
         
         volumeChart.setPreferredSize( new Dimension( 100, VOL_CHART_HEIGHT ) ) ;
         macdChart.setPreferredSize( new Dimension( 100, MACD_CHART_HEIGHT ) ) ;
+        rsiChart.setPreferredSize( new Dimension( 100, RSI_CHART_HEIGHT ) ) ;
         
         priceChart.hideXAxis() ;
         volumeChart.hideXAxis() ;
+        macdChart.hideXAxis() ;
 
         initPanelUI( this ) ;
         add( getChartPanel(), BorderLayout.CENTER ) ;
@@ -76,6 +79,7 @@ public class SimPanel extends JPanel {
         JPanel panel = getNewJPanel() ;
         panel.add( this.volumeChart, BorderLayout.NORTH ) ;
         panel.add( this.macdChart, BorderLayout.CENTER ) ;
+        panel.add( this.rsiChart, BorderLayout.SOUTH ) ;
         return panel ;
     }
     
