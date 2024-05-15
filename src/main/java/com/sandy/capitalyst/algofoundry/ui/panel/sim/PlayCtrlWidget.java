@@ -59,7 +59,7 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
     private final ImageIcon pauseIcon ;
     
     private PlayState playState = PlayState.YET_TO_START;
-    private int emitDelayMs = 250 ;
+    private int emitDelayMs = 25 ;
     
     private Thread playDaemon ;
     
@@ -166,7 +166,7 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
         if( !emitDelaySlider.getValueIsAdjusting() ) {
             this.emitDelayMs = emitDelaySlider.getValue() ;
             if( this.emitDelayMs == 0 ) {
-                this.emitDelayMs = 5 ;
+                this.emitDelayMs = 2 ;
             }
         }
     }

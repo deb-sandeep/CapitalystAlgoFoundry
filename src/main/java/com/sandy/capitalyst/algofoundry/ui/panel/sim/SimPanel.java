@@ -2,31 +2,28 @@ package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
-import com.sandy.capitalyst.algofoundry.core.ui.IndicatorChart;
-import com.sandy.capitalyst.algofoundry.ui.indchart.MACDChart;
+import com.sandy.capitalyst.algofoundry.ui.indchart.IndicatorChart;
 import com.sandy.capitalyst.algofoundry.ui.indchart.PriceChart;
+import com.sandy.capitalyst.algofoundry.ui.indchart.VolumeChart;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.getNewJPanel;
 import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.initPanelUI;
-import static com.sandy.capitalyst.algofoundry.core.indicator.IndicatorType.*;
 
 @Slf4j
 public class SimPanel extends JPanel {
     
-    private static final int CHART_HEIGHT = 150 ;
+    private static final int VOL_CHART_HEIGHT = 100 ;
     
     private final EquityEODHistory history ;
     
     private final IndicatorChart mainChart ;
-    private final IndicatorChart macdChart ;
+    private final IndicatorChart volumeChart ;
     
     private final SimControlPanel controlPanel ;
     
@@ -35,8 +32,8 @@ public class SimPanel extends JPanel {
     public SimPanel( String symbol ) throws Exception {
         this.history = new EquityHistEODAPIClient().getEquityEODHistory( symbol ) ;
         
-        this.mainChart = new PriceChart( symbol ) ;
-        this.macdChart = new MACDChart( symbol ) ;
+        this.mainChart   = new PriceChart( symbol ) ;
+        this.volumeChart = new VolumeChart( symbol ) ;
         
         this.controlPanel = new SimControlPanel( this ) ;
         
@@ -45,7 +42,7 @@ public class SimPanel extends JPanel {
     
     private void setUpUI() {
         
-        macdChart.setPreferredSize( new Dimension( 100, CHART_HEIGHT ) ) ;
+        volumeChart.setPreferredSize( new Dimension( 100, VOL_CHART_HEIGHT ) ) ;
 
         initPanelUI( this ) ;
         add( getChartPanel(), BorderLayout.CENTER ) ;
@@ -62,19 +59,19 @@ public class SimPanel extends JPanel {
     private JPanel getFooterChartPanel() {
         JPanel panel = getNewJPanel() ;
         panel.setLayout( new GridLayout( 1, 1 ) ) ;
-        panel.add( this.macdChart ) ;
+        panel.add( this.volumeChart ) ;
         return panel ;
     }
     
     public boolean playCurrentBarSeriesData() {
         
-        Set<String> allSubscribedIndicators = new HashSet<>() ;
+        Set<EquityEODHistory.PayloadType> payloadTypes = new HashSet<>() ;
         
-        allSubscribedIndicators.addAll( mainChart.getSubscribedIndicators() ) ;
-        allSubscribedIndicators.addAll( macdChart.getSubscribedIndicators() ) ;
+        payloadTypes.addAll( mainChart.getConsumedPayloadTypes() ) ;
+        payloadTypes.addAll( volumeChart.getConsumedPayloadTypes() ) ;
         
         if( curBarSeriesIndex < history.getBarCount() ) {
-            history.emitValues( curBarSeriesIndex, allSubscribedIndicators ) ;
+            history.emitDayValues( curBarSeriesIndex, payloadTypes ) ;
             this.curBarSeriesIndex++ ;
             return true ;
         }
