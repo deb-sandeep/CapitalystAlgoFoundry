@@ -7,17 +7,17 @@ import java.util.Date;
 
 public class MACDPayload extends AbstractDayValuePayload {
 
-    @Getter private double mcad ;
+    @Getter private double macd;
     @Getter private double signal ;
     @Getter private double histogramValue ;
     
     public MACDPayload( Date date, String symbol,
-                        double mcadValue, double signalValue ) {
+                        double macdValue, double signalValue ) {
 
         super( EquityEODHistory.PayloadType.MACD, date, symbol ) ;
         
-        this.mcad = mcadValue ;
+        this.macd = macdValue ;
         this.signal = signalValue ;
-        this.histogramValue = mcadValue - signalValue ;
+        this.histogramValue = macdValue - signalValue ;
     }
 }

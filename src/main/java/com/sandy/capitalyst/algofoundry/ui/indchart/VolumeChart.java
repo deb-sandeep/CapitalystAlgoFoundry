@@ -53,12 +53,7 @@ public class VolumeChart extends IndicatorChart {
         if( payload instanceof OHLCVPayload ohlcv ) {
             double vol = ohlcv.getVolume() ;
             vol = vol < 1 ? 0 : (double)(vol/1000) ;
-            try {
-                dayVolumeTimeSeries.add( day, vol ) ;
-            }
-            catch( IllegalArgumentException e ) {
-                log.error( "Illegal argument exception", e ) ;
-            }
+            dayVolumeTimeSeries.add( day, vol ) ;
         }
     }
     

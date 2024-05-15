@@ -175,7 +175,7 @@ public abstract class IndicatorChart extends JPanel
         }
     }
     
-    protected void hideXAxis() {
+    public void hideXAxis() {
         DateAxis  xAxis = (DateAxis)plot.getDomainAxis() ;
         xAxis.setAxisLineVisible( false ) ;
         xAxis.setTickLabelsVisible( false ) ;

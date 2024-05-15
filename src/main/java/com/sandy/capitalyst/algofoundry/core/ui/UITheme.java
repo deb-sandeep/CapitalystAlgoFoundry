@@ -29,6 +29,9 @@ public class UITheme {
             new BasicStroke( 0.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
                              1.0f, new float[] {2.0f, 3.0f}, 0.0f ) ;
     
-    public static final BasicStroke LINE_STROKE =
+    public static final BasicStroke LINE_STROKE_0_5 =
             new BasicStroke( 0.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND ) ;
+
+    public static final BasicStroke LINE_STROKE_1_5 =
+            new BasicStroke( 1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND ) ;
 }

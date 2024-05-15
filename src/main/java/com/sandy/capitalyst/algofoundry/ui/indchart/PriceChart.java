@@ -4,7 +4,6 @@ import com.sandy.capitalyst.algofoundry.apiclient.histeod.payload.AbstractDayVal
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.payload.BollingerPayload;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.payload.OHLCVPayload;
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
-import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.renderer.xy.DeviationRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.time.Day;
@@ -34,7 +33,6 @@ public class PriceChart extends IndicatorChart {
         consumedPayloadTypes.add( PayloadType.OHLCV ) ;
         consumedPayloadTypes.add( PayloadType.BOLLINGER ) ;
 
-        super.hideXAxis() ;
         attachClosePriceTimeSeries() ;
         attachBollingerBands() ;
     }
@@ -77,7 +75,7 @@ public class PriceChart extends IndicatorChart {
         XYItemRenderer renderer = plot.getRenderer() ;
         renderer.setSeriesPaint( primaryDataset.getSeriesCount()-1,
                                  CLOSING_PRICE_COLOR ) ;
-        renderer.setSeriesStroke( 0, UITheme.LINE_STROKE  );
+        renderer.setSeriesStroke( 0, UITheme.LINE_STROKE_0_5 );
     }
     
     private void attachBollingerBands() {
