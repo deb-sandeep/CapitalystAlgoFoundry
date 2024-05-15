@@ -80,5 +80,7 @@ public class SimPanel extends JPanel {
     
     public void restartSimulation() {
         this.curBarSeriesIndex = 0 ;
+        this.mainChart.clearChart() ;
+        this.volumeChart.clearChart() ;
     }
 }

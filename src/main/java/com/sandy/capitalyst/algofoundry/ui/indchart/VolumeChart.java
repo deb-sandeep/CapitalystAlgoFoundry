@@ -38,6 +38,11 @@ public class VolumeChart extends IndicatorChart {
     }
     
     @Override
+    public void clearChart() {
+        dayVolumeTimeSeries.clear() ;
+    }
+    
+    @Override
     public List<PayloadType> getConsumedPayloadTypes() {
         return this.consumedPayloadTypes ;
     }

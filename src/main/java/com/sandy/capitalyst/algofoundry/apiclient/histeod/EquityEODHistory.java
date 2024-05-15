@@ -21,9 +21,11 @@ import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.indicators.statistics.StandardDeviationIndicator;
 import org.ta4j.core.num.Num;
 
+import javax.swing.*;
 import java.util.*;
 
 import static com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityEODHistory.IndicatorName.* ;
+import static com.sandy.capitalyst.algofoundry.EventCatalog.* ;
 
 @Slf4j
 public class EquityEODHistory {
@@ -75,9 +77,11 @@ public class EquityEODHistory {
         
         AbstractDayValuePayload payload = buildPayload( index, pType ) ;
         
-        AlgoFoundry.getBus()
-                   .publishEvent( EventCatalog.EVT_INDICATOR_DAY_VALUE,
-                                  payload ) ;
+        SwingUtilities.invokeLater( () ->
+            AlgoFoundry.getBus()
+                       .publishEvent( EVT_INDICATOR_DAY_VALUE,
+                                      payload )
+        ) ;
     }
     
     private AbstractDayValuePayload buildPayload( int index, PayloadType pType ) {

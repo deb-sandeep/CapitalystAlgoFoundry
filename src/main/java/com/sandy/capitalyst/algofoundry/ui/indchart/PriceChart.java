@@ -34,21 +34,22 @@ public class PriceChart extends IndicatorChart {
         consumedPayloadTypes.add( PayloadType.OHLCV ) ;
         consumedPayloadTypes.add( PayloadType.BOLLINGER ) ;
 
+        super.hideXAxis() ;
         attachClosePriceTimeSeries() ;
         attachBollingerBands() ;
-    }
-    
-    protected void configureXAxes( DateAxis xAxis ) {
-        super.configureXAxes( xAxis ) ;
-        xAxis.setAxisLineVisible( false ) ;
-        xAxis.setTickLabelsVisible( false ) ;
     }
     
     @Override
     public List<PayloadType> getConsumedPayloadTypes() {
         return this.consumedPayloadTypes ;
     }
-
+    
+    @Override
+    public void clearChart() {
+        closePriceTimeSeries.clear() ;
+        bollingerBandsSeries.clear() ;
+    }
+    
     @Override
     protected void handleDayValuePayload( AbstractDayValuePayload payload ) {
         Day day = new Day( payload.getDate() ) ;

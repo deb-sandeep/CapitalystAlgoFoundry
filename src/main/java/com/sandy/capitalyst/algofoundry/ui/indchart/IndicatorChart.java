@@ -175,6 +175,12 @@ public abstract class IndicatorChart extends JPanel
         }
     }
     
+    protected void hideXAxis() {
+        DateAxis  xAxis = (DateAxis)plot.getDomainAxis() ;
+        xAxis.setAxisLineVisible( false ) ;
+        xAxis.setTickLabelsVisible( false ) ;
+    }
+    
     @Override
     public final void handleEvent( Event event ) {
         AbstractDayValuePayload payload ;
@@ -187,4 +193,6 @@ public abstract class IndicatorChart extends JPanel
     protected abstract void handleDayValuePayload( AbstractDayValuePayload payload ) ;
     
     public abstract List<EquityEODHistory.PayloadType> getConsumedPayloadTypes() ;
+    
+    public abstract void clearChart() ;
 }

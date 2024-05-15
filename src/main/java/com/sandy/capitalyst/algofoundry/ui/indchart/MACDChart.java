@@ -21,4 +21,9 @@ public class MACDChart extends IndicatorChart {
     public List<EquityEODHistory.PayloadType> getConsumedPayloadTypes() {
         return consumedPayloadTypes ;
     }
+    
+    @Override
+    public void clearChart() {
+    
+    }
 }
