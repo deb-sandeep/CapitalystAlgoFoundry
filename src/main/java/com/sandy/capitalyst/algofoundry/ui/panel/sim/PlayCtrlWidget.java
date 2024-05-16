@@ -1,13 +1,17 @@
 package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
+import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +21,27 @@ import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.* ;
 public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
     implements ActionListener, ChangeListener {
     
+    public static class RuleSelectionRenderer extends DefaultListCellRenderer {
+        public Component getListCellRendererComponent( JList<?> list,
+                                                       Object value,
+                                                       int index,
+                                                       boolean isSelected,
+                                                       boolean cellHasFocus ) {
+            
+            JLabel label = (JLabel)super.getListCellRendererComponent(
+                              list, value, index, isSelected, cellHasFocus ) ;
+            label.setPreferredSize( new Dimension( 100, 25 ) );
+            label.setBackground( UITheme.BACKGROUND_COLOR.brighter() ) ;
+            label.setForeground( Color.GRAY.brighter() ) ;
+            
+            if( isSelected ) {
+                label.setForeground( Color.WHITE ) ;
+            }
+            
+            return label ;
+        }
+    }
+    
     private class PlayDaemonThread extends Thread {
         public void run() {
             while( playState != PlayState.ENDED ) {
@@ -24,7 +49,7 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
                     if( playState == PlayState.PLAYING ) {
                         if( !simPanel.playCurrentBarSeriesData() ) {
                             playState = PlayState.ENDED ;
-                            refreshButtons() ;
+                            refreshControls() ;
                         }
                     }
                     Thread.sleep( emitDelayMs ) ;
@@ -42,11 +67,11 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
     
     private static final Map<PlayState, boolean[]> BTN_ENABLE_STATES = new HashMap<>() ;
     static {
-        // Boolean flags are in the order play, step, stop, reset
-        BTN_ENABLE_STATES.put( PlayState.YET_TO_START, new boolean[]{ true,  false, false, false } ) ;
-        BTN_ENABLE_STATES.put( PlayState.PLAYING,      new boolean[]{ true,  false, true,  false } ) ;
-        BTN_ENABLE_STATES.put( PlayState.PAUSED,       new boolean[]{ true,  true,  true,  false } ) ;
-        BTN_ENABLE_STATES.put( PlayState.ENDED,        new boolean[]{ false, false, false, true  } ) ;
+        // Boolean flags are in the order play, step, stop, reset, ruleSelection
+        BTN_ENABLE_STATES.put( PlayState.YET_TO_START, new boolean[]{ true,  false, false, false, true  } ) ;
+        BTN_ENABLE_STATES.put( PlayState.PLAYING,      new boolean[]{ true,  false, true,  false, false } ) ;
+        BTN_ENABLE_STATES.put( PlayState.PAUSED,       new boolean[]{ true,  true,  true,  false, false } ) ;
+        BTN_ENABLE_STATES.put( PlayState.ENDED,        new boolean[]{ false, false, false, true,  true  } ) ;
     }
     
     private final JButton playPauseBtn ;
@@ -54,6 +79,9 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
     private final JButton stopBtn ;
     private final JButton restartBtn ;
     private final JSlider emitDelaySlider ;
+
+    private final JComboBox<String> buyRuleComboBox = new JComboBox<>() ;
+    private final JComboBox<String> sellRuleComboBox = new JComboBox<>() ;
     
     private final ImageIcon playIcon ;
     private final ImageIcon pauseIcon ;
@@ -79,20 +107,76 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
         this.emitDelaySlider = new JSlider( JSlider.HORIZONTAL,
                                             MIN_EMIT_DELAY, MAX_EMIT_DELAY,
                                             this.emitDelayMs ) ;
+        
+        setUpRuleSelectors() ;
         setUpUI() ;
         
         this.playDaemon = new PlayDaemonThread() ;
         this.playDaemon.start() ;
     }
     
+    private void setUpRuleSelectors() {
+        
+        setUpComboBoxUI( buyRuleComboBox ) ;
+        setUpComboBoxUI( sellRuleComboBox ) ;
+        
+        simPanel.getBuyRuleNames().forEach( buyRuleComboBox::addItem ) ;
+        simPanel.getSellRuleNames().forEach( sellRuleComboBox::addItem ) ;
+        
+        setUpRuleSelectionListeners() ;
+    }
+    
+    private void setUpComboBoxUI( JComboBox<String> comboBox ) {
+        comboBox.setEditable( false ) ;
+        comboBox.setRenderer( new RuleSelectionRenderer() ) ;
+    }
+    
+    private void setUpRuleSelectionListeners() {
+        buyRuleComboBox.addActionListener( (e) -> {
+            simPanel.setBuyRule( (String)buyRuleComboBox.getSelectedItem() ) ;
+        } ) ;
+        
+        sellRuleComboBox.addActionListener( (e) -> {
+            simPanel.setSellRule( (String)sellRuleComboBox.getSelectedItem() ) ;
+        } ) ;
+    }
+    
     private void setUpUI() {
         initPanelUI( this ) ;
         
-        setLayout( new GridLayout( 2, 1 ) ) ;
-        add( getPlayPauseBtnPanel() ) ;
-        add( getEmitDelayChangeSlider() ) ;
+        add( getRuleSelectionPanel(), BorderLayout.NORTH ) ;
+        add( getPlayPauseBtnPanel(), BorderLayout.CENTER ) ;
+        add( getEmitDelayChangeSlider(), BorderLayout.SOUTH ) ;
         
-        refreshButtons() ;
+        refreshControls() ;
+    }
+    
+    private JPanel getRuleSelectionPanel() {
+        JPanel panel = getNewJPanel() ;
+        panel.setLayout( new GridLayout( 2, 1 ) ) ;
+        panel.add( getBuyRulePanel() ) ;
+        panel.add( getSellRulePanel() ) ;
+        return panel ;
+    }
+    
+    private JPanel getBuyRulePanel() {
+        TitledBorder border = BorderFactory.createTitledBorder( "Buy rule" ) ;
+        border.setTitleColor( Color.GRAY.brighter() ) ;
+        
+        JPanel panel = getNewJPanel() ;
+        panel.setBorder( border ) ;
+        panel.add( buyRuleComboBox ) ;
+        return panel ;
+    }
+    
+    private JPanel getSellRulePanel() {
+        TitledBorder border = BorderFactory.createTitledBorder( "Sell rule" ) ;
+        border.setTitleColor( Color.GRAY.brighter() ) ;
+
+        JPanel panel = getNewJPanel() ;
+        panel.setBorder( border ) ;
+        panel.add( sellRuleComboBox ) ;
+        return panel ;
     }
     
     private JPanel getPlayPauseBtnPanel() {
@@ -126,6 +210,10 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
         if( src == playPauseBtn ) {
             if( playState == PlayState.YET_TO_START ||
                 playState == PlayState.PAUSED ) {
+                
+                if( playState == PlayState.YET_TO_START ) {
+                    simPanel.initializeTradeTriggerEvaluator() ;
+                }
                 playState = PlayState.PLAYING ;
             }
             else if( playState == PlayState.PLAYING ) {
@@ -137,7 +225,7 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
             playState = PlayState.YET_TO_START;
             playDaemon = new PlayDaemonThread() ;
             playDaemon.start() ;
-            refreshButtons() ;
+            refreshControls() ;
         }
         else if( src == stepBtn ) {
             if( !simPanel.playCurrentBarSeriesData() ) {
@@ -147,15 +235,19 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
         else if( src == stopBtn ) {
             playState = PlayState.ENDED ;
         }
-        refreshButtons() ;
+        refreshControls() ;
     }
     
-    private void refreshButtons() {
+    private void refreshControls() {
+        
         boolean[] enableStates = BTN_ENABLE_STATES.get( playState ) ;
         playPauseBtn.setEnabled( enableStates[0] ) ;
         stepBtn.setEnabled     ( enableStates[1] ) ;
         stopBtn.setEnabled     ( enableStates[2] ) ;
         restartBtn.setEnabled  ( enableStates[3] ) ;
+        
+        buyRuleComboBox.setEnabled( enableStates[4] );
+        sellRuleComboBox.setEnabled( enableStates[4] );
         
         playPauseBtn.setIcon( ( playState == PlayState.PLAYING ) ?
                               pauseIcon : playIcon ) ;

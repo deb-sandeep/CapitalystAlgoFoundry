@@ -1,6 +1,5 @@
 package com.sandy.capitalyst.algofoundry.equityhistory;
 
-import com.sandy.capitalyst.algofoundry.AlgoFoundry;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +20,8 @@ import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.indicators.statistics.StandardDeviationIndicator;
 import org.ta4j.core.num.Num;
 
-import javax.swing.*;
 import java.util.*;
 
-import static com.sandy.capitalyst.algofoundry.EventCatalog.EVT_INDICATOR_DAY_VALUE;
 import static com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory.IndicatorName.*;
 
 @Slf4j
@@ -40,8 +37,6 @@ public class EquityEODHistory {
 
     public enum IndicatorName {
         CLOSING_PRICE,
-        SMA_20,
-        EMA_20,
         STDEV_20,
         BOLLINGER_UP,
         BOLLINGER_MID,
@@ -65,6 +60,8 @@ public class EquityEODHistory {
     @Getter private final String symbol ;
     
     private final Map<IndicatorName, Indicator<Num>> cache = new HashMap<>() ;
+    private final Map<Integer, SMAIndicator> smaCache = new HashMap<>() ;
+    private final Map<Integer, EMAIndicator> emaCache = new HashMap<>() ;
     private final Set<DayValueListener> dayValueListeners = new HashSet<>() ;
     
     public EquityEODHistory( String symbol, BarSeries barSeries ) {
@@ -74,6 +71,10 @@ public class EquityEODHistory {
     
     public void addDayValueListener( DayValueListener listener ) {
         dayValueListeners.add( listener ) ;
+    }
+    
+    public void removeDayValueListener( DayValueListener listener ) {
+        dayValueListeners.remove( listener ) ;
     }
     
     public int getBarCount() {
@@ -144,13 +145,19 @@ public class EquityEODHistory {
         return ind( indName ).getValue( index ).doubleValue() ;
     }
     
-    private Indicator<Num> ind( IndicatorName key ) {
+    public SMAIndicator getSMAIndicator( int window ) {
+        return smaCache.computeIfAbsent( window, this::createSMAIndicator ) ;
+    }
+    
+    public EMAIndicator getEMAIndicator( int window ) {
+        return emaCache.computeIfAbsent( window, this::createEMAIndicator ) ;
+    }
+    
+    public Indicator<Num> ind( IndicatorName key ) {
         Indicator<Num> ind = cache.get( key ) ;
         if( ind == null ) {
             switch( key ) {
                 case CLOSING_PRICE -> ind = createClosePriceIndicator() ;
-                case SMA_20        -> ind = createSMAIndicator( 20 ) ;
-                case EMA_20        -> ind = createEMAIndicator( 20 ) ;
                 case STDEV_20      -> ind = createStDevIndicator( 20 ) ;
                 case BOLLINGER_LOW -> ind = createBollingerLowerIndicator() ;
                 case BOLLINGER_UP  -> ind = createBollingerUpperIndicator() ;
@@ -171,11 +178,11 @@ public class EquityEODHistory {
         return new ClosePriceIndicator( this.barSeries ) ;
     }
     
-    private Indicator<Num> createSMAIndicator( int period ) {
+    private SMAIndicator createSMAIndicator( int period ) {
         return new SMAIndicator( ind( CLOSING_PRICE ), period ) ;
     }
     
-    private Indicator<Num> createEMAIndicator( int period ) {
+    private EMAIndicator createEMAIndicator( int period ) {
         return new EMAIndicator( ind( CLOSING_PRICE ), period ) ;
     }
     
@@ -184,7 +191,7 @@ public class EquityEODHistory {
     }
     
     private BollingerBandsMiddleIndicator createBollingerMiddleIndicator() {
-        return new BollingerBandsMiddleIndicator( ind( EMA_20 ) ) ;
+        return new BollingerBandsMiddleIndicator( getEMAIndicator( 20 ) ) ;
     }
     
     private Indicator<Num> createBollingerUpperIndicator() {
