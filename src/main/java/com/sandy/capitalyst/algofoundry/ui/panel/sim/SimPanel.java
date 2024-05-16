@@ -2,10 +2,9 @@ package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
-import com.sandy.capitalyst.algofoundry.trigger.TradeStrategy;
-import com.sandy.capitalyst.algofoundry.trigger.TradeTriggerEvaluator;
-import com.sandy.capitalyst.algofoundry.trigger.TradeTriggerListener;
-import com.sandy.capitalyst.algofoundry.trigger.strategy.ADXEMATradeStrategy;
+import com.sandy.capitalyst.algofoundry.strategy.TradeStrategy;
+import com.sandy.capitalyst.algofoundry.strategy.TradeListener;
+import com.sandy.capitalyst.algofoundry.strategy.strategy.ADXEMATradeStrategy;
 import com.sandy.capitalyst.algofoundry.ui.indchart.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,7 +40,6 @@ public class SimPanel extends JPanel {
     private int curBarSeriesIndex = 0 ;
     
     private TradeStrategy tradeStrategy = null ;
-    private TradeTriggerEvaluator tradeTriggerEvaluator = null ;
     
     public SimPanel( String symbol ) throws Exception {
         this.history = new EquityHistEODAPIClient().getEquityEODHistory( symbol ) ;
@@ -74,7 +72,8 @@ public class SimPanel extends JPanel {
     }
     
     private void populateTradeStrategiesMap() {
-        tradeStrategyMap.put( ADXEMATradeStrategy.NAME, new ADXEMATradeStrategy( history ) ) ;
+        tradeStrategyMap.put( ADXEMATradeStrategy.NAME,
+                              new ADXEMATradeStrategy( history, 5, 20, 20 ) ) ;
         setTradeStrategy( ADXEMATradeStrategy.NAME ) ;
     }
     
@@ -144,19 +143,15 @@ public class SimPanel extends JPanel {
     }
     
     public void setTradeStrategy( String strategyName ) {
-        tradeStrategy = tradeStrategyMap.get( strategyName ) ;
-    }
-    
-    public void doPrePlayProcessing() {
-        refreshTradeTriggerEvaluator() ;
-    }
-    
-    private void refreshTradeTriggerEvaluator() {
-        if( tradeTriggerEvaluator != null ) {
-            history.removeDayValueListener( tradeTriggerEvaluator ) ;
+        if( tradeStrategy != null ) {
+            tradeStrategy.clear() ;
+            history.removeDayValueListener( tradeStrategy ) ;
         }
-        tradeTriggerEvaluator = new TradeTriggerEvaluator( history, tradeStrategy ) ;
-        tradeTriggerEvaluator.addTradeTriggerListener( ( TradeTriggerListener )this.priceChart ) ;
-        history.addDayValueListener( tradeTriggerEvaluator ) ;
+        
+        tradeStrategy = tradeStrategyMap.get( strategyName ) ;
+        tradeStrategy.addTradeListener( ( TradeListener )this.priceChart ) ;
+        history.addDayValueListener( tradeStrategy ) ;
     }
+    
+    public void doPrePlayProcessing() {}
 }

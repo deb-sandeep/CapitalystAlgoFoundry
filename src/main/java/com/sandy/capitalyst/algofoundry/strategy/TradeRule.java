@@ -1,9 +1,9 @@
-package com.sandy.capitalyst.algofoundry.trigger;
+package com.sandy.capitalyst.algofoundry.strategy;
 
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
-import com.sandy.capitalyst.algofoundry.trigger.rule.logic.AndRule;
-import com.sandy.capitalyst.algofoundry.trigger.rule.logic.NotRule;
-import com.sandy.capitalyst.algofoundry.trigger.rule.logic.OrRule;
+import com.sandy.capitalyst.algofoundry.strategy.rule.logic.AndRule;
+import com.sandy.capitalyst.algofoundry.strategy.rule.logic.NotRule;
+import com.sandy.capitalyst.algofoundry.strategy.rule.logic.OrRule;
 
 public abstract class TradeRule {
     

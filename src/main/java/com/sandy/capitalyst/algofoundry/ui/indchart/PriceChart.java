@@ -5,13 +5,12 @@ import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.BollingerBandDayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.MADayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.OHLCVDayValue;
-import com.sandy.capitalyst.algofoundry.trigger.TradeTrigger;
-import com.sandy.capitalyst.algofoundry.trigger.TradeTriggerListener;
+import com.sandy.capitalyst.algofoundry.strategy.Trade;
+import com.sandy.capitalyst.algofoundry.strategy.TradeListener;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.annotations.XYAnnotation;
 import org.jfree.chart.annotations.XYDrawableAnnotation;
 import org.jfree.chart.renderer.xy.DeviationRenderer;
-import org.jfree.chart.renderer.xy.XYDifferenceRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.Day;
@@ -20,7 +19,6 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.YIntervalDataItem;
 import org.jfree.data.xy.YIntervalSeries;
 import org.jfree.data.xy.YIntervalSeriesCollection;
-import org.ta4j.core.Trade;
 
 import java.awt.*;
 import java.util.List;
@@ -29,7 +27,7 @@ import static com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory.Pa
 
 @Slf4j
 public class PriceChart extends IndicatorChart
-    implements TradeTriggerListener {
+    implements TradeListener {
     
     private static final Color CLOSING_PRICE_COLOR = new Color( 178, 255, 102 ).darker() ;
     private static final Color EMA5_COLOR          = new Color( 121, 168, 252, 255 ) ;
@@ -137,14 +135,14 @@ public class PriceChart extends IndicatorChart
     }
     
     @Override
-    public void handleTradeTrigger( TradeTrigger trigger ) {
+    public void handleTrade( Trade trade ) {
         
-        Color color = ( trigger.getTradeType() == Trade.TradeType.BUY ) ?
+        Color color = ( trade.getTradeType() == org.ta4j.core.Trade.TradeType.BUY ) ?
                       Color.GREEN.darker() : Color.RED.darker() ;
         CircleAnnotationDrawable cd = new CircleAnnotationDrawable( color ) ;
         XYAnnotation annotation = new XYDrawableAnnotation(
-                                            (double)trigger.getDate().getTime(),
-                                            trigger.getPrice(),
+                                            (double)trade.getDate().getTime(),
+                                            trade.getPrice(),
                                             10, 10, cd ) ;
         plot.getRenderer().addAnnotation( annotation ) ;
     }

@@ -1,7 +1,7 @@
-package com.sandy.capitalyst.algofoundry.trigger.rule.atom;
+package com.sandy.capitalyst.algofoundry.strategy.rule.atom;
 
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
-import com.sandy.capitalyst.algofoundry.trigger.TradeRule;
+import com.sandy.capitalyst.algofoundry.strategy.TradeRule;
 import org.ta4j.core.Indicator;
 import org.ta4j.core.num.Num;
 import org.ta4j.core.rules.OverIndicatorRule;
