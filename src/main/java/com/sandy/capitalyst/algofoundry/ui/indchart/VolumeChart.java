@@ -1,7 +1,7 @@
 package com.sandy.capitalyst.algofoundry.ui.indchart;
 
-import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValuePayload;
-import com.sandy.capitalyst.algofoundry.equityhistory.payload.OHLCVPayload;
+import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
+import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.OHLCVDayValue;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
@@ -39,9 +39,9 @@ public class VolumeChart extends IndicatorChart {
     }
 
     @Override
-    protected void handleDayValuePayload( AbstractDayValuePayload payload ) {
+    protected void consumeDayValue( AbstractDayValue payload ) {
         Day day = new Day( payload.getDate() ) ;
-        if( payload instanceof OHLCVPayload ohlcv ) {
+        if( payload instanceof OHLCVDayValue ohlcv ) {
             double vol = ohlcv.getVolume() ;
             vol = vol < 1 ? 0 : (double)(vol/1000) ;
             dayVolumeTimeSeries.add( day, vol ) ;

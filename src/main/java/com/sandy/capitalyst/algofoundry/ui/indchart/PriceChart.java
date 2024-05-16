@@ -1,8 +1,8 @@
 package com.sandy.capitalyst.algofoundry.ui.indchart;
 
-import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValuePayload;
-import com.sandy.capitalyst.algofoundry.equityhistory.payload.BollingerPayload;
-import com.sandy.capitalyst.algofoundry.equityhistory.payload.OHLCVPayload;
+import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
+import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.BollingerBandDayValue;
+import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.OHLCVDayValue;
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 import org.jfree.chart.renderer.xy.DeviationRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -49,12 +49,12 @@ public class PriceChart extends IndicatorChart {
     }
     
     @Override
-    protected void handleDayValuePayload( AbstractDayValuePayload payload ) {
+    protected void consumeDayValue( AbstractDayValue payload ) {
         Day day = new Day( payload.getDate() ) ;
-        if( payload instanceof OHLCVPayload ohlcv ) {
+        if( payload instanceof OHLCVDayValue ohlcv ) {
             closePriceTimeSeries.add( day, ohlcv.getClose()  ) ;
         }
-        else if( payload instanceof BollingerPayload b ) {
+        else if( payload instanceof BollingerBandDayValue b ) {
             YIntervalDataItem data = new YIntervalDataItem(
                     b.getDate().getTime(),
                     b.getMid(),

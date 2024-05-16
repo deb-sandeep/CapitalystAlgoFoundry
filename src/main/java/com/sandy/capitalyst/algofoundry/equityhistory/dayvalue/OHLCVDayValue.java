@@ -1,13 +1,13 @@
-package com.sandy.capitalyst.algofoundry.equityhistory.payload;
+package com.sandy.capitalyst.algofoundry.equityhistory.dayvalue;
 
-import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValuePayload;
+import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import lombok.Getter;
 import org.ta4j.core.Bar;
 
 import java.util.Date;
 
-public class OHLCVPayload extends AbstractDayValuePayload {
+public class OHLCVDayValue extends AbstractDayValue {
 
     @Getter private double open ;
     @Getter private double high ;
@@ -15,7 +15,7 @@ public class OHLCVPayload extends AbstractDayValuePayload {
     @Getter private double close ;
     @Getter private long   volume ;
     
-    public OHLCVPayload( Date date, String symbol, Bar bar ) {
+    public OHLCVDayValue( Date date, String symbol, Bar bar ) {
 
         super( EquityEODHistory.PayloadType.OHLCV, date, symbol ) ;
         

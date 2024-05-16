@@ -1,7 +1,7 @@
 package com.sandy.capitalyst.algofoundry.ui.indchart;
 
-import com.sandy.capitalyst.algofoundry.equityhistory.payload.ADXPayload;
-import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValuePayload;
+import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.ADXDayValue;
+import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.renderer.xy.XYAreaRenderer;
@@ -122,9 +122,9 @@ public class ADXChart extends IndicatorChart {
     }
     
     @Override
-    protected void handleDayValuePayload( AbstractDayValuePayload payload ) {
+    protected void consumeDayValue( AbstractDayValue payload ) {
         Day day = new Day( payload.getDate() ) ;
-        if( payload instanceof ADXPayload adx ) {
+        if( payload instanceof ADXDayValue adx ) {
             adxTimeSeries.add( day, adx.getAdx() ) ;
             plusDMITimeSeries.add( day, adx.getPlusDMI() ) ;
             minusDMITimeSeries.add( day, adx.getMinusDMI() ) ;

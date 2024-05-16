@@ -1,10 +1,10 @@
 package com.sandy.capitalyst.algofoundry.ui.indchart;
 
-import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
-import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValuePayload;
-import com.sandy.capitalyst.algofoundry.core.bus.Event;
-import com.sandy.capitalyst.algofoundry.core.bus.EventSubscriber;
+import com.sandy.capitalyst.algofoundry.core.ui.SwingUtils;
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
+import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
+import com.sandy.capitalyst.algofoundry.equityhistory.DayValueListener;
+import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -26,13 +26,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.sandy.capitalyst.algofoundry.AlgoFoundry.*;
-import static com.sandy.capitalyst.algofoundry.EventCatalog.EVT_INDICATOR_DAY_VALUE;
+import static com.sandy.capitalyst.algofoundry.AlgoFoundry.getConfig;
 import static com.sandy.capitalyst.algofoundry.core.ui.UITheme.*;
 
 @Slf4j
 public abstract class IndicatorChart extends JPanel
-    implements EventSubscriber {
+    implements DayValueListener {
     
     protected final int    xAxisWindowSize ;
     protected final String symbol ;
@@ -62,16 +61,6 @@ public abstract class IndicatorChart extends JPanel
         
         setLayout( new BorderLayout() ) ;
         add( chartPanel, BorderLayout.CENTER ) ;
-        
-        getBus().addSubscriberForEventTypes( this, false, EVT_INDICATOR_DAY_VALUE );
-        getCleaner().register( this, getCleanerAction() ) ;
-    }
-    
-    public Runnable getCleanerAction() {
-        return () -> {
-            log.debug( "Cleaning chart." ) ;
-            getBus().removeSubscriber( this, EVT_INDICATOR_DAY_VALUE ) ;
-        } ;
     }
     
     private void initializeChart() {
@@ -188,19 +177,6 @@ public abstract class IndicatorChart extends JPanel
         xAxis.setTickLabelsVisible( false ) ;
     }
     
-    @Override
-    public final void handleEvent( Event event ) {
-        AbstractDayValuePayload payload ;
-        if( event.getEventType() == EVT_INDICATOR_DAY_VALUE ) {
-            payload = ( AbstractDayValuePayload )event.getValue() ;
-            if( payload.getSymbol().equals( this.symbol ) ) {
-                handleDayValuePayload( payload ) ;
-            }
-        }
-    }
-    
-    protected abstract void handleDayValuePayload( AbstractDayValuePayload payload ) ;
-    
     public abstract List<EquityEODHistory.PayloadType> getConsumedPayloadTypes() ;
     
     public abstract void clearChart() ;
@@ -210,4 +186,12 @@ public abstract class IndicatorChart extends JPanel
             series.clear() ;
         }
     }
+    
+    public final void handleDayValue( AbstractDayValue dayValue ) {
+        SwingUtilities.invokeLater( () -> {
+            consumeDayValue( dayValue ) ;
+        } );
+    }
+    
+    protected abstract void consumeDayValue( AbstractDayValue dayValue ) ;
 }

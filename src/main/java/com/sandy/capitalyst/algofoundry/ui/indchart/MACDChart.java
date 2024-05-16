@@ -1,7 +1,7 @@
 package com.sandy.capitalyst.algofoundry.ui.indchart;
 
-import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValuePayload;
-import com.sandy.capitalyst.algofoundry.equityhistory.payload.MACDPayload;
+import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
+import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.MACDDayValue;
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.renderer.xy.XYDifferenceRenderer;
@@ -92,9 +92,9 @@ public class MACDChart extends IndicatorChart {
     }
     
     @Override
-    protected void handleDayValuePayload( AbstractDayValuePayload payload ) {
+    protected void consumeDayValue( AbstractDayValue payload ) {
         Day day = new Day( payload.getDate() ) ;
-        if( payload instanceof MACDPayload macd ) {
+        if( payload instanceof MACDDayValue macd ) {
             macdTimeSeries.add( day, macd.getMacd() ) ;
             macdSignalTimeSeries.add( day, macd.getSignal() ) ;
             macdHistogramTimeSeries.add( day, macd.getHistogramValue() ) ;

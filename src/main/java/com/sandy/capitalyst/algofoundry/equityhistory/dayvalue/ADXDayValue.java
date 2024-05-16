@@ -1,19 +1,19 @@
-package com.sandy.capitalyst.algofoundry.equityhistory.payload;
+package com.sandy.capitalyst.algofoundry.equityhistory.dayvalue;
 
-import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValuePayload;
+import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import lombok.Getter;
 
 import java.util.Date;
 
-public class ADXPayload extends AbstractDayValuePayload {
+public class ADXDayValue extends AbstractDayValue {
 
     @Getter private final double adx;
     @Getter private final double plusDMI ;
     @Getter private final double minusDMI ;
     
-    public ADXPayload( Date date, String symbol,
-                       double adx, double plusDMI, double minusDMI ) {
+    public ADXDayValue( Date date, String symbol,
+                        double adx, double plusDMI, double minusDMI ) {
 
         super( EquityEODHistory.PayloadType.ADX, date, symbol ) ;
         

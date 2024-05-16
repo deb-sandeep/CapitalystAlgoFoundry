@@ -1,7 +1,7 @@
 package com.sandy.capitalyst.algofoundry.ui.indchart;
 
-import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValuePayload;
-import com.sandy.capitalyst.algofoundry.equityhistory.payload.RSIPayload;
+import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
+import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.RSIDayValue;
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.renderer.xy.XYDifferenceRenderer;
@@ -93,9 +93,9 @@ public class RSIChart extends IndicatorChart {
     }
     
     @Override
-    protected void handleDayValuePayload( AbstractDayValuePayload payload ) {
+    protected void consumeDayValue( AbstractDayValue payload ) {
         Day day = new Day( payload.getDate() ) ;
-        if( payload instanceof RSIPayload rsi ) {
+        if( payload instanceof RSIDayValue rsi ) {
             rsiTimeSeries.add( day, rsi.getRsi() ) ;
             ceilingTimeSeries.add( day, RSI_CEILING_VALUE ) ;
             floorTimeSeries.add( day, RSI_FLOOR_VALUE ) ;

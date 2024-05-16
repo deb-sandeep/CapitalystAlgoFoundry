@@ -52,6 +52,10 @@ public class SimPanel extends JPanel {
                 adxChart
         } ;
         
+        for( IndicatorChart chart : charts ) {
+            this.history.addDayValueListener( chart ) ;
+        }
+        
         this.controlPanel = new SimControlPanel( this ) ;
         
         setUpUI() ;

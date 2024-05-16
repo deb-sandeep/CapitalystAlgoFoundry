@@ -1,19 +1,19 @@
-package com.sandy.capitalyst.algofoundry.equityhistory.payload;
+package com.sandy.capitalyst.algofoundry.equityhistory.dayvalue;
 
-import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValuePayload;
+import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import lombok.Getter;
 
 import java.util.Date;
 
-public class MACDPayload extends AbstractDayValuePayload {
+public class MACDDayValue extends AbstractDayValue {
 
     @Getter private final double macd;
     @Getter private final double signal ;
     @Getter private final double histogramValue ;
     
-    public MACDPayload( Date date, String symbol,
-                        double macdValue, double signalValue ) {
+    public MACDDayValue( Date date, String symbol,
+                         double macdValue, double signalValue ) {
 
         super( EquityEODHistory.PayloadType.MACD, date, symbol ) ;
         

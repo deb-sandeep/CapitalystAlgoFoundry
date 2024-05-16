@@ -1,7 +1,7 @@
 package com.sandy.capitalyst.algofoundry.equityhistory;
 
 import com.sandy.capitalyst.algofoundry.AlgoFoundry;
-import com.sandy.capitalyst.algofoundry.equityhistory.payload.*;
+import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.ta4j.core.Bar;
@@ -22,10 +22,7 @@ import org.ta4j.core.indicators.statistics.StandardDeviationIndicator;
 import org.ta4j.core.num.Num;
 
 import javax.swing.*;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static com.sandy.capitalyst.algofoundry.EventCatalog.EVT_INDICATOR_DAY_VALUE;
 import static com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory.IndicatorName.*;
@@ -68,10 +65,15 @@ public class EquityEODHistory {
     @Getter private final String symbol ;
     
     private final Map<IndicatorName, Indicator<Num>> cache = new HashMap<>() ;
+    private final Set<DayValueListener> dayValueListeners = new HashSet<>() ;
     
     public EquityEODHistory( String symbol, BarSeries barSeries ) {
         this.barSeries = barSeries ;
         this.symbol = symbol ;
+    }
+    
+    public void addDayValueListener( DayValueListener listener ) {
+        dayValueListeners.add( listener ) ;
     }
     
     public int getBarCount() {
@@ -88,22 +90,18 @@ public class EquityEODHistory {
             throw new IllegalArgumentException( "Index is out of bounds." ) ;
         }
         
-        AbstractDayValuePayload payload = buildPayload( index, pType ) ;
-        payload.setSeriesIndex( index ) ;
-        
-        SwingUtilities.invokeLater( () ->
-            AlgoFoundry.getBus()
-                       .publishEvent( EVT_INDICATOR_DAY_VALUE,
-                                      payload )
-        ) ;
+        AbstractDayValue dayValue = buildPayload( index, pType ) ;
+        dayValue.setSeriesIndex( index ) ;
+
+        dayValueListeners.forEach( l -> l.handleDayValue( dayValue ) );
     }
     
-    private AbstractDayValuePayload buildPayload( int index, PayloadType pType ) {
+    private AbstractDayValue buildPayload( int index, PayloadType pType ) {
         
         Bar  bar  = barSeries.getBar( index ) ;
         Date date = Date.from( bar.getEndTime().toInstant() ) ;
         
-        AbstractDayValuePayload payload = null ;
+        AbstractDayValue payload = null ;
         switch( pType ) {
             case OHLCV     -> payload = buildOHLCVPayload( date, bar ) ;
             case BOLLINGER -> payload = buildBollingerPayload( index, date ) ;
@@ -114,29 +112,29 @@ public class EquityEODHistory {
         return payload ;
     }
     
-    private OHLCVPayload buildOHLCVPayload( Date date, Bar bar ) {
-        return new OHLCVPayload( date, symbol, bar ) ;
+    private OHLCVDayValue buildOHLCVPayload( Date date, Bar bar ) {
+        return new OHLCVDayValue( date, symbol, bar ) ;
     }
     
-    private BollingerPayload buildBollingerPayload( int index, Date date ) {
-        return new BollingerPayload( date, symbol,
+    private BollingerBandDayValue buildBollingerPayload( int index, Date date ) {
+        return new BollingerBandDayValue( date, symbol,
                                      getIndVal( BOLLINGER_UP, index ),
                                      getIndVal( BOLLINGER_MID, index ),
                                      getIndVal( BOLLINGER_LOW, index ) );
     }
     
-    private MACDPayload buildMACDPayload( int index, Date date ) {
-        return new MACDPayload( date, symbol,
+    private MACDDayValue buildMACDPayload( int index, Date date ) {
+        return new MACDDayValue( date, symbol,
                                 getIndVal( MACD, index ),
                                 getIndVal( MACD_SIGNAL, index ) ) ;
     }
     
-    private RSIPayload buildRSIPayload( int index, Date date ) {
-        return new RSIPayload( date, symbol, getIndVal( RSI, index ) ) ;
+    private RSIDayValue buildRSIPayload( int index, Date date ) {
+        return new RSIDayValue( date, symbol, getIndVal( RSI, index ) ) ;
     }
     
-    private ADXPayload buildADXPayload( int index, Date date ) {
-        return new ADXPayload( date, symbol,
+    private ADXDayValue buildADXPayload( int index, Date date ) {
+        return new ADXDayValue( date, symbol,
                                getIndVal( ADX, index ),
                                getIndVal( ADX_PLUS_DMI, index ),
                                getIndVal( ADX_MINUS_DMI, index ) ) ;
