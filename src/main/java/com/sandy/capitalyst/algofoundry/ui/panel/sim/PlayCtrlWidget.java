@@ -78,8 +78,7 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
     private final JButton restartBtn ;
     private final JSlider emitDelaySlider ;
 
-    private final JComboBox<String> buyRuleComboBox = new JComboBox<>() ;
-    private final JComboBox<String> sellRuleComboBox = new JComboBox<>() ;
+    private final JComboBox<String> strategyComboBox = new JComboBox<>() ;
     
     private final ImageIcon playIcon ;
     private final ImageIcon pauseIcon ;
@@ -106,36 +105,22 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
                                             MIN_EMIT_DELAY, MAX_EMIT_DELAY,
                                             this.emitDelayMs ) ;
         
-        setUpRuleSelectors() ;
+        setUpTradeStrategySelector() ;
         setUpUI() ;
         
         this.playDaemon = new PlayDaemonThread() ;
         this.playDaemon.start() ;
     }
     
-    private void setUpRuleSelectors() {
+    private void setUpTradeStrategySelector() {
         
-        setUpComboBoxUI( buyRuleComboBox ) ;
-        setUpComboBoxUI( sellRuleComboBox ) ;
+        strategyComboBox.setEditable( false ) ;
+        strategyComboBox.setRenderer( new RuleSelectionRenderer() ) ;
+
+        simPanel.getTradeStrategyNames().forEach( strategyComboBox::addItem ) ;
         
-        simPanel.getBuyRuleNames().forEach( buyRuleComboBox::addItem ) ;
-        simPanel.getSellRuleNames().forEach( sellRuleComboBox::addItem ) ;
-        
-        setUpRuleSelectionListeners() ;
-    }
-    
-    private void setUpComboBoxUI( JComboBox<String> comboBox ) {
-        comboBox.setEditable( false ) ;
-        comboBox.setRenderer( new RuleSelectionRenderer() ) ;
-    }
-    
-    private void setUpRuleSelectionListeners() {
-        buyRuleComboBox.addActionListener( (e) -> {
-            simPanel.setBuyRule( (String)buyRuleComboBox.getSelectedItem() ) ;
-        } ) ;
-        
-        sellRuleComboBox.addActionListener( (e) -> {
-            simPanel.setSellRule( (String)sellRuleComboBox.getSelectedItem() ) ;
+        strategyComboBox.addActionListener( ( e) -> {
+            simPanel.setTradeStrategy( (String)strategyComboBox.getSelectedItem() ) ;
         } ) ;
     }
     
@@ -150,30 +135,12 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
     }
     
     private JPanel getRuleSelectionPanel() {
-        JPanel panel = getNewJPanel() ;
-        panel.setLayout( new GridLayout( 2, 1 ) ) ;
-        panel.add( getBuyRulePanel() ) ;
-        panel.add( getSellRulePanel() ) ;
-        return panel ;
-    }
-    
-    private JPanel getBuyRulePanel() {
-        TitledBorder border = BorderFactory.createTitledBorder( "Buy rule" ) ;
+        TitledBorder border = BorderFactory.createTitledBorder( "Trade Strategy" ) ;
         border.setTitleColor( Color.GRAY.brighter() ) ;
         
         JPanel panel = getNewJPanel() ;
         panel.setBorder( border ) ;
-        panel.add( buyRuleComboBox ) ;
-        return panel ;
-    }
-    
-    private JPanel getSellRulePanel() {
-        TitledBorder border = BorderFactory.createTitledBorder( "Sell rule" ) ;
-        border.setTitleColor( Color.GRAY.brighter() ) ;
-
-        JPanel panel = getNewJPanel() ;
-        panel.setBorder( border ) ;
-        panel.add( sellRuleComboBox ) ;
+        panel.add( strategyComboBox ) ;
         return panel ;
     }
     
@@ -244,8 +211,7 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
         stopBtn.setEnabled     ( enableStates[2] ) ;
         restartBtn.setEnabled  ( enableStates[3] ) ;
         
-        buyRuleComboBox.setEnabled( enableStates[4] );
-        sellRuleComboBox.setEnabled( enableStates[4] );
+        strategyComboBox.setEnabled( enableStates[4] );
         
         playPauseBtn.setIcon( ( playState == PlayState.PLAYING ) ?
                               pauseIcon : playIcon ) ;

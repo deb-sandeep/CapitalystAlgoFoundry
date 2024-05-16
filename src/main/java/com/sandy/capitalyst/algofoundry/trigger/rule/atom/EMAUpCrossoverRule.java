@@ -1,9 +1,8 @@
-package com.sandy.capitalyst.algofoundry.trigger.rule;
+package com.sandy.capitalyst.algofoundry.trigger.rule.atom;
 
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.trigger.TradeRule;
 import org.ta4j.core.indicators.EMAIndicator;
-import org.ta4j.core.num.Num;
 import org.ta4j.core.rules.CrossedUpIndicatorRule;
 
 public class EMAUpCrossoverRule extends TradeRule {

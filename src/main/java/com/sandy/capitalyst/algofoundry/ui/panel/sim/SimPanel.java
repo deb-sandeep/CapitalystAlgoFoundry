@@ -2,12 +2,10 @@ package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
-import com.sandy.capitalyst.algofoundry.trigger.TradeRule;
-import com.sandy.capitalyst.algofoundry.trigger.TradeTrigger;
+import com.sandy.capitalyst.algofoundry.trigger.TradeStrategy;
 import com.sandy.capitalyst.algofoundry.trigger.TradeTriggerEvaluator;
 import com.sandy.capitalyst.algofoundry.trigger.TradeTriggerListener;
-import com.sandy.capitalyst.algofoundry.trigger.rule.EMADownCrossoverRule;
-import com.sandy.capitalyst.algofoundry.trigger.rule.EMAUpCrossoverRule;
+import com.sandy.capitalyst.algofoundry.trigger.strategy.ADXEMATradeStrategy;
 import com.sandy.capitalyst.algofoundry.ui.indchart.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,8 +15,6 @@ import java.util.*;
 
 import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.getNewJPanel;
 import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.initPanelUI;
-import static com.sandy.capitalyst.algofoundry.core.util.StringUtil.fmtDate;
-import static com.sandy.capitalyst.algofoundry.core.util.StringUtil.isEmptyOrNull;
 
 @Slf4j
 public class SimPanel extends JPanel {
@@ -28,8 +24,7 @@ public class SimPanel extends JPanel {
     private static final int RSI_CHART_HEIGHT = 150 ;
     private static final int ADX_CHART_HEIGHT = 150 ;
     
-    private final Map<String, TradeRule> buyRuleMap = new HashMap<>() ;
-    private final Map<String, TradeRule> sellRuleMap = new HashMap<>() ;
+    private final Map<String, TradeStrategy> tradeStrategyMap  = new HashMap<>() ;
     
     private final EquityEODHistory history ;
     
@@ -45,8 +40,7 @@ public class SimPanel extends JPanel {
     
     private int curBarSeriesIndex = 0 ;
     
-    private TradeRule buyRule = null ;
-    private TradeRule sellRule = null ;
+    private TradeStrategy tradeStrategy = null ;
     private TradeTriggerEvaluator tradeTriggerEvaluator = null ;
     
     public SimPanel( String symbol ) throws Exception {
@@ -70,8 +64,7 @@ public class SimPanel extends JPanel {
             this.history.addDayValueListener( chart ) ;
         }
         
-        populateBuyRulesMap() ;
-        populateSellRulesMap() ;
+        populateTradeStrategiesMap() ;
         
         this.controlPanel = new SimControlPanel( this ) ;
         
@@ -80,14 +73,9 @@ public class SimPanel extends JPanel {
         doPrePlayProcessing() ;
     }
     
-    private void populateBuyRulesMap() {
-        buyRuleMap.put( "EMA_5_20_Crossover", new EMAUpCrossoverRule( history, 5, 20 ) ) ;
-        buyRule = buyRuleMap.get( "EMA_5_20_Crossover" ) ;
-    }
-    
-    private void populateSellRulesMap() {
-        sellRuleMap.put( "EMA_5_20_Crossover", new EMADownCrossoverRule( history, 5, 20 ) ) ;
-        sellRule = sellRuleMap.get( "EMA_5_20_Crossover" ) ;
+    private void populateTradeStrategiesMap() {
+        tradeStrategyMap.put( ADXEMATradeStrategy.NAME, new ADXEMATradeStrategy( history ) ) ;
+        setTradeStrategy( ADXEMATradeStrategy.NAME ) ;
     }
     
     private void setUpUI() {
@@ -129,12 +117,8 @@ public class SimPanel extends JPanel {
         return panel ;
     }
     
-    public Collection<String> getBuyRuleNames() {
-        return buyRuleMap.keySet() ;
-    }
-    
-    public Collection<String> getSellRuleNames() {
-        return sellRuleMap.keySet() ;
+    public Collection<String> getTradeStrategyNames() {
+        return tradeStrategyMap.keySet() ;
     }
     
     public boolean playCurrentBarSeriesData() {
@@ -159,12 +143,8 @@ public class SimPanel extends JPanel {
         }
     }
     
-    public void setBuyRule( String ruleName ) {
-        buyRule = isEmptyOrNull( ruleName ) ? null : buyRuleMap.get( ruleName ) ;
-    }
-    
-    public void setSellRule( String ruleName ) {
-        sellRule = isEmptyOrNull( ruleName ) ? null : sellRuleMap.get( ruleName ) ;
+    public void setTradeStrategy( String strategyName ) {
+        tradeStrategy = tradeStrategyMap.get( strategyName ) ;
     }
     
     public void doPrePlayProcessing() {
@@ -175,7 +155,7 @@ public class SimPanel extends JPanel {
         if( tradeTriggerEvaluator != null ) {
             history.removeDayValueListener( tradeTriggerEvaluator ) ;
         }
-        tradeTriggerEvaluator = new TradeTriggerEvaluator( history, buyRule, sellRule ) ;
+        tradeTriggerEvaluator = new TradeTriggerEvaluator( history, tradeStrategy ) ;
         tradeTriggerEvaluator.addTradeTriggerListener( ( TradeTriggerListener )this.priceChart ) ;
         history.addDayValueListener( tradeTriggerEvaluator ) ;
     }

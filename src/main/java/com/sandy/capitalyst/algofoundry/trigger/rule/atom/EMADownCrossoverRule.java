@@ -1,4 +1,4 @@
-package com.sandy.capitalyst.algofoundry.trigger.rule;
+package com.sandy.capitalyst.algofoundry.trigger.rule.atom;
 
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.trigger.TradeRule;

@@ -21,11 +21,10 @@ public class TradeTriggerEvaluator implements DayValueListener {
     private int lastIndexEvalauted = -1 ;
     
     public TradeTriggerEvaluator( EquityEODHistory history,
-                                  TradeRule buyRule,
-                                  TradeRule sellRule ) {
+                                  TradeStrategy tradeStrategy ) {
         this.history = history ;
-        this.buyRule = buyRule ;
-        this.sellRule = sellRule ;
+        this.buyRule = tradeStrategy.getBuyRule() ;
+        this.sellRule = tradeStrategy.getSellRule() ;
     }
     
     public void addTradeTriggerListener( TradeTriggerListener listener ) {
