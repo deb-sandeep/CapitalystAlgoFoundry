@@ -1,6 +1,6 @@
 package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
-import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityEODHistory;
+import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
 import com.sandy.capitalyst.algofoundry.ui.indchart.*;
 import lombok.extern.slf4j.Slf4j;

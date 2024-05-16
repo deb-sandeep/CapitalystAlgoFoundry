@@ -1,8 +1,8 @@
 package com.sandy.capitalyst.algofoundry.ui.indchart;
 
-import com.sandy.capitalyst.algofoundry.apiclient.histeod.payload.AbstractDayValuePayload;
-import com.sandy.capitalyst.algofoundry.apiclient.histeod.payload.BollingerPayload;
-import com.sandy.capitalyst.algofoundry.apiclient.histeod.payload.OHLCVPayload;
+import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValuePayload;
+import com.sandy.capitalyst.algofoundry.equityhistory.payload.BollingerPayload;
+import com.sandy.capitalyst.algofoundry.equityhistory.payload.OHLCVPayload;
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 import org.jfree.chart.renderer.xy.DeviationRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -15,7 +15,7 @@ import org.jfree.data.xy.YIntervalSeriesCollection;
 import java.awt.*;
 import java.util.List;
 
-import static com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityEODHistory.PayloadType;
+import static com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory.PayloadType;
 
 public class PriceChart extends IndicatorChart {
     

@@ -1,7 +1,7 @@
 package com.sandy.capitalyst.algofoundry.ui.indchart;
 
-import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityEODHistory;
-import com.sandy.capitalyst.algofoundry.apiclient.histeod.payload.AbstractDayValuePayload;
+import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
+import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValuePayload;
 import com.sandy.capitalyst.algofoundry.core.bus.Event;
 import com.sandy.capitalyst.algofoundry.core.bus.EventSubscriber;
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;

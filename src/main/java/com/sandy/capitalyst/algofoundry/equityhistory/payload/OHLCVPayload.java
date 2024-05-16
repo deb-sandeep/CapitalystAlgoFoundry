@@ -1,6 +1,7 @@
-package com.sandy.capitalyst.algofoundry.apiclient.histeod.payload;
+package com.sandy.capitalyst.algofoundry.equityhistory.payload;
 
-import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityEODHistory;
+import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValuePayload;
+import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import lombok.Getter;
 import org.ta4j.core.Bar;
 

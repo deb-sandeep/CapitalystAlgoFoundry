@@ -1,7 +1,7 @@
 package com.sandy.capitalyst.algofoundry.ui.indchart;
 
-import com.sandy.capitalyst.algofoundry.apiclient.histeod.payload.AbstractDayValuePayload;
-import com.sandy.capitalyst.algofoundry.apiclient.histeod.payload.RSIPayload;
+import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValuePayload;
+import com.sandy.capitalyst.algofoundry.equityhistory.payload.RSIPayload;
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.renderer.xy.XYDifferenceRenderer;
@@ -13,7 +13,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import java.awt.*;
 import java.util.List;
 
-import static com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityEODHistory.PayloadType;
+import static com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory.PayloadType;
 
 @Slf4j
 public class RSIChart extends IndicatorChart {

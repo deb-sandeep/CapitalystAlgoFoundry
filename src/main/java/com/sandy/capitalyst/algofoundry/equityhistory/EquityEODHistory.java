@@ -1,7 +1,7 @@
-package com.sandy.capitalyst.algofoundry.apiclient.histeod;
+package com.sandy.capitalyst.algofoundry.equityhistory;
 
 import com.sandy.capitalyst.algofoundry.AlgoFoundry;
-import com.sandy.capitalyst.algofoundry.apiclient.histeod.payload.*;
+import com.sandy.capitalyst.algofoundry.equityhistory.payload.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.ta4j.core.Bar;
@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.sandy.capitalyst.algofoundry.EventCatalog.EVT_INDICATOR_DAY_VALUE;
-import static com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityEODHistory.IndicatorName.*;
+import static com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory.IndicatorName.*;
 
 @Slf4j
 public class EquityEODHistory {
@@ -44,6 +44,7 @@ public class EquityEODHistory {
     public enum IndicatorName {
         CLOSING_PRICE,
         SMA_20,
+        EMA_20,
         STDEV_20,
         BOLLINGER_UP,
         BOLLINGER_MID,
@@ -68,7 +69,7 @@ public class EquityEODHistory {
     
     private final Map<IndicatorName, Indicator<Num>> cache = new HashMap<>() ;
     
-    EquityEODHistory( String symbol, BarSeries barSeries ) {
+    public EquityEODHistory( String symbol, BarSeries barSeries ) {
         this.barSeries = barSeries ;
         this.symbol = symbol ;
     }
@@ -88,6 +89,7 @@ public class EquityEODHistory {
         }
         
         AbstractDayValuePayload payload = buildPayload( index, pType ) ;
+        payload.setSeriesIndex( index ) ;
         
         SwingUtilities.invokeLater( () ->
             AlgoFoundry.getBus()
@@ -150,6 +152,7 @@ public class EquityEODHistory {
             switch( key ) {
                 case CLOSING_PRICE -> ind = createClosePriceIndicator() ;
                 case SMA_20        -> ind = createSMAIndicator( 20 ) ;
+                case EMA_20        -> ind = createEMAIndicator( 20 ) ;
                 case STDEV_20      -> ind = createStDevIndicator( 20 ) ;
                 case BOLLINGER_LOW -> ind = createBollingerLowerIndicator() ;
                 case BOLLINGER_UP  -> ind = createBollingerUpperIndicator() ;
@@ -174,12 +177,16 @@ public class EquityEODHistory {
         return new SMAIndicator( ind( CLOSING_PRICE ), period ) ;
     }
     
+    private Indicator<Num> createEMAIndicator( int period ) {
+        return new EMAIndicator( ind( CLOSING_PRICE ), period ) ;
+    }
+    
     private Indicator<Num> createStDevIndicator( int period ) {
         return new StandardDeviationIndicator( ind( CLOSING_PRICE ), period ) ;
     }
     
     private BollingerBandsMiddleIndicator createBollingerMiddleIndicator() {
-        return new BollingerBandsMiddleIndicator( ind( SMA_20 ) ) ;
+        return new BollingerBandsMiddleIndicator( ind( EMA_20 ) ) ;
     }
     
     private Indicator<Num> createBollingerUpperIndicator() {

@@ -1,14 +1,14 @@
-package com.sandy.capitalyst.algofoundry.apiclient.histeod.payload;
+package com.sandy.capitalyst.algofoundry.equityhistory;
 
-import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityEODHistory;
 import lombok.Getter;
 
 import java.util.Date;
 
-import static com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityEODHistory.* ;
+import static com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory.* ;
 
 public abstract class AbstractDayValuePayload {
     
+    @Getter private int seriesIndex ;
     @Getter private final PayloadType payloadType ;
     @Getter private final String symbol ;
     @Getter private final Date date ;
@@ -17,5 +17,9 @@ public abstract class AbstractDayValuePayload {
         this.payloadType = payloadType ;
         this.symbol = symbol ;
         this.date = date ;
+    }
+    
+    void setSeriesIndex( int index ) {
+        this.seriesIndex = index ;
     }
 }
