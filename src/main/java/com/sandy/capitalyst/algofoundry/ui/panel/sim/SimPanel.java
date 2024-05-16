@@ -5,6 +5,7 @@ import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient
 import com.sandy.capitalyst.algofoundry.strategy.TradeStrategy;
 import com.sandy.capitalyst.algofoundry.strategy.TradeListener;
 import com.sandy.capitalyst.algofoundry.strategy.strategy.ADXEMATradeStrategy;
+import com.sandy.capitalyst.algofoundry.strategy.strategy.MACDTradeStrategy;
 import com.sandy.capitalyst.algofoundry.ui.indchart.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,7 +24,7 @@ public class SimPanel extends JPanel {
     private static final int RSI_CHART_HEIGHT = 150 ;
     private static final int ADX_CHART_HEIGHT = 150 ;
     
-    private final Map<String, TradeStrategy> tradeStrategyMap  = new HashMap<>() ;
+    private final Map<String, TradeStrategy> tradeStrategyMap  = new LinkedHashMap<>() ;
     
     private final EquityEODHistory history ;
     
@@ -72,9 +73,12 @@ public class SimPanel extends JPanel {
     }
     
     private void populateTradeStrategiesMap() {
+        tradeStrategyMap.put( MACDTradeStrategy.NAME,
+                              new MACDTradeStrategy( history ) ) ;
         tradeStrategyMap.put( ADXEMATradeStrategy.NAME,
                               new ADXEMATradeStrategy( history, 5, 20, 20 ) ) ;
-        setTradeStrategy( ADXEMATradeStrategy.NAME ) ;
+        
+        setTradeStrategy( MACDTradeStrategy.NAME ) ;
     }
     
     private void setUpUI() {

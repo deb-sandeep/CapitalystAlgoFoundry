@@ -3,9 +3,9 @@ package com.sandy.capitalyst.algofoundry.strategy.strategy;
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.strategy.TradeRule;
 import com.sandy.capitalyst.algofoundry.strategy.TradeStrategy;
-import com.sandy.capitalyst.algofoundry.strategy.rule.atom.ADXStrengthRule;
-import com.sandy.capitalyst.algofoundry.strategy.rule.atom.EMADownCrossoverRule;
-import com.sandy.capitalyst.algofoundry.strategy.rule.atom.EMAUpCrossoverRule;
+import com.sandy.capitalyst.algofoundry.strategy.rule.atom.adx.ADXStrengthRule;
+import com.sandy.capitalyst.algofoundry.strategy.rule.atom.ema.EMADownCrossoverRule;
+import com.sandy.capitalyst.algofoundry.strategy.rule.atom.ema.EMAUpCrossoverRule;
 
 public class ADXEMATradeStrategy extends TradeStrategy {
     
