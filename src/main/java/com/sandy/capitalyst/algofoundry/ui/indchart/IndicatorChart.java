@@ -193,7 +193,9 @@ public abstract class IndicatorChart extends JPanel
         AbstractDayValuePayload payload ;
         if( event.getEventType() == EVT_INDICATOR_DAY_VALUE ) {
             payload = ( AbstractDayValuePayload )event.getValue() ;
-            handleDayValuePayload( payload ) ;
+            if( payload.getSymbol().equals( this.symbol ) ) {
+                handleDayValuePayload( payload ) ;
+            }
         }
     }
     
