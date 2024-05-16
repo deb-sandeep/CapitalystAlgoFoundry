@@ -12,9 +12,15 @@ public abstract class AbstractEMARule extends AbstractTradeRule {
     protected EMAIndicator shortIndicator ;
     protected EMAIndicator longIndicator ;
     
-    public AbstractEMARule( EquityEODHistory history, int shortWindow, int longWindow ) {
+    public AbstractEMARule( EquityEODHistory history ) {
         super( history ) ;
-        shortIndicator = history.getEMAIndicator( shortWindow ) ;
-        longIndicator  = history.getEMAIndicator( longWindow ) ;
+        shortIndicator = history.getEMAIndicator( 5 ) ;
+        longIndicator  = history.getEMAIndicator( 20 ) ;
+    }
+
+    public AbstractEMARule( EquityEODHistory history, int minWindow, int maxWindow ) {
+        super( history ) ;
+        shortIndicator = history.getEMAIndicator( minWindow ) ;
+        longIndicator  = history.getEMAIndicator( maxWindow ) ;
     }
 }

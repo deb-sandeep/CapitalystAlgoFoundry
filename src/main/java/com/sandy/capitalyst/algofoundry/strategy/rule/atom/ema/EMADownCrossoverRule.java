@@ -6,8 +6,12 @@ import org.ta4j.core.rules.CrossedDownIndicatorRule;
 
 public class EMADownCrossoverRule extends AbstractEMARule {
     
-    public EMADownCrossoverRule( EquityEODHistory history, int shortWindow, int longWindow ) {
-        super( history, shortWindow, longWindow ) ;
+    public EMADownCrossoverRule( EquityEODHistory history ) {
+        super( history ) ;
+    }
+    
+    public EMADownCrossoverRule( EquityEODHistory history, int minWindow, int maxWindow ) {
+        super( history, minWindow, maxWindow ) ;
     }
     
     @Override

@@ -11,27 +11,22 @@ public class ADXEMATradeStrategy extends TradeStrategy {
     
     public static final String NAME = "EMA Crossover + ADX" ;
     
-    private final int minEMA ;
-    private final int maxEMA ;
     private final int adxStrength ;
     
-    public ADXEMATradeStrategy( EquityEODHistory history,
-                                int minEMA, int maxEMA, int adxStrength ) {
+    public ADXEMATradeStrategy( EquityEODHistory history, int adxStrength ) {
         super( history ) ;
-        this.minEMA = minEMA ;
-        this.maxEMA = maxEMA ;
         this.adxStrength = adxStrength ;
     }
     
     @Override
     protected TradeRule createBuyRule() {
-        return new EMAUpCrossoverRule( history, minEMA, maxEMA ).and(
+        return new EMAUpCrossoverRule( history ).and(
                     new ADXStrengthRule( history, adxStrength ) ) ;
     }
     
     @Override
     protected TradeRule createSellRule() {
-        return new EMADownCrossoverRule( history, minEMA, maxEMA ).and(
-                new ADXStrengthRule( history, maxEMA ) ) ;
+        return new EMADownCrossoverRule( history ).and(
+                new ADXStrengthRule( history, adxStrength ) ) ;
     }
 }

@@ -20,6 +20,7 @@ import org.jfree.data.xy.YIntervalDataItem;
 import org.jfree.data.xy.YIntervalSeries;
 import org.jfree.data.xy.YIntervalSeriesCollection;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
@@ -144,6 +145,9 @@ public class PriceChart extends IndicatorChart
                                             (double)trade.getDate().getTime(),
                                             trade.getPrice(),
                                             10, 10, cd ) ;
-        plot.getRenderer().addAnnotation( annotation ) ;
+        
+        SwingUtilities.invokeLater( () -> {
+            plot.getRenderer().addAnnotation( annotation ) ;
+        } );
     }
 }

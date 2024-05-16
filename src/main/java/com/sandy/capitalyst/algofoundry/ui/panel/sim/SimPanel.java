@@ -76,7 +76,7 @@ public class SimPanel extends JPanel {
         tradeStrategyMap.put( MACDTradeStrategy.NAME,
                               new MACDTradeStrategy( history ) ) ;
         tradeStrategyMap.put( ADXEMATradeStrategy.NAME,
-                              new ADXEMATradeStrategy( history, 5, 20, 20 ) ) ;
+                              new ADXEMATradeStrategy( history, 20 ) ) ;
         
         setTradeStrategy( MACDTradeStrategy.NAME ) ;
     }

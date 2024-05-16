@@ -3,19 +3,20 @@ package com.sandy.capitalyst.algofoundry.strategy.rule.atom.ema;
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import org.ta4j.core.Rule;
 import org.ta4j.core.rules.CrossedUpIndicatorRule;
+import org.ta4j.core.rules.OverIndicatorRule;
 
-public class EMAUpCrossoverRule extends AbstractEMARule {
+public class EMAUpTrendRule extends AbstractEMARule {
     
-    public EMAUpCrossoverRule( EquityEODHistory history ) {
+    public EMAUpTrendRule( EquityEODHistory history ) {
         super( history ) ;
     }
     
-    public EMAUpCrossoverRule( EquityEODHistory history, int minWindow, int maxWindow ) {
+    public EMAUpTrendRule( EquityEODHistory history, int minWindow, int maxWindow ) {
         super( history, minWindow, maxWindow ) ;
     }
     
     @Override
     protected Rule createRule() {
-        return new CrossedUpIndicatorRule( shortIndicator, longIndicator ) ;
+        return new OverIndicatorRule( shortIndicator, longIndicator ) ;
     }
 }
