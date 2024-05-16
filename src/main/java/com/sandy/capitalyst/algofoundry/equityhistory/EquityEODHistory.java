@@ -32,12 +32,12 @@ public class EquityEODHistory {
         BOLLINGER,
         MACD,
         RSI,
-        ADX
+        ADX,
+        EMA5
     }
 
     public enum IndicatorName {
         CLOSING_PRICE,
-        STDEV_20,
         BOLLINGER_UP,
         BOLLINGER_MID,
         BOLLINGER_LOW,
@@ -59,9 +59,11 @@ public class EquityEODHistory {
     @Getter private final BarSeries barSeries ;
     @Getter private final String symbol ;
     
-    private final Map<IndicatorName, Indicator<Num>> cache = new HashMap<>() ;
-    private final Map<Integer, SMAIndicator> smaCache = new HashMap<>() ;
-    private final Map<Integer, EMAIndicator> emaCache = new HashMap<>() ;
+    private final Map<IndicatorName, Indicator<Num>>       cache      = new HashMap<>() ;
+    private final Map<Integer, SMAIndicator>               smaCache   = new HashMap<>() ;
+    private final Map<Integer, EMAIndicator>               emaCache   = new HashMap<>() ;
+    private final Map<Integer, StandardDeviationIndicator> stDevCache = new HashMap<>() ;
+
     private final Set<DayValueListener> dayValueListeners = new HashSet<>() ;
     
     public EquityEODHistory( String symbol, BarSeries barSeries ) {
@@ -109,6 +111,7 @@ public class EquityEODHistory {
             case MACD      -> payload = buildMACDPayload( index, date ) ;
             case RSI       -> payload = buildRSIPayload( index, date ) ;
             case ADX       -> payload = buildADXPayload( index, date ) ;
+            case EMA5      -> payload = buildEMAPayload( index, date, 5 ) ;
         }
         return payload ;
     }
@@ -141,6 +144,13 @@ public class EquityEODHistory {
                                getIndVal( ADX_MINUS_DMI, index ) ) ;
     }
     
+    private MADayValue buildEMAPayload( int index, Date date, int windowSz ) {
+        return new MADayValue( date, symbol,
+                               MADayValue.MAType.EMA,
+                               getEMAIndicator( windowSz ).getValue( index )
+                                                          .doubleValue() ) ;
+    }
+    
     private double getIndVal( IndicatorName indName, int index ) {
         return ind( indName ).getValue( index ).doubleValue() ;
     }
@@ -153,12 +163,15 @@ public class EquityEODHistory {
         return emaCache.computeIfAbsent( window, this::createEMAIndicator ) ;
     }
     
+    public StandardDeviationIndicator getStDevIndicator( int window ) {
+        return stDevCache.computeIfAbsent( window, this::createStDevIndicator ) ;
+    }
+    
     public Indicator<Num> ind( IndicatorName key ) {
         Indicator<Num> ind = cache.get( key ) ;
         if( ind == null ) {
             switch( key ) {
                 case CLOSING_PRICE -> ind = createClosePriceIndicator() ;
-                case STDEV_20      -> ind = createStDevIndicator( 20 ) ;
                 case BOLLINGER_LOW -> ind = createBollingerLowerIndicator() ;
                 case BOLLINGER_UP  -> ind = createBollingerUpperIndicator() ;
                 case BOLLINGER_MID -> ind = createBollingerMiddleIndicator() ;
@@ -186,7 +199,7 @@ public class EquityEODHistory {
         return new EMAIndicator( ind( CLOSING_PRICE ), period ) ;
     }
     
-    private Indicator<Num> createStDevIndicator( int period ) {
+    private StandardDeviationIndicator createStDevIndicator( int period ) {
         return new StandardDeviationIndicator( ind( CLOSING_PRICE ), period ) ;
     }
     
@@ -197,13 +210,13 @@ public class EquityEODHistory {
     private Indicator<Num> createBollingerUpperIndicator() {
         return new BollingerBandsUpperIndicator(
                 (BollingerBandsMiddleIndicator)ind( BOLLINGER_MID ),
-                ind( STDEV_20 ) ) ;
+                getStDevIndicator( 20 ) ) ;
     }
     
     private Indicator<Num> createBollingerLowerIndicator() {
         return new BollingerBandsLowerIndicator(
                 (BollingerBandsMiddleIndicator)ind( BOLLINGER_MID ),
-                ind( STDEV_20 ) ) ;
+                getStDevIndicator( 20 ) ) ;
     }
     
     private Indicator<Num> createMACDIndicator() {

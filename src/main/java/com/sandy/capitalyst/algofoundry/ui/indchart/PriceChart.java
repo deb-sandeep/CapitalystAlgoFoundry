@@ -1,26 +1,41 @@
 package com.sandy.capitalyst.algofoundry.ui.indchart;
 
+import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.BollingerBandDayValue;
+import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.MADayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.OHLCVDayValue;
-import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
+import com.sandy.capitalyst.algofoundry.trigger.TradeTrigger;
+import com.sandy.capitalyst.algofoundry.trigger.TradeTriggerListener;
+import lombok.extern.slf4j.Slf4j;
+import org.jfree.chart.annotations.XYAnnotation;
+import org.jfree.chart.annotations.XYDrawableAnnotation;
 import org.jfree.chart.renderer.xy.DeviationRenderer;
+import org.jfree.chart.renderer.xy.XYDifferenceRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.YIntervalDataItem;
 import org.jfree.data.xy.YIntervalSeries;
 import org.jfree.data.xy.YIntervalSeriesCollection;
+import org.ta4j.core.Trade;
 
 import java.awt.*;
 import java.util.List;
 
 import static com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory.PayloadType;
 
-public class PriceChart extends IndicatorChart {
+@Slf4j
+public class PriceChart extends IndicatorChart
+    implements TradeTriggerListener {
     
     private static final Color CLOSING_PRICE_COLOR = new Color( 178, 255, 102 ).darker() ;
+    private static final Color EMA5_COLOR          = new Color( 121, 168, 252, 255 ) ;
+    private static final Color BOLLINGER_MID_COLOR = new Color( 175, 65, 65, 255 ) ;
     
+    private TimeSeries ema5TimeSeries ;
     private TimeSeries closePriceTimeSeries ;
     private YIntervalSeries bollingerBandsSeries ;
     
@@ -32,9 +47,11 @@ public class PriceChart extends IndicatorChart {
     protected void postInitializeChart() {
         consumedPayloadTypes.add( PayloadType.OHLCV ) ;
         consumedPayloadTypes.add( PayloadType.BOLLINGER ) ;
+        consumedPayloadTypes.add( PayloadType.EMA5 ) ;
 
         attachClosePriceTimeSeries() ;
         attachBollingerBands() ;
+        attachEMA5TimeSeries() ;
     }
     
     @Override
@@ -46,6 +63,7 @@ public class PriceChart extends IndicatorChart {
     public void clearChart() {
         closePriceTimeSeries.clear() ;
         bollingerBandsSeries.clear() ;
+        ema5TimeSeries.clear() ;
     }
     
     @Override
@@ -62,9 +80,11 @@ public class PriceChart extends IndicatorChart {
                     b.getHigh() ) ;
             bollingerBandsSeries.add( data, true ) ;
         }
+        else if( payload instanceof MADayValue ema5 ) {
+            ema5TimeSeries.add( day, ema5.getValue() ) ;
+        }
     }
     
-    // Close Price time series is attached as the primary time series.
     private void attachClosePriceTimeSeries() {
         
         closePriceTimeSeries = new TimeSeries( "Day Close" ) ;
@@ -92,8 +112,40 @@ public class PriceChart extends IndicatorChart {
         renderer.setAlpha( 0.35f ) ;
         renderer.setSeriesStroke( 0, UITheme.DASHED_STROKE ) ;
         renderer.setSeriesFillPaint( 0, Color.DARK_GRAY ) ;
-        renderer.setSeriesPaint( 0, Color.GRAY ) ;
+        renderer.setSeriesPaint( 0, BOLLINGER_MID_COLOR ) ;
         
         plot.setRenderer(1, renderer ) ;
+    }
+    
+    private void attachEMA5TimeSeries() {
+        
+        TimeSeriesCollection dataset ;
+        XYItemRenderer renderer ;
+        
+        ema5TimeSeries = new TimeSeries( "EMA5" ) ;
+        super.configureSeries( ema5TimeSeries ) ;
+        
+        dataset = new TimeSeriesCollection() ;
+        dataset.addSeries( ema5TimeSeries ) ;
+        
+        renderer = new XYLineAndShapeRenderer( true, false ) ;
+        renderer.setSeriesPaint( 0, EMA5_COLOR ) ;
+        renderer.setSeriesStroke( 0, UITheme.DASHED_STROKE ) ;
+        
+        plot.setDataset( 2, dataset ) ;
+        plot.setRenderer( 2, renderer ) ;
+    }
+    
+    @Override
+    public void handleTradeTrigger( TradeTrigger trigger ) {
+        
+        Color color = ( trigger.getTradeType() == Trade.TradeType.BUY ) ?
+                      Color.GREEN.darker() : Color.RED.darker() ;
+        CircleAnnotationDrawable cd = new CircleAnnotationDrawable( color ) ;
+        XYAnnotation annotation = new XYDrawableAnnotation(
+                                            (double)trigger.getDate().getTime(),
+                                            trigger.getPrice(),
+                                            10, 10, cd ) ;
+        plot.getRenderer().addAnnotation( annotation ) ;
     }
 }

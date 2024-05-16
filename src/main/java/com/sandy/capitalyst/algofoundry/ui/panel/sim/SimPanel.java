@@ -21,8 +21,7 @@ import static com.sandy.capitalyst.algofoundry.core.util.StringUtil.fmtDate;
 import static com.sandy.capitalyst.algofoundry.core.util.StringUtil.isEmptyOrNull;
 
 @Slf4j
-public class SimPanel extends JPanel
-    implements TradeTriggerListener {
+public class SimPanel extends JPanel {
     
     private static final int VOL_CHART_HEIGHT = 100 ;
     private static final int MACD_CHART_HEIGHT = 150 ;
@@ -78,7 +77,7 @@ public class SimPanel extends JPanel
         
         setUpUI() ;
 
-        initializeTradeTriggerEvaluator() ;
+        doPrePlayProcessing() ;
     }
     
     private void populateBuyRulesMap() {
@@ -130,6 +129,14 @@ public class SimPanel extends JPanel
         return panel ;
     }
     
+    public Collection<String> getBuyRuleNames() {
+        return buyRuleMap.keySet() ;
+    }
+    
+    public Collection<String> getSellRuleNames() {
+        return sellRuleMap.keySet() ;
+    }
+    
     public boolean playCurrentBarSeriesData() {
         
         Set<EquityEODHistory.PayloadType> payloadTypes = new HashSet<>() ;
@@ -160,27 +167,16 @@ public class SimPanel extends JPanel
         sellRule = isEmptyOrNull( ruleName ) ? null : sellRuleMap.get( ruleName ) ;
     }
     
-    public Collection<String> getBuyRuleNames() {
-        return buyRuleMap.keySet() ;
+    public void doPrePlayProcessing() {
+        refreshTradeTriggerEvaluator() ;
     }
     
-    public Collection<String> getSellRuleNames() {
-        return sellRuleMap.keySet() ;
-    }
-    
-    public void initializeTradeTriggerEvaluator() {
+    private void refreshTradeTriggerEvaluator() {
         if( tradeTriggerEvaluator != null ) {
             history.removeDayValueListener( tradeTriggerEvaluator ) ;
         }
-        tradeTriggerEvaluator = new TradeTriggerEvaluator( buyRule, sellRule ) ;
-        tradeTriggerEvaluator.addTradeTriggerListener( this ) ;
+        tradeTriggerEvaluator = new TradeTriggerEvaluator( history, buyRule, sellRule ) ;
+        tradeTriggerEvaluator.addTradeTriggerListener( ( TradeTriggerListener )this.priceChart ) ;
         history.addDayValueListener( tradeTriggerEvaluator ) ;
-    }
-    
-    @Override
-    public void handleTradeTrigger( TradeTrigger trigger ) {
-        log.debug( "Received a {} trade trigger for date {}",
-                   trigger.getTradeType(),
-                   fmtDate( trigger.getDate() ) ) ;
     }
 }

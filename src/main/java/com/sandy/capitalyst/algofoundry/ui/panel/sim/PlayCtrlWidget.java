@@ -4,14 +4,12 @@ import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -212,7 +210,7 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
                 playState == PlayState.PAUSED ) {
                 
                 if( playState == PlayState.YET_TO_START ) {
-                    simPanel.initializeTradeTriggerEvaluator() ;
+                    simPanel.doPrePlayProcessing() ;
                 }
                 playState = PlayState.PLAYING ;
             }
