@@ -13,7 +13,7 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
     private static final int ACTIVATION_WINDOW = 3 ;
     private static final int POST_TRADE_COOLOFF_PERIOD = 5 ;
     
-    private int blackoutDaysLeft    = 0 ;
+    private int blackoutDaysLeft    = 20 ;
     private int activeEntryDaysLeft = 0 ;
     private int activeExitDaysLeft  = 0 ;
     
@@ -22,6 +22,13 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
     
     protected AbstractZonedTradeStrategy( EquityEODHistory history ) {
         super( history ) ;
+    }
+    
+    public void clear() {
+        super.clear() ;
+        this.blackoutDaysLeft = 20 ;
+        this.activeEntryDaysLeft = 0 ;
+        this.activeExitDaysLeft = 0 ;
     }
     
     protected final void setNumBlackoutDays( int numDays ) {

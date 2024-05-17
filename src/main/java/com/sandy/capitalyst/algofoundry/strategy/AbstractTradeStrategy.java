@@ -57,7 +57,8 @@ public abstract class AbstractTradeStrategy
         logger.addListener( listener ) ;
     }
     
-    public final void clear() {
+    public void clear() {
+        lastIndexEvalauted = -1 ;
         listeners.clear() ;
         tradeBook.clear() ;
         logger.clearListeners() ;
