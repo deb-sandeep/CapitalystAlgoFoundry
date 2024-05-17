@@ -16,7 +16,7 @@ public class TradeBook {
     @Getter private int    quantity       = 0 ;
     @Getter private double avgPrice       = 0 ;
     
-    TradeBook(){}
+    public TradeBook(){}
     
     public void addTrade( TradeSignal trade ) {
         trades.add( trade ) ;
@@ -27,7 +27,7 @@ public class TradeBook {
         clearBookState() ;
         Queue<TradeSignal> buyTrades = new LinkedList<>() ;
         for( TradeSignal trade : trades ) {
-            if( trade.isBuy() ) {
+            if( trade.isEntrySignal() ) {
                 quantity++ ;
                 buyTrades.add( trade ) ;
             }
@@ -67,5 +67,4 @@ public class TradeBook {
         quantity = 0 ;
         avgPrice = 0 ;
     }
-    
 }

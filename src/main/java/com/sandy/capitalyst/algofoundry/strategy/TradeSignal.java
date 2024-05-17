@@ -4,28 +4,28 @@ import lombok.Getter;
 
 import java.util.Date;
 
-import static org.ta4j.core.Trade.TradeType.* ;
-
 public class TradeSignal {
     
-    @Getter private final org.ta4j.core.Trade.TradeType tradeType ;
+    public enum Type { ENTRY, EXIT }
+    
+    @Getter private final Type tradeType ;
     
     @Getter private final Date    date ;
     @Getter private final String  symbol ;
     @Getter private final double  price ;
     
-    TradeSignal( org.ta4j.core.Trade.TradeType type, Date date, String symbol, double price ) {
+    public TradeSignal( Type type, Date date, String symbol, double price ) {
         this.tradeType = type ;
         this.date = date ;
         this.symbol = symbol ;
         this.price = price ;
     }
     
-    public boolean isBuy() {
-        return this.tradeType == BUY ;
+    public boolean isEntrySignal() {
+        return this.tradeType == Type.ENTRY ;
     }
 
-    public boolean isSell() {
-        return this.tradeType == SELL ;
+    public boolean isExitSignal() {
+        return this.tradeType == Type.EXIT ;
     }
 }
