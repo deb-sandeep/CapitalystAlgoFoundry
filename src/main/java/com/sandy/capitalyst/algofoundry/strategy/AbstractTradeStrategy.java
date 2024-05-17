@@ -75,11 +75,13 @@ public abstract class AbstractTradeStrategy
             
             signal = executeStrategy( seriesIndex, date, bar ) ;
             if( signal != null ) {
-                if( signal.isEntrySignal() || (tradeBook.getQuantity() > 0) ) {
-                    tradeBook.addTrade( signal ) ;
-                    for( TradeSignalListener l : listeners ) {
-                        l.handleTradeSignal( signal ) ;
+                if( signal.isEntrySignal() ) {
+                    if( tradeBook.getQuantity() > 0 ) {
+                        tradeBook.addTrade( signal ) ;
                     }
+                }
+                for( TradeSignalListener l : listeners ) {
+                    l.handleTradeSignal( signal ) ;
                 }
             }
             

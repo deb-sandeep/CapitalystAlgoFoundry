@@ -2,10 +2,9 @@ package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
-import com.sandy.capitalyst.algofoundry.strategy.strategy.TradeStrategy;
+import com.sandy.capitalyst.algofoundry.strategy.strategy.AbstractZonedTradeStrategy;
 import com.sandy.capitalyst.algofoundry.strategy.TradeSignalListener;
-import com.sandy.capitalyst.algofoundry.strategy.strategy.ADXEMATradeStrategy;
-import com.sandy.capitalyst.algofoundry.strategy.strategy.MACDTradeStrategy;
+import com.sandy.capitalyst.algofoundry.strategy.strategy.MyTradeStrategy;
 import com.sandy.capitalyst.algofoundry.ui.indchart.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,7 +23,7 @@ public class SimPanel extends JPanel {
     private static final int RSI_CHART_HEIGHT = 150 ;
     private static final int ADX_CHART_HEIGHT = 150 ;
     
-    private final Map<String, TradeStrategy> tradeStrategyMap  = new LinkedHashMap<>() ;
+    private final Map<String, AbstractZonedTradeStrategy> tradeStrategyMap = new LinkedHashMap<>() ;
     
     private final EquityEODHistory history ;
     
@@ -40,7 +39,7 @@ public class SimPanel extends JPanel {
     
     private int curBarSeriesIndex = 0 ;
     
-    private TradeStrategy tradeStrategy = null ;
+    private AbstractZonedTradeStrategy tradeStrategy = null ;
     
     public SimPanel( String symbol ) throws Exception {
         this.history = new EquityHistEODAPIClient().getEquityEODHistory( symbol ) ;
@@ -73,12 +72,9 @@ public class SimPanel extends JPanel {
     }
     
     private void populateTradeStrategiesMap() {
-        tradeStrategyMap.put( MACDTradeStrategy.NAME,
-                              new MACDTradeStrategy( history ) ) ;
-        tradeStrategyMap.put( ADXEMATradeStrategy.NAME,
-                              new ADXEMATradeStrategy( history, 20 ) ) ;
-        
-        setTradeStrategy( MACDTradeStrategy.NAME ) ;
+        tradeStrategyMap.put( MyTradeStrategy.NAME,
+                              new MyTradeStrategy( history ) ) ;
+        setTradeStrategy( MyTradeStrategy.NAME ) ;
     }
     
     private void setUpUI() {
