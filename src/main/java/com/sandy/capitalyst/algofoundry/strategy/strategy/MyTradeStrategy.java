@@ -28,7 +28,7 @@ public class MyTradeStrategy extends AbstractZonedTradeStrategy {
         shortIndicator = history.getEMAIndicator( 5 ) ;
         longIndicator = history.getEMAIndicator( 20 ) ;
         divergenceIndicator = NumericIndicator.of( shortIndicator )
-                                              .minus( longIndicator ) ;
+                                              .minus( longIndicator ).abs() ;
     }
     
     @Override
@@ -37,7 +37,7 @@ public class MyTradeStrategy extends AbstractZonedTradeStrategy {
         double triggerPointPrice = longIndicator.getValue( seriesIndex-numDaysIntoActivationPeriod ).doubleValue() ;
         double currentDivergence = divergenceIndicator.getValue( seriesIndex ).doubleValue() ;
         
-        return Math.abs((currentDivergence/triggerPointPrice)*100) >= 2 ;
+        return (currentDivergence/triggerPointPrice)*100 >= 2 ;
     }
     
     @Override
@@ -46,7 +46,7 @@ public class MyTradeStrategy extends AbstractZonedTradeStrategy {
         double triggerPointPrice = longIndicator.getValue( seriesIndex-numDaysIntoActivationPeriod ).doubleValue() ;
         double currentDivergence = divergenceIndicator.getValue( seriesIndex ).doubleValue() ;
         
-        return Math.abs((currentDivergence/triggerPointPrice)*100) >= 2 ;
+        return (currentDivergence/triggerPointPrice)*100 >= 2 ;
     }
     
     @Override

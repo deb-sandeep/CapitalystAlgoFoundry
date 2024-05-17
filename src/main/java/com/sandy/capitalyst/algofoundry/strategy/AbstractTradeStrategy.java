@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.ta4j.core.Trade.TradeType.BUY;
-import static org.ta4j.core.Trade.TradeType.SELL;
-
 public abstract class AbstractTradeStrategy
         implements DayValueListener {
     
@@ -20,6 +17,8 @@ public abstract class AbstractTradeStrategy
     protected final EquityEODHistory history ;
     protected final TradeBook tradeBook = new TradeBook() ;
     protected int   lastIndexEvalauted = -1 ;
+    
+    protected StrategyLogger logger = new StrategyLogger() ;
     
     private TradeRule entryRule;
     private TradeRule exitRule;
@@ -54,9 +53,14 @@ public abstract class AbstractTradeStrategy
         listeners.add( listener ) ;
     }
     
+    public final void addLogListener( StrategyLogListener listener ) {
+        logger.addListener( listener ) ;
+    }
+    
     public final void clear() {
         listeners.clear() ;
         tradeBook.clear() ;
+        logger.clearListeners() ;
     }
     
     @Override
@@ -73,8 +77,11 @@ public abstract class AbstractTradeStrategy
             Bar  bar  = history.getBarSeries().getBar( seriesIndex ) ;
             Date date = Date.from( bar.getEndTime().toInstant() ) ;
             
+            logger.log( date ) ;
+            
             signal = executeStrategy( seriesIndex, date, bar ) ;
             if( signal != null ) {
+                logger.log( signal.getType() + " signal" ) ;
                 if( signal.isEntrySignal() ) {
                     if( tradeBook.getQuantity() > 0 ) {
                         tradeBook.addTrade( signal ) ;

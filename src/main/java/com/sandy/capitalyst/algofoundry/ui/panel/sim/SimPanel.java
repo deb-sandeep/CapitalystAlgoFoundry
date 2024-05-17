@@ -63,18 +63,16 @@ public class SimPanel extends JPanel {
         }
         
         populateTradeStrategiesMap() ;
-        
+
         this.controlPanel = new SimControlPanel( this ) ;
         
         setUpUI() ;
-
         doPrePlayProcessing() ;
     }
     
     private void populateTradeStrategiesMap() {
         tradeStrategyMap.put( MyTradeStrategy.NAME,
                               new MyTradeStrategy( history ) ) ;
-        setTradeStrategy( MyTradeStrategy.NAME ) ;
     }
     
     private void setUpUI() {
@@ -150,6 +148,7 @@ public class SimPanel extends JPanel {
         
         tradeStrategy = tradeStrategyMap.get( strategyName ) ;
         tradeStrategy.addTradeSignalListener( ( TradeSignalListener )this.priceChart ) ;
+        tradeStrategy.addLogListener( controlPanel.getLogDisplayWidget() );
         history.addDayValueListener( tradeStrategy ) ;
     }
     

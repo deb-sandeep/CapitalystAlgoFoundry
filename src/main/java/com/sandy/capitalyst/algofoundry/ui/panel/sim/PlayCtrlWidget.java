@@ -177,6 +177,7 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
                 playState == PlayState.PAUSED ) {
                 
                 if( playState == PlayState.YET_TO_START ) {
+                    simPanel.setTradeStrategy( (String)strategyComboBox.getSelectedItem() );
                     simPanel.doPrePlayProcessing() ;
                 }
                 playState = PlayState.PLAYING ;

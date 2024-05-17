@@ -75,14 +75,18 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
         
         if( isInBlackoutPeriod() ) {
             // We do not signal in a blackout period
+            logger.log( "In blackout period" ) ;
             blackoutDaysLeft-- ;
         }
         else if( !( isInEntryActivePeriod() || isInEntryActivePeriod() ) ) {
+            logger.log( "In lookout period" ) ;
             if( isEntryActivationTriggered( seriesIndex ) ) {
+                logger.log( "Entry activation triggered" ) ;
                 activeEntryDaysLeft = ACTIVATION_WINDOW ;
                 activeExitDaysLeft = 0 ;
             }
             else if( isExitActivationTriggered( seriesIndex ) ) {
+                logger.log( "Exit activation triggered" ) ;
                 activeEntryDaysLeft = 0 ;
                 activeExitDaysLeft = ACTIVATION_WINDOW ;
             }

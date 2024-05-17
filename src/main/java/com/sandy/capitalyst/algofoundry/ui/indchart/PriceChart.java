@@ -138,7 +138,7 @@ public class PriceChart extends IndicatorChart
     @Override
     public void handleTradeSignal( TradeSignal signal ) {
         
-        Color color = ( signal.getTradeType() == TradeSignal.Type.ENTRY ) ?
+        Color color = ( signal.getType() == TradeSignal.Type.ENTRY ) ?
                       Color.GREEN.darker() : Color.RED.darker() ;
         CircleAnnotationDrawable cd = new CircleAnnotationDrawable( color ) ;
         XYAnnotation annotation = new XYDrawableAnnotation(

@@ -26,6 +26,8 @@ public class UITheme {
     public static final Color CHART_AXIS_TICK_COLOR = Color.DARK_GRAY.brighter().brighter() ;
     public static final Color CHART_BORDER_COLOR    = new Color( 30, 30, 30 ) ;
     
+    public static final Font  LOG_UI_FONT           = new Font( MONO_FONT_NAME, Font.PLAIN, 11 ) ;
+    
     public static final BasicStroke DASHED_STROKE =
             new BasicStroke( 0.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
                              1.0f, new float[] {2.0f, 3.0f}, 0.0f ) ;
