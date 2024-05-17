@@ -10,7 +10,7 @@ import java.util.Date;
 
 public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
     
-    private static final int ACTIVATION_WINDOW = 3 ;
+    private static final int ACTIVATION_WINDOW = 5 ;
     private static final int POST_TRADE_COOLOFF_PERIOD = 5 ;
     
     private int blackoutDaysLeft    = 20 ;
