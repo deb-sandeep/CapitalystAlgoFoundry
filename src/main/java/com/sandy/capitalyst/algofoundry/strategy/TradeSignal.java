@@ -6,7 +6,7 @@ import java.util.Date;
 
 import static org.ta4j.core.Trade.TradeType.* ;
 
-public class Trade {
+public class TradeSignal {
     
     @Getter private final org.ta4j.core.Trade.TradeType tradeType ;
     
@@ -14,7 +14,7 @@ public class Trade {
     @Getter private final String  symbol ;
     @Getter private final double  price ;
     
-    Trade( org.ta4j.core.Trade.TradeType type, Date date, String symbol, double price ) {
+    TradeSignal( org.ta4j.core.Trade.TradeType type, Date date, String symbol, double price ) {
         this.tradeType = type ;
         this.date = date ;
         this.symbol = symbol ;

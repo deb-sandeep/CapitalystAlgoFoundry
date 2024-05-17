@@ -5,8 +5,8 @@ import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.BollingerBandDayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.MADayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.OHLCVDayValue;
-import com.sandy.capitalyst.algofoundry.strategy.Trade;
-import com.sandy.capitalyst.algofoundry.strategy.TradeListener;
+import com.sandy.capitalyst.algofoundry.strategy.TradeSignal;
+import com.sandy.capitalyst.algofoundry.strategy.TradeSignalListener;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.annotations.XYAnnotation;
 import org.jfree.chart.annotations.XYDrawableAnnotation;
@@ -28,7 +28,7 @@ import static com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory.Pa
 
 @Slf4j
 public class PriceChart extends IndicatorChart
-    implements TradeListener {
+    implements TradeSignalListener {
     
     private static final Color CLOSING_PRICE_COLOR = new Color( 178, 255, 102 ).darker() ;
     private static final Color EMA5_COLOR          = new Color( 121, 168, 252, 255 ) ;
@@ -136,14 +136,14 @@ public class PriceChart extends IndicatorChart
     }
     
     @Override
-    public void handleTrade( Trade trade ) {
+    public void handleTradeSignal( TradeSignal signal ) {
         
-        Color color = ( trade.getTradeType() == org.ta4j.core.Trade.TradeType.BUY ) ?
+        Color color = ( signal.getTradeType() == org.ta4j.core.Trade.TradeType.BUY ) ?
                       Color.GREEN.darker() : Color.RED.darker() ;
         CircleAnnotationDrawable cd = new CircleAnnotationDrawable( color ) ;
         XYAnnotation annotation = new XYDrawableAnnotation(
-                                            (double)trade.getDate().getTime(),
-                                            trade.getPrice(),
+                                            (double)signal.getDate().getTime(),
+                                            signal.getPrice(),
                                             10, 10, cd ) ;
         
         SwingUtilities.invokeLater( () -> {

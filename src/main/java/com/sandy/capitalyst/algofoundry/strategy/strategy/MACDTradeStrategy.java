@@ -21,7 +21,6 @@ public class MACDTradeStrategy extends TradeStrategy {
     public MACDTradeStrategy( EquityEODHistory history ) {
         super( history ) ;
     }
-    
     @Override
     protected TradeRule createBuyRule() {
         

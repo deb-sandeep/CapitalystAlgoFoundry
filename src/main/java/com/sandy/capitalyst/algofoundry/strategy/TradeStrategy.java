@@ -14,7 +14,7 @@ import static org.ta4j.core.Trade.TradeType.* ;
 public abstract class TradeStrategy
         implements DayValueListener {
     
-    private final List<TradeListener> listeners = new ArrayList<>() ;
+    private final List<TradeSignalListener> listeners = new ArrayList<>() ;
     
     protected final EquityEODHistory history ;
     
@@ -47,7 +47,7 @@ public abstract class TradeStrategy
         return sellRule ;
     }
     
-    public final void addTradeListener( TradeListener listener ) {
+    public final void addTradeListener( TradeSignalListener listener ) {
         listeners.add( listener ) ;
     }
     
@@ -60,24 +60,24 @@ public abstract class TradeStrategy
     public void handleDayValue( AbstractDayValue dayValue ) {
         
         int seriesIndex = dayValue.getSeriesIndex() ;
-        computeTrade( seriesIndex ) ;
+        computeTradeSignal( seriesIndex ) ;
     }
     
-    public Trade computeTrade( int seriesIndex ) {
+    public TradeSignal computeTradeSignal( int seriesIndex ) {
         
-        Trade trade = null ;
+        TradeSignal trade = null ;
         if( seriesIndex > lastIndexEvalauted ) {
             
             Bar  bar  = history.getBarSeries().getBar( seriesIndex ) ;
             Date date = Date.from( bar.getEndTime().toInstant() ) ;
             
             if( getBuyRule() != null && getBuyRule().isTriggered( seriesIndex ) ) {
-                trade = new Trade( BUY, date,
+                trade = new TradeSignal( BUY, date,
                         history.getSymbol(),
                         bar.getClosePrice().doubleValue() ) ;
             }
             else if( getSellRule() != null && getSellRule().isTriggered( seriesIndex ) ) {
-                trade = new Trade( SELL, date,
+                trade = new TradeSignal( SELL, date,
                         history.getSymbol(),
                         bar.getClosePrice().doubleValue() ) ;
             }
@@ -85,8 +85,8 @@ public abstract class TradeStrategy
             if( trade != null ) {
                 if( trade.isBuy() || (tradeBook.getQuantity() > 0) ) {
                     tradeBook.addTrade( trade ) ;
-                    for( TradeListener l : listeners ) {
-                        l.handleTrade( trade ) ;
+                    for( TradeSignalListener l : listeners ) {
+                        l.handleTradeSignal( trade ) ;
                     }
                 }
             }

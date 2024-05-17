@@ -3,7 +3,7 @@ package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
 import com.sandy.capitalyst.algofoundry.strategy.TradeStrategy;
-import com.sandy.capitalyst.algofoundry.strategy.TradeListener;
+import com.sandy.capitalyst.algofoundry.strategy.TradeSignalListener;
 import com.sandy.capitalyst.algofoundry.strategy.strategy.ADXEMATradeStrategy;
 import com.sandy.capitalyst.algofoundry.strategy.strategy.MACDTradeStrategy;
 import com.sandy.capitalyst.algofoundry.ui.indchart.*;
@@ -153,7 +153,7 @@ public class SimPanel extends JPanel {
         }
         
         tradeStrategy = tradeStrategyMap.get( strategyName ) ;
-        tradeStrategy.addTradeListener( ( TradeListener )this.priceChart ) ;
+        tradeStrategy.addTradeListener( ( TradeSignalListener )this.priceChart ) ;
         history.addDayValueListener( tradeStrategy ) ;
     }
     
