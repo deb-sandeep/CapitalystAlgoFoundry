@@ -82,11 +82,11 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
         
         if( isInBlackoutPeriod() ) {
             // We do not signal in a blackout period
-            logger.log( "In blackout period" ) ;
+            //logger.log( "In blackout period" ) ;
             blackoutDaysLeft-- ;
         }
         else if( !( isInEntryActivePeriod() || isInEntryActivePeriod() ) ) {
-            logger.log( "In lookout period" ) ;
+            //logger.log( "In lookout period" ) ;
             if( isEntryActivationTriggered( seriesIndex ) ) {
                 logger.log( "Entry activation triggered" ) ;
                 activeEntryDaysLeft = ACTIVATION_WINDOW ;
@@ -100,26 +100,26 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
         }
         
         if( isInEntryActivePeriod() ) {
-            if( isEntryPreconditionMet( seriesIndex ) &&
-                getEntryRule().isTriggered( seriesIndex ) ) {
-                
-                signal = new TradeSignal( TradeSignal.Type.ENTRY, date,
-                                          history.getSymbol(), closingPrice ) ;
+            if( isEntryPreconditionMet( seriesIndex ) ) {
+                logger.log1( "Entry precondition met" ) ;
+                if( getEntryRule().isTriggered( seriesIndex ) ) {
+                    logger.log1( "Entry rule triggered." ) ;
+                    signal = new TradeSignal( TradeSignal.Type.ENTRY, date,
+                             history.getSymbol(), closingPrice ) ;
+                }
             }
-            else {
-                activeEntryDaysLeft-- ;
-            }
+            activeEntryDaysLeft-- ;
         }
         else if( isInExitActivePeriod() ) {
-            if( isExitPreconditionMet( seriesIndex ) &&
-                getExitRule().isTriggered( seriesIndex ) ) {
-                
-                signal = new TradeSignal( TradeSignal.Type.EXIT, date,
-                                          history.getSymbol(), closingPrice ) ;
+            if( isExitPreconditionMet( seriesIndex ) ) {
+                logger.log1( "Exit precondition met" ) ;
+                if( getExitRule().isTriggered( seriesIndex ) ) {
+                    logger.log1( "Exit rule triggered." ) ;
+                    signal = new TradeSignal( TradeSignal.Type.EXIT, date,
+                            history.getSymbol(), closingPrice ) ;
+                }
             }
-            else {
-                activeExitDaysLeft-- ;
-            }
+            activeExitDaysLeft-- ;
         }
         
         if( signal != null ) {

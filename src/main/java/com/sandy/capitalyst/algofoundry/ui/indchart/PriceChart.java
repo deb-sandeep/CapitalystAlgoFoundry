@@ -8,20 +8,31 @@ import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.OHLCVDayValue;
 import com.sandy.capitalyst.algofoundry.strategy.TradeSignal;
 import com.sandy.capitalyst.algofoundry.strategy.TradeSignalListener;
 import lombok.extern.slf4j.Slf4j;
+import org.jfree.chart.ChartMouseEvent;
+import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.annotations.XYAnnotation;
 import org.jfree.chart.annotations.XYDrawableAnnotation;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.panel.CrosshairOverlay;
+import org.jfree.chart.plot.Crosshair;
 import org.jfree.chart.renderer.xy.DeviationRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.general.DatasetUtilities;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.YIntervalDataItem;
 import org.jfree.data.xy.YIntervalSeries;
 import org.jfree.data.xy.YIntervalSeriesCollection;
+import org.jfree.ui.RectangleEdge;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import static com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory.PayloadType;
@@ -29,6 +40,9 @@ import static com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory.Pa
 @Slf4j
 public class PriceChart extends IndicatorChart
     implements TradeSignalListener {
+    
+    private static final SimpleDateFormat CROSSHAIR_DATE_FMT  = new SimpleDateFormat( "dd-MMM-yyyy" ) ;
+    private static final DecimalFormat    CROSSHAIR_PRICE_FMT = new DecimalFormat( "###.0" ) ;
     
     private static final Color CLOSING_PRICE_COLOR = new Color( 178, 255, 102 ).darker() ;
     private static final Color EMA5_COLOR          = new Color( 121, 168, 252, 255 ) ;
@@ -38,9 +52,14 @@ public class PriceChart extends IndicatorChart
     private TimeSeries closePriceTimeSeries ;
     private YIntervalSeries bollingerBandsSeries ;
     
+    private Crosshair xCrosshair ;
+    private Crosshair ema5Crosshair;
+    private Crosshair ema20Crosshair;
+    
     public PriceChart( String symbol ) {
         super( symbol, "Price" ) ;
         postInitializeChart() ;
+        attachCrosshair() ;
     }
     
     protected void postInitializeChart() {
@@ -51,6 +70,71 @@ public class PriceChart extends IndicatorChart
         attachClosePriceTimeSeries() ;
         attachBollingerBands() ;
         attachEMA5TimeSeries() ;
+    }
+    
+    private void attachCrosshair() {
+        
+        CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
+        
+        this.xCrosshair = createXCrosshair() ;
+        this.ema5Crosshair = createEMACrosshair() ;
+        this.ema20Crosshair = createEMACrosshair() ;
+        
+        crosshairOverlay.addDomainCrosshair( xCrosshair ) ;
+        crosshairOverlay.addRangeCrosshair( ema5Crosshair ) ;
+        crosshairOverlay.addRangeCrosshair( ema20Crosshair ) ;
+        
+        chartPanel.addOverlay( crosshairOverlay ) ;
+        chartPanel.addChartMouseListener( getCrosshairMouseListener() );
+    }
+    
+    private Crosshair createGenericCrosshair() {
+        
+        Crosshair crosshair = new Crosshair( Double.NaN, Color.GRAY.darker(),
+                                             new BasicStroke(0f));
+        crosshair.setLabelVisible( true ) ;
+        crosshair.setLabelBackgroundPaint( UITheme.BACKGROUND_COLOR.brighter() ) ;
+        return crosshair ;
+    }
+    
+    private Crosshair createXCrosshair() {
+        Crosshair crosshair = createGenericCrosshair() ;
+        crosshair.setLabelGenerator( c -> {
+            Date date = new Date( (long)c.getValue() ) ;
+            return CROSSHAIR_DATE_FMT.format( date ) ;
+        } ) ;
+        return crosshair ;
+    }
+    
+    private Crosshair createEMACrosshair() {
+        Crosshair crosshair = createGenericCrosshair() ;
+        crosshair.setLabelGenerator( c ->
+                CROSSHAIR_PRICE_FMT.format( c.getValue() )
+        ) ;
+        return crosshair ;
+    }
+    
+    private ChartMouseListener getCrosshairMouseListener() {
+        return new ChartMouseListener() {
+            @Override
+            public void chartMouseClicked( ChartMouseEvent event ) {}
+            
+            @Override
+            public void chartMouseMoved( ChartMouseEvent event ) {
+                Rectangle2D dataArea = chartPanel.getScreenDataArea() ;
+                ValueAxis   xAxis    = plot.getDomainAxis();
+                double x = xAxis.java2DToValue( event.getTrigger().getX(),
+                                                dataArea,
+                                                RectangleEdge.BOTTOM);
+                xCrosshair.setValue( x ) ;
+                
+                double ema5 = DatasetUtilities.findYValue( plot.getDataset(2), 0, x ) ;
+                ema5Crosshair.setValue( ema5 ) ;
+                
+                double ema20 = DatasetUtilities.findYValue( plot.getDataset(1), 0, x ) ;
+                ema20Crosshair.setValue( ema20 ) ;
+            }
+        } ;
     }
     
     @Override
@@ -73,10 +157,10 @@ public class PriceChart extends IndicatorChart
         }
         else if( payload instanceof BollingerBandDayValue b ) {
             YIntervalDataItem data = new YIntervalDataItem(
-                    b.getDate().getTime(),
-                    b.getMid(),
-                    b.getLow(),
-                    b.getHigh() ) ;
+                                                        b.getDate().getTime(),
+                                                        b.getMid(),
+                                                        b.getLow(),
+                                                        b.getHigh() ) ;
             bollingerBandsSeries.add( data, true ) ;
         }
         else if( payload instanceof MADayValue ema5 ) {
@@ -146,8 +230,7 @@ public class PriceChart extends IndicatorChart
                                             signal.getPrice(),
                                             10, 10, cd ) ;
         
-        SwingUtilities.invokeLater( () -> {
-            plot.getRenderer().addAnnotation( annotation ) ;
-        } );
+        SwingUtilities.invokeLater( () -> plot.getRenderer()
+                                              .addAnnotation( annotation ) ) ;
     }
 }

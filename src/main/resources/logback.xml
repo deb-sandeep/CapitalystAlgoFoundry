@@ -20,6 +20,9 @@
     <logger name="org.jboss"            level="WARN"></logger>
     <logger name="com.zaxxer"           level="WARN"></logger>
     <logger name="SQL dialect"          level="WARN"></logger>
+    <!--
+    <logger name="org.ta4j.core.rules"  level="TRACE"></logger>
+    -->
 
     <logger name="com.sandy.capitalyst.algofoundry.core.net" level="INFO"></logger>
 

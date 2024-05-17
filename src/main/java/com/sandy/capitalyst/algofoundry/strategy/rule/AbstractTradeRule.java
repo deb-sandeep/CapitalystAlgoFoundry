@@ -8,7 +8,7 @@ import org.ta4j.core.rules.CrossedDownIndicatorRule;
 
 public abstract class AbstractTradeRule extends TradeRule {
     
-    private Rule  rule ;
+    private Rule rule ;
     
     public AbstractTradeRule( EquityEODHistory history ) {
         super( history ) ;

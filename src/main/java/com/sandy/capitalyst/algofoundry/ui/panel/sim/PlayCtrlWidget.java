@@ -84,7 +84,7 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
     private final ImageIcon pauseIcon ;
     
     private PlayState playState = PlayState.YET_TO_START;
-    private int emitDelayMs = 25 ;
+    private int emitDelayMs = 200 ;
     
     private Thread playDaemon ;
     
