@@ -10,6 +10,8 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -107,9 +109,24 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
         
         setUpTradeStrategySelector() ;
         setUpUI() ;
+        setUpButtonKeyListeners() ;
         
         this.playDaemon = new PlayDaemonThread() ;
         this.playDaemon.start() ;
+    }
+    
+    private void setUpButtonKeyListeners() {
+        this.stepBtn.addKeyListener( new KeyAdapter() {
+            @Override
+            public void keyTyped( KeyEvent e ) {
+                if( e.getKeyChar() == 'n' ) {
+                    if( stepBtn.isEnabled() ) {
+                        ActionEvent ae = new ActionEvent( stepBtn, 0, null ) ;
+                        actionPerformed( ae ) ;
+                    }
+                }
+            }
+        } );
     }
     
     private void setUpTradeStrategySelector() {
@@ -222,9 +239,6 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
     public void stateChanged( ChangeEvent e ) {
         if( !emitDelaySlider.getValueIsAdjusting() ) {
             this.emitDelayMs = emitDelaySlider.getValue() ;
-            if( this.emitDelayMs == 0 ) {
-                this.emitDelayMs = 2 ;
-            }
         }
     }
 }

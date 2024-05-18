@@ -28,9 +28,9 @@ public class MyTradeStrategy extends AbstractZonedTradeStrategy {
     
     private static final int    ACTIVATION_TEST_GAP     = 3 ;
     private static final double ACTIVATION_EMA_DIFF_THR = 2 ;
-    private static final double ACTIVATION_EMA_THR      = 1.5 ;
+    private static final double ACTIVATION_EMA_THR      = 1 ;
     
-    private static final double SIGNAL_EMA_THR = 2 ;
+    private static final double SIGNAL_EMA_THR = 1 ;
     
     private final EMAIndicator   ema5;
     private final EMAIndicator   ema20;
@@ -129,12 +129,13 @@ public class MyTradeStrategy extends AbstractZonedTradeStrategy {
     protected boolean isEntryConditionMet( int index ) {
         
         int activationAge      = super.getNumDaysIntoEntryZone() ;
+        double pctThreshold    = SIGNAL_EMA_THR + (activationAge-1)*0.125 ;
         boolean adxUpTrendRes  = adxUpTrend.isTriggered( index ) ;
         boolean adxStrengthRes = adxStrength.isTriggered( index ) ;
         boolean ema20Jump      = hasValuePctChanged( "EMA jump",
                                                     ema5, ema5, index,
                                                     activationAge,
-                                                    SIGNAL_EMA_THR ) ;
+                                                    pctThreshold ) ;
         
         boolean result = ema20Jump && adxUpTrendRes && adxStrengthRes ;
 
@@ -143,7 +144,7 @@ public class MyTradeStrategy extends AbstractZonedTradeStrategy {
             logger.log2( bs( adxUpTrendRes  ) + " ADX up trend" ) ;
             logger.log2( bs( adxStrengthRes ) + " ADX strength > 25" ) ;
             logger.log2( bs( ema20Jump      ) + " EMA jump > " +
-                    SIGNAL_EMA_THR + "% in " + activationAge + " days" ) ;
+                    pctThreshold + "% in " + activationAge + " days" ) ;
         }
         
         return result ;
@@ -153,12 +154,13 @@ public class MyTradeStrategy extends AbstractZonedTradeStrategy {
     protected boolean isExitConditionMet( int index ) {
         
         int activationAge = super.getNumDaysIntoExitZone() ;
+        double pctThreshold = -SIGNAL_EMA_THR - (activationAge-1)*0.125 ;
         boolean adxDownTrendRes = adxDownTrend.isTriggered( index ) ;
         boolean adxStrengthRes  = adxStrength.isTriggered( index ) ;
         boolean ema20Jump       = hasValuePctChanged( "EMA jump",
                                                         ema5, ema5, index,
                                                         activationAge,
-                                                        -SIGNAL_EMA_THR ) ;
+                                                        pctThreshold ) ;
         
         boolean result = ema20Jump && adxDownTrendRes && adxStrengthRes ;
 
@@ -167,7 +169,7 @@ public class MyTradeStrategy extends AbstractZonedTradeStrategy {
             logger.log2( bs( adxDownTrendRes ) + " ADX down trend" ) ;
             logger.log2( bs( adxStrengthRes  ) + " ADX strength > 25" ) ;
             logger.log2( bs( ema20Jump       ) + " EMA jump < -" +
-                    SIGNAL_EMA_THR + "% in " + activationAge + " days" ) ;
+                    pctThreshold + "% in " + activationAge + " days" ) ;
         }
         
         return result ;

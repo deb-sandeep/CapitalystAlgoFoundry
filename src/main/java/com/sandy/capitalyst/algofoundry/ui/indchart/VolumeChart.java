@@ -92,7 +92,7 @@ public class VolumeChart extends IndicatorChart
         XYAnnotation annotation = new XYDrawableAnnotation(
                                             (double)(date.getTime() + 86400*500),
                                             yVal,
-                                            10, 10, cd ) ;
+                                            5, 5, cd ) ;
         SwingUtilities.invokeLater( () ->
                 plot.getRenderer().addAnnotation( annotation ) ) ;
     }

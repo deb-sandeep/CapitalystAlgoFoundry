@@ -12,7 +12,7 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
     public enum Zone { BLACKOUT, LOOKOUT, ENTRY_ACTIVE, EXIT_ACTIVE } ;
     
     private static final int ACTIVATION_WINDOW = 5 ;
-    private static final int POST_TRADE_COOLOFF_PERIOD = 3 ;
+    private static final int POST_TRADE_COOLOFF_PERIOD = 0 ;
     
     private int blackoutDaysLeft    = 20 ;
     private int activeEntryDaysLeft = 0 ;
@@ -82,28 +82,34 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
             logger.log( date, "Lookout", true ) ;
             publishCurrentZone( date, Zone.LOOKOUT, volume ) ;
             if( isEntryZoneTriggered( index ) ) {
-                logger.log1( "ENTRY ZONE ACTIVATED" ) ;
+                logger.log2( ">> ENTRY ZONE ACTIVATED" ) ;
                 activeEntryDaysLeft = ACTIVATION_WINDOW ;
                 activeExitDaysLeft = 0 ;
             }
             else if( isExitZoneTriggered( index ) ) {
-                logger.log1( "EXIT ZONE ACTIVATED" ) ;
+                logger.log2( ">> EXIT ZONE ACTIVATED" ) ;
                 activeEntryDaysLeft = 0 ;
                 activeExitDaysLeft = ACTIVATION_WINDOW ;
             }
         }
-        else if( isInEntryActivePeriod() ) {
+        
+        if( isInEntryActivePeriod() ) {
             logger.log( date, "Entry Check " + getNumDaysIntoEntryZone(), true ) ;
             publishCurrentZone( date, Zone.ENTRY_ACTIVE, volume ) ;
             if( isEntryConditionMet( index ) ) {
-                logger.log1( "ENTRY" ) ;
+                logger.log2( ">> ENTRY" ) ;
                 signal = new TradeSignal( TradeSignal.Type.ENTRY, date,
                         history.getSymbol(), closingPrice ) ;
             }
             else {
-                logger.log1( "Entry disqualified" ) ;
+                logger.log2( ">> Entry disqualified" ) ;
             }
             activeEntryDaysLeft-- ;
+            if( isExitZoneTriggered( index ) ) {
+                logger.log2( ">> EXIT ZONE ACTIVATED" ) ;
+                activeEntryDaysLeft = 0 ;
+                activeExitDaysLeft = ACTIVATION_WINDOW ;
+            }
         }
         else if( isInExitActivePeriod() ) {
             logger.log( date, "Exit Check " + getNumDaysIntoExitZone(), true ) ;
@@ -114,9 +120,14 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
                         history.getSymbol(), closingPrice ) ;
             }
             else {
-                logger.log1( "Exit disqualified" ) ;
+                logger.log2( ">> Exit disqualified" ) ;
             }
             activeExitDaysLeft-- ;
+            if( isEntryZoneTriggered( index ) ) {
+                logger.log2( ">> ENTRY ZONE ACTIVATED" ) ;
+                activeEntryDaysLeft = ACTIVATION_WINDOW ;
+                activeExitDaysLeft = 0 ;
+            }
         }
         
         if( signal != null ) {
