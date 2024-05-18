@@ -60,6 +60,7 @@ public class LogDisplayWidget extends SimControlPanel.SimControlWidget
         textArea.setFont( UITheme.LOG_UI_FONT ) ;
         textArea.setBorder( BorderFactory.createEmptyBorder() ) ;
         textArea.setEditable( false ) ;
+        textArea.setDoubleBuffered( true ) ;
         textArea.addKeyListener( new KeyAdapter() {
             @Override
             public void keyTyped( KeyEvent e ) {
@@ -73,6 +74,7 @@ public class LogDisplayWidget extends SimControlPanel.SimControlWidget
         sp.setBorder( BorderFactory.createLineBorder( Color.GRAY.darker(), 1 ) ) ;
         sp.getVerticalScrollBar().setUI( new ScrollBarUI() ) ;
         sp.getHorizontalScrollBar().setUI( new ScrollBarUI() ) ;
+        sp.setDoubleBuffered( true ) ;
         add( sp, BorderLayout.CENTER ) ;
     }
     

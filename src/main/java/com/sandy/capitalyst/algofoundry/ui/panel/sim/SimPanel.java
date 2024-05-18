@@ -2,7 +2,8 @@ package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
-import com.sandy.capitalyst.algofoundry.strategy.strategy.AbstractZonedTradeStrategy;
+import com.sandy.capitalyst.algofoundry.strategy.AbstractZonedTradeStrategy;
+import com.sandy.capitalyst.algofoundry.strategy.StrategyZoneListener;
 import com.sandy.capitalyst.algofoundry.strategy.TradeSignalListener;
 import com.sandy.capitalyst.algofoundry.strategy.strategy.MyTradeStrategy;
 import com.sandy.capitalyst.algofoundry.ui.indchart.*;
@@ -78,7 +79,8 @@ public class SimPanel extends JPanel {
     
     private void populateTradeStrategiesMap() {
         tradeStrategyMap.put( MyTradeStrategy.NAME,
-                              new MyTradeStrategy( history ) ) ;
+                              new MyTradeStrategy( history,
+                                                   (StrategyZoneListener)volumeChart ) ) ;
     }
     
     private void setUpUI() {

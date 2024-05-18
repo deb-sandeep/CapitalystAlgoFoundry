@@ -15,34 +15,14 @@ public abstract class AbstractTradeStrategy
     private final List<TradeSignalListener> listeners = new ArrayList<>() ;
     
     protected final EquityEODHistory history ;
-    protected final TradeBook tradeBook = new TradeBook() ;
-    protected int   lastIndexEvalauted = -1 ;
+    protected final TradeBook        tradeBook = new TradeBook() ;
+    
+    protected int lastIndexEvaluated = -1 ;
     
     protected StrategyLogger logger = new StrategyLogger() ;
     
-    private TradeRule entryRule;
-    private TradeRule exitRule;
-    
     protected AbstractTradeStrategy( EquityEODHistory history ) {
         this.history = history ;
-    }
-    
-    protected abstract TradeRule createEntryRule() ;
-    
-    protected abstract TradeRule createExitRule() ;
-    
-    public final TradeRule getEntryRule() {
-        if( entryRule == null ) {
-            entryRule = createEntryRule() ;
-        }
-        return entryRule;
-    }
-    
-    public final TradeRule getExitRule() {
-        if( exitRule == null ) {
-            exitRule = createExitRule() ;
-        }
-        return exitRule;
     }
     
     public final TradeBook getTradeBook() {
@@ -58,7 +38,7 @@ public abstract class AbstractTradeStrategy
     }
     
     public void clear() {
-        lastIndexEvalauted = -1 ;
+        lastIndexEvaluated = -1 ;
         listeners.clear() ;
         tradeBook.clear() ;
         logger.clearListeners() ;
@@ -73,14 +53,13 @@ public abstract class AbstractTradeStrategy
     public final TradeSignal executeStrategy( int seriesIndex ) {
         
         TradeSignal signal = null ;
-        if( seriesIndex > lastIndexEvalauted ) {
+        if( seriesIndex > lastIndexEvaluated ) {
             
             Bar  bar  = history.getBarSeries().getBar( seriesIndex ) ;
             Date date = Date.from( bar.getEndTime().toInstant() ) ;
             
             signal = executeStrategy( seriesIndex, date, bar ) ;
             if( signal != null ) {
-                logger.log( signal.getType() + " signal" ) ;
                 if( signal.isEntrySignal() ) {
                     if( tradeBook.getQuantity() > 0 ) {
                         tradeBook.addTrade( signal ) ;
@@ -92,7 +71,7 @@ public abstract class AbstractTradeStrategy
             }
             
             tradeBook.computeNotionalProfit( bar.getClosePrice().doubleValue() ) ;
-            this.lastIndexEvalauted = seriesIndex ;
+            this.lastIndexEvaluated = seriesIndex ;
         }
         return signal ;
     }

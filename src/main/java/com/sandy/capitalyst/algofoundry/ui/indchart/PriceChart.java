@@ -1,10 +1,13 @@
 package com.sandy.capitalyst.algofoundry.ui.indchart;
 
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
+import com.sandy.capitalyst.algofoundry.core.util.StringUtil;
 import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.BollingerBandDayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.MADayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.OHLCVDayValue;
+import com.sandy.capitalyst.algofoundry.strategy.AbstractZonedTradeStrategy;
+import com.sandy.capitalyst.algofoundry.strategy.StrategyZoneListener;
 import com.sandy.capitalyst.algofoundry.strategy.TradeSignal;
 import com.sandy.capitalyst.algofoundry.strategy.TradeSignalListener;
 import com.sandy.capitalyst.algofoundry.ui.indchart.util.CircleAnnotationDrawable;
@@ -59,6 +62,9 @@ public class PriceChart extends IndicatorChart
     private Crosshair ema5Crosshair;
     private Crosshair ema20Crosshair;
     
+    private final CrosshairOverlay crosshairOverlay = new CrosshairOverlay() ;
+    private boolean crosshairEnabled = false ;
+    
     private List<CrossHairMoveListener> crossHairMoveListeners = new ArrayList<>() ;
     
     public PriceChart( String symbol ) {
@@ -79,8 +85,6 @@ public class PriceChart extends IndicatorChart
     
     private void attachCrosshair() {
         
-        CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
-        
         this.xCrosshair = createXCrosshair() ;
         this.ema5Crosshair = createEMACrosshair() ;
         this.ema20Crosshair = createEMACrosshair() ;
@@ -89,7 +93,6 @@ public class PriceChart extends IndicatorChart
         crosshairOverlay.addRangeCrosshair( ema5Crosshair ) ;
         crosshairOverlay.addRangeCrosshair( ema20Crosshair ) ;
         
-        chartPanel.addOverlay( crosshairOverlay ) ;
         chartPanel.addChartMouseListener( getCrosshairMouseListener() );
     }
     
@@ -117,6 +120,12 @@ public class PriceChart extends IndicatorChart
             
             @Override
             public void chartMouseMoved( ChartMouseEvent event ) {
+                
+                if( !crosshairEnabled ) {
+                    chartPanel.addOverlay( crosshairOverlay ) ;
+                    crosshairEnabled = true ;
+                }
+                
                 Rectangle2D dataArea = chartPanel.getScreenDataArea() ;
                 ValueAxis   xAxis    = plot.getDomainAxis();
                 double x = xAxis.java2DToValue( event.getTrigger().getX(),
@@ -168,6 +177,10 @@ public class PriceChart extends IndicatorChart
         else if( payload instanceof MADayValue ema5 ) {
             ema5TimeSeries.add( day, ema5.getValue() ) ;
         }
+        
+        chartPanel.removeOverlay( crosshairOverlay ) ;
+        crossHairMoveListeners.forEach( l -> l.xCrosshairMoved( -1 ) ) ;
+        crosshairEnabled = false ;
     }
     
     private void attachClosePriceTimeSeries() {

@@ -1,116 +1,202 @@
 package com.sandy.capitalyst.algofoundry.strategy.strategy;
 
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
-import com.sandy.capitalyst.algofoundry.strategy.TradeRule;
+import com.sandy.capitalyst.algofoundry.strategy.AbstractZonedTradeStrategy;
+import com.sandy.capitalyst.algofoundry.strategy.StrategyZoneListener;
 import com.sandy.capitalyst.algofoundry.strategy.rule.atom.adx.ADXDownTrendRule;
 import com.sandy.capitalyst.algofoundry.strategy.rule.atom.adx.ADXStrengthRule;
 import com.sandy.capitalyst.algofoundry.strategy.rule.atom.adx.ADXUpTrendRule;
 import com.sandy.capitalyst.algofoundry.strategy.rule.atom.ema.EMADownCrossoverRule;
 import com.sandy.capitalyst.algofoundry.strategy.rule.atom.ema.EMAUpCrossoverRule;
-import com.sandy.capitalyst.algofoundry.strategy.rule.atom.macd.*;
-import com.sandy.capitalyst.algofoundry.strategy.rule.logic.AndRule;
-import jakarta.persistence.criteria.CriteriaBuilder;
+import com.sandy.capitalyst.algofoundry.strategy.rule.atom.macd.MACDHistNegativeStartRule;
+import com.sandy.capitalyst.algofoundry.strategy.rule.atom.macd.MACDHistPositiveStartRule;
 import lombok.extern.slf4j.Slf4j;
+import org.ta4j.core.Bar;
 import org.ta4j.core.Indicator;
 import org.ta4j.core.indicators.EMAIndicator;
-import org.ta4j.core.indicators.helpers.CombineIndicator;
-import org.ta4j.core.indicators.helpers.PreviousValueIndicator;
 import org.ta4j.core.indicators.numeric.NumericIndicator;
 import org.ta4j.core.num.Num;
+
+import java.util.Date;
+
+import static com.sandy.capitalyst.algofoundry.core.util.StringUtil.*;
 
 @Slf4j
 public class MyTradeStrategy extends AbstractZonedTradeStrategy {
     
     public static final String NAME = "My Strategy" ;
     
+    private static final int    ACTIVATION_TEST_GAP     = 3 ;
+    private static final double ACTIVATION_EMA_DIFF_THR = 2 ;
+    private static final double ACTIVATION_EMA_THR      = 1.5 ;
+    
+    private static final double SIGNAL_EMA_THR = 2 ;
+    
     private final EMAIndicator   ema5;
     private final EMAIndicator   ema20;
     private final Indicator<Num> emaDiff;
+    
+    private final boolean logRootCause = true ;
+    
+    private MACDHistPositiveStartRule macdPosStart;
+    private MACDHistNegativeStartRule macdNegStart;
+    private EMAUpCrossoverRule        emaUpCrossover ;
+    private EMADownCrossoverRule      emaDownCrossover ;
+    private ADXUpTrendRule            adxUpTrend ;
+    private ADXDownTrendRule          adxDownTrend ;
+    private ADXStrengthRule           adxStrength ;
 
-    public MyTradeStrategy( EquityEODHistory history ) {
+    public MyTradeStrategy( EquityEODHistory history, StrategyZoneListener zoneListener ) {
+        
         super( history ) ;
-        ema5 = history.getEMAIndicator( 5 ) ;
+        super.addZoneListener( zoneListener ) ;
+        
+        ema5 = history.getEMAIndicator( 5 );
         ema20 = history.getEMAIndicator( 20 ) ;
         emaDiff = NumericIndicator.of( ema5 ).minus( ema20 ) ;
+        
+        createRules() ;
     }
     
-    protected boolean isEntryActivationTriggered( int seriesIndex ) {
-        boolean superResult = super.isEntryActivationTriggered( seriesIndex ) ;
-        boolean emaDiffJump = hasValuePctChanged( emaDiff, ema20, seriesIndex, 3, 5 ) ;
-        boolean ema20Jump   = hasValuePctChanged( ema20, seriesIndex, 3, 5 ) ;
-        return superResult || emaDiffJump || ema20Jump ;
-    }
-    
-    protected boolean isExitActivationTriggered( int seriesIndex ) {
-        boolean superResult = super.isExitActivationTriggered( seriesIndex ) ;
-        boolean emaJump = hasValuePctChanged( emaDiff, ema20, seriesIndex, 3, -5 ) ;
-        boolean ema20Jump   = hasValuePctChanged( ema20, seriesIndex, 3, -5 ) ;
-        return superResult || emaJump  || ema20Jump ;
-    }
-    
-    @Override
-    protected boolean isEntryPreconditionMet( int seriesIndex ) {
-        int activationAge = super.getNumDaysIntoEntryActivationPeriod() ;
-        return hasValuePctChanged( emaDiff, seriesIndex, activationAge, 3 ) ;
+    private void createRules() {
+        macdPosStart = new MACDHistPositiveStartRule( history ) ;
+        macdNegStart = new MACDHistNegativeStartRule( history ) ;
+        
+        emaUpCrossover = new EMAUpCrossoverRule( history ) ;
+        emaDownCrossover = new EMADownCrossoverRule( history ) ;
+        
+        adxUpTrend = new ADXUpTrendRule( history ) ;
+        adxDownTrend = new ADXDownTrendRule( history ) ;
+        
+        adxStrength = new ADXStrengthRule( history, 25 ) ;
     }
     
     @Override
-    protected boolean isExitPreconditionMet( int seriesIndex ) {
-        int activationAge = super.getNumDaysIntoExitActivationPeriod() ;
-        return hasValuePctChanged( emaDiff, seriesIndex, activationAge, -3 ) ;
-    }
-    
-    private boolean hasValuePctChanged( Indicator<Num> series,
-                                        int index, int gapDays, double pct ) {
-        return hasValuePctChanged( series, null, index, gapDays, pct ) ;
-    }
+    protected boolean isEntryZoneTriggered( int index ) {
+        
+        boolean macdPosStartRes = macdPosStart.isTriggered( index ) ;
+        boolean emaUpCrossoverRes = emaUpCrossover.isTriggered( index ) ;
+        boolean emaDiffJump = hasValuePctChanged( "EMA diff",
+                                                    emaDiff, ema20, index,
+                                                    ACTIVATION_TEST_GAP,
+                                                    ACTIVATION_EMA_DIFF_THR ) ;
+        boolean ema20Jump   = hasValuePctChanged( "EMA jump",
+                                                    ema20, ema20, index,
+                                                    ACTIVATION_TEST_GAP,
+                                                    ACTIVATION_EMA_THR ) ;
+        
+        boolean result = macdPosStartRes || emaUpCrossoverRes || emaDiffJump || ema20Jump ;
 
-    private boolean hasValuePctChanged( Indicator<Num> series, Indicator<Num> ref,
+        logger.log1( bs( result ) + " Entry zone trigger check" );
+        if( logRootCause ) {
+            logger.log2( bs( macdPosStartRes   ) + " MACD positive start" ) ;
+            logger.log2( bs( emaUpCrossoverRes ) + " EMA up crossover" ) ;
+            logger.log2( bs( emaDiffJump       ) + " EMA diff > " + ACTIVATION_EMA_DIFF_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
+            logger.log2( bs( ema20Jump         ) + " EMA 20 diff > " + ACTIVATION_EMA_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
+        }
+        
+        return result ;
+    }
+    
+    @Override
+    protected boolean isExitZoneTriggered( int index ) {
+        
+        boolean macdNegStartRes = macdNegStart.isTriggered( index ) ;
+        boolean emaDownCrossoverRes = emaDownCrossover.isTriggered( index ) ;
+        boolean emaDiffJump = hasValuePctChanged( "EMA diff",
+                                                    emaDiff, ema20, index,
+                                                    ACTIVATION_TEST_GAP,
+                                                    -ACTIVATION_EMA_DIFF_THR ) ;
+        boolean ema20Jump   = hasValuePctChanged( "EMA jump",
+                                                    ema20, ema20, index,
+                                                    ACTIVATION_TEST_GAP,
+                                                    -ACTIVATION_EMA_THR ) ;
+        
+        boolean result = macdNegStartRes || emaDownCrossoverRes || emaDiffJump || ema20Jump ;
+
+        logger.log1( bs( result ) + " Exit zone trigger check" );
+        if( logRootCause ) {
+            logger.log2( bs( macdNegStartRes     ) + " MACD negative start" ) ;
+            logger.log2( bs( emaDownCrossoverRes ) + " EMA down crossover" ) ;
+            logger.log2( bs( emaDiffJump         ) + " EMA diff < -" + ACTIVATION_EMA_DIFF_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
+            logger.log2( bs( ema20Jump           ) + " EMA 20 diff < -" + ACTIVATION_EMA_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
+        }
+
+        return result ;
+    }
+    
+    @Override
+    protected boolean isEntryConditionMet( int index ) {
+        
+        int activationAge      = super.getNumDaysIntoEntryZone() ;
+        boolean adxUpTrendRes  = adxUpTrend.isTriggered( index ) ;
+        boolean adxStrengthRes = adxStrength.isTriggered( index ) ;
+        boolean ema20Jump      = hasValuePctChanged( "EMA jump",
+                                                    ema5, ema5, index,
+                                                    activationAge,
+                                                    SIGNAL_EMA_THR ) ;
+        
+        boolean result = ema20Jump && adxUpTrendRes && adxStrengthRes ;
+
+        logger.log1( bs( result ) + " Entry condition check" );
+        if( logRootCause ) {
+            logger.log2( bs( adxUpTrendRes  ) + " ADX up trend" ) ;
+            logger.log2( bs( adxStrengthRes ) + " ADX strength > 25" ) ;
+            logger.log2( bs( ema20Jump      ) + " EMA jump > " +
+                    SIGNAL_EMA_THR + "% in " + activationAge + " days" ) ;
+        }
+        
+        return result ;
+    }
+    
+    @Override
+    protected boolean isExitConditionMet( int index ) {
+        
+        int activationAge = super.getNumDaysIntoExitZone() ;
+        boolean adxDownTrendRes = adxDownTrend.isTriggered( index ) ;
+        boolean adxStrengthRes  = adxStrength.isTriggered( index ) ;
+        boolean ema20Jump       = hasValuePctChanged( "EMA jump",
+                                                        ema5, ema5, index,
+                                                        activationAge,
+                                                        -SIGNAL_EMA_THR ) ;
+        
+        boolean result = ema20Jump && adxDownTrendRes && adxStrengthRes ;
+
+        logger.log1( bs( result ) + " Exit condition check" );
+        if( logRootCause ) {
+            logger.log2( bs( adxDownTrendRes ) + " ADX down trend" ) ;
+            logger.log2( bs( adxStrengthRes  ) + " ADX strength > 25" ) ;
+            logger.log2( bs( ema20Jump       ) + " EMA jump < -" +
+                    SIGNAL_EMA_THR + "% in " + activationAge + " days" ) ;
+        }
+        
+        return result ;
+    }
+    
+    private boolean hasValuePctChanged( String label, Indicator<Num> series, Indicator<Num> ref,
                                         int index, int gapDays, double pct ) {
         
-        Indicator<Num>   prev = new PreviousValueIndicator( series, gapDays ) ;
-        CombineIndicator diff = CombineIndicator.minus( series, prev ) ;
+        Bar currentBar = history.getBarSeries().getBar( index ) ;
+        Bar prevBar = history.getBarSeries().getBar( index - gapDays ) ;
         
-        double change = diff.getValue( index ).doubleValue() ;
-        double refVal = 0 ;
+        double refVal ;
+        double change = series.getValue( index ).doubleValue() -
+                        series.getValue( index-gapDays ).doubleValue() ;
         
         if( ref != null ) {
             refVal = ref.getValue( index-gapDays ).doubleValue() ;
         }
         else {
-            refVal = prev.getValue( index ).doubleValue() ;
+            refVal = series.getValue( index-gapDays ).doubleValue() ;
         }
-
+        
         double chgPct = ( change/refVal )*100 ;
+        log.debug( "Jump check - {}", label ) ;
+        log.debug( "Current date = {}", fmtDate( Date.from( currentBar.getEndTime().toInstant() ) ) ) ;
+        log.debug( "Past    date = {}", fmtDate( Date.from( prevBar.getEndTime().toInstant() ) ) ) ;
+        log.debug( "  #Days = {}, Change = {}, ref = {}, changePct = {}%, threshold={}%",
+                   gapDays, fmtDbl( change ), fmtDbl( refVal ), fmtDbl( chgPct ), pct ) ;
         
         return pct > 0 ? chgPct >= pct : chgPct <= pct ;
-    }
-    
-    @Override
-    protected TradeRule createEntryActivationRule() {
-        return new MACDHistPositiveStartRule( history )
-                .or( new EMAUpCrossoverRule( history ) ) ;
-    }
-    
-    @Override
-    protected TradeRule createExitActivationRule() {
-        return new MACDHistNegativeStartRule( history )
-                .or( new EMADownCrossoverRule( history ) ) ;
-    }
-    
-    @Override
-    protected TradeRule createEntryRule() {
-        return new AndRule(
-            new ADXUpTrendRule( history ),
-            new ADXStrengthRule( history, 25 )
-        ) ;
-    }
-    
-    @Override
-    protected TradeRule createExitRule() {
-        return new AndRule(
-            new ADXDownTrendRule( history ),
-            new ADXStrengthRule( history, 25 )
-        ) ;
     }
 }

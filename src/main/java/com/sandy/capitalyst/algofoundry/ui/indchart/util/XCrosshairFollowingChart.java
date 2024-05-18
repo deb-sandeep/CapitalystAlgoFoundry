@@ -4,12 +4,13 @@ import com.sandy.capitalyst.algofoundry.ui.indchart.IndicatorChart;
 import org.jfree.chart.panel.CrosshairOverlay;
 import org.jfree.chart.plot.Crosshair;
 
-import java.util.Date;
-
 public abstract class XCrosshairFollowingChart extends IndicatorChart
     implements CrossHairMoveListener {
     
     private Crosshair xCrosshair ;
+    
+    private final CrosshairOverlay crosshairOverlay = new CrosshairOverlay() ;
+    private boolean crosshairEnabled = false ;
 
     protected XCrosshairFollowingChart( String symbol, String yLabel ) {
         super( symbol, yLabel ) ;
@@ -18,16 +19,27 @@ public abstract class XCrosshairFollowingChart extends IndicatorChart
     
     private void attachCrosshair() {
         
-        CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
-        
         xCrosshair = createGenericCrosshair() ;
         xCrosshair.setLabelVisible( false ) ;
         crosshairOverlay.addDomainCrosshair( xCrosshair ) ;
-        
-        chartPanel.addOverlay( crosshairOverlay ) ;
     }
     
     public void xCrosshairMoved( double x ) {
-        xCrosshair.setValue( x ) ;
+        if( x < 0 ) {
+            if( crosshairEnabled ) {
+                chartPanel.removeOverlay( crosshairOverlay ) ;
+                crosshairEnabled = false ;
+            }
+        }
+        else {
+            if( !crosshairEnabled ) {
+                chartPanel.addOverlay( crosshairOverlay ) ;
+                crosshairEnabled = true ;
+            }
+        }
+        
+        if( crosshairEnabled ) {
+            xCrosshair.setValue( x ) ;
+        }
     }
 }
