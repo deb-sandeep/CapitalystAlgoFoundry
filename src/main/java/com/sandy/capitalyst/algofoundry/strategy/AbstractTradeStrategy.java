@@ -70,7 +70,8 @@ public abstract class AbstractTradeStrategy
                 }
             }
             
-            tradeBook.computeNotionalProfit( bar.getClosePrice().doubleValue() ) ;
+            double closePrice = bar.getClosePrice().doubleValue() ;
+            tradeBook.handleTradeSignal( seriesIndex, date, closePrice, signal ) ;
             this.lastIndexEvaluated = seriesIndex ;
         }
         return signal ;
