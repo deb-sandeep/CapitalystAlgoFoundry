@@ -6,6 +6,7 @@ import com.sandy.capitalyst.algofoundry.strategy.strategy.AbstractZonedTradeStra
 import com.sandy.capitalyst.algofoundry.strategy.TradeSignalListener;
 import com.sandy.capitalyst.algofoundry.strategy.strategy.MyTradeStrategy;
 import com.sandy.capitalyst.algofoundry.ui.indchart.*;
+import com.sandy.capitalyst.algofoundry.ui.indchart.util.CrossHairMoveListener;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -61,6 +62,11 @@ public class SimPanel extends JPanel {
         for( IndicatorChart chart : charts ) {
             this.history.addDayValueListener( chart ) ;
         }
+        
+        (( PriceChart )priceChart).addCrosshairMoveListeners(
+                ( CrossHairMoveListener )macdChart,
+                ( CrossHairMoveListener )rsiChart,
+                ( CrossHairMoveListener )adxChart ) ;
         
         populateTradeStrategiesMap() ;
 

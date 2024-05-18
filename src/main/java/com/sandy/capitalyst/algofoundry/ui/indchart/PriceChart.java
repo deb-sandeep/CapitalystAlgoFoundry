@@ -7,6 +7,8 @@ import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.MADayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.OHLCVDayValue;
 import com.sandy.capitalyst.algofoundry.strategy.TradeSignal;
 import com.sandy.capitalyst.algofoundry.strategy.TradeSignalListener;
+import com.sandy.capitalyst.algofoundry.ui.indchart.util.CircleAnnotationDrawable;
+import com.sandy.capitalyst.algofoundry.ui.indchart.util.CrossHairMoveListener;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -32,6 +34,8 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -41,7 +45,6 @@ import static com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory.Pa
 public class PriceChart extends IndicatorChart
     implements TradeSignalListener {
     
-    private static final SimpleDateFormat CROSSHAIR_DATE_FMT  = new SimpleDateFormat( "dd-MMM-yyyy" ) ;
     private static final DecimalFormat    CROSSHAIR_PRICE_FMT = new DecimalFormat( "###.0" ) ;
     
     private static final Color CLOSING_PRICE_COLOR = new Color( 178, 255, 102 ).darker() ;
@@ -55,6 +58,8 @@ public class PriceChart extends IndicatorChart
     private Crosshair xCrosshair ;
     private Crosshair ema5Crosshair;
     private Crosshair ema20Crosshair;
+    
+    private List<CrossHairMoveListener> crossHairMoveListeners = new ArrayList<>() ;
     
     public PriceChart( String symbol ) {
         super( symbol, "Price" ) ;
@@ -86,15 +91,6 @@ public class PriceChart extends IndicatorChart
         
         chartPanel.addOverlay( crosshairOverlay ) ;
         chartPanel.addChartMouseListener( getCrosshairMouseListener() );
-    }
-    
-    private Crosshair createGenericCrosshair() {
-        
-        Crosshair crosshair = new Crosshair( Double.NaN, Color.GRAY.darker(),
-                                             new BasicStroke(0f));
-        crosshair.setLabelVisible( true ) ;
-        crosshair.setLabelBackgroundPaint( UITheme.BACKGROUND_COLOR.brighter() ) ;
-        return crosshair ;
     }
     
     private Crosshair createXCrosshair() {
@@ -133,8 +129,14 @@ public class PriceChart extends IndicatorChart
                 
                 double ema20 = DatasetUtilities.findYValue( plot.getDataset(1), 0, x ) ;
                 ema20Crosshair.setValue( ema20 ) ;
+                
+                crossHairMoveListeners.forEach( l -> l.xCrosshairMoved( x ) ) ;
             }
         } ;
+    }
+    
+    public void addCrosshairMoveListeners( CrossHairMoveListener... listeners ) {
+        Collections.addAll( crossHairMoveListeners, listeners );
     }
     
     @Override

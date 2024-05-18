@@ -11,7 +11,7 @@ import java.util.Date;
 public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
     
     private static final int ACTIVATION_WINDOW = 5 ;
-    private static final int POST_TRADE_COOLOFF_PERIOD = 5 ;
+    private static final int POST_TRADE_COOLOFF_PERIOD = 3 ;
     
     private int blackoutDaysLeft    = 20 ;
     private int activeEntryDaysLeft = 0 ;
@@ -63,14 +63,14 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
     
     protected int getNumDaysIntoEntryActivationPeriod() {
         if( isInEntryActivePeriod() ) {
-            return ACTIVATION_WINDOW - activeEntryDaysLeft ;
+            return ACTIVATION_WINDOW - activeEntryDaysLeft + 1 ;
         }
         return 0 ;
     }
     
     protected int getNumDaysIntoExitActivationPeriod() {
         if( isInExitActivePeriod() ) {
-            return ACTIVATION_WINDOW - activeExitDaysLeft ;
+            return ACTIVATION_WINDOW - activeExitDaysLeft + 1 ;
         }
         return 0 ;
     }
@@ -81,12 +81,11 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
         double closingPrice = bar.getClosePrice().doubleValue() ;
         
         if( isInBlackoutPeriod() ) {
-            // We do not signal in a blackout period
-            //logger.log( "In blackout period" ) ;
+            logger.log( date, "Blackout" ) ;
             blackoutDaysLeft-- ;
         }
-        else if( !( isInEntryActivePeriod() || isInEntryActivePeriod() ) ) {
-            //logger.log( "In lookout period" ) ;
+        else if( !( isInEntryActivePeriod() || isInExitActivePeriod() ) ) {
+            logger.log( date, "Lookout" ) ;
             if( isEntryActivationTriggered( seriesIndex ) ) {
                 logger.log( "Entry activation triggered" ) ;
                 activeEntryDaysLeft = ACTIVATION_WINDOW ;
@@ -98,19 +97,26 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
                 activeExitDaysLeft = ACTIVATION_WINDOW ;
             }
         }
-        
-        if( isInEntryActivePeriod() ) {
+        else if( isInEntryActivePeriod() ) {
+            logger.log( date, "Entry Check " + getNumDaysIntoEntryActivationPeriod() ) ;
             if( isEntryPreconditionMet( seriesIndex ) ) {
                 logger.log1( "Entry precondition met" ) ;
                 if( getEntryRule().isTriggered( seriesIndex ) ) {
-                    logger.log1( "Entry rule triggered." ) ;
+                    logger.log1( "Entry rule triggered" ) ;
                     signal = new TradeSignal( TradeSignal.Type.ENTRY, date,
                              history.getSymbol(), closingPrice ) ;
                 }
+                else {
+                    logger.log1( "Entry rule failed" ) ;
+                }
+            }
+            else {
+                logger.log1( "Entry precondition not met" ) ;
             }
             activeEntryDaysLeft-- ;
         }
         else if( isInExitActivePeriod() ) {
+            logger.log( date, "Exit Check " + getNumDaysIntoExitActivationPeriod() ) ;
             if( isExitPreconditionMet( seriesIndex ) ) {
                 logger.log1( "Exit precondition met" ) ;
                 if( getExitRule().isTriggered( seriesIndex ) ) {
@@ -118,6 +124,12 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
                     signal = new TradeSignal( TradeSignal.Type.EXIT, date,
                             history.getSymbol(), closingPrice ) ;
                 }
+                else {
+                    logger.log1( "Exit rule failed" ) ;
+                }
+            }
+            else {
+                logger.log1( "Exit precondition not met" ) ;
             }
             activeExitDaysLeft-- ;
         }
@@ -131,11 +143,11 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
         return signal ;
     }
     
-    private boolean isEntryActivationTriggered( int seriesIndex ) {
+    protected boolean isEntryActivationTriggered( int seriesIndex ) {
         return getEntryActivationRule().isTriggered( seriesIndex ) ;
     }
     
-    private boolean isExitActivationTriggered( int seriesIndex ) {
+    protected boolean isExitActivationTriggered( int seriesIndex ) {
         return getExitActivationRule().isTriggered( seriesIndex ) ;
     }
     

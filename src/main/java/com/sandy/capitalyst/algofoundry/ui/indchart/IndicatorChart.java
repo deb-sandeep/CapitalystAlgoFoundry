@@ -12,6 +12,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisSpace;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.Crosshair;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.ComparableObjectSeries;
@@ -33,6 +34,8 @@ import static com.sandy.capitalyst.algofoundry.core.ui.UITheme.*;
 public abstract class IndicatorChart extends JPanel
     implements DayValueListener {
     
+    protected static final SimpleDateFormat CROSSHAIR_DATE_FMT  = new SimpleDateFormat( "dd-MMM-yyyy" ) ;
+
     protected final int    xAxisWindowSize ;
     protected final String symbol ;
 
@@ -194,4 +197,13 @@ public abstract class IndicatorChart extends JPanel
     }
     
     protected abstract void consumeDayValue( AbstractDayValue dayValue ) ;
+    
+    protected Crosshair createGenericCrosshair() {
+        
+        Crosshair crosshair = new Crosshair( Double.NaN, Color.GRAY.darker(),
+                new BasicStroke(0f));
+        crosshair.setLabelVisible( true ) ;
+        crosshair.setLabelBackgroundPaint( UITheme.BACKGROUND_COLOR.brighter() ) ;
+        return crosshair ;
+    }
 }

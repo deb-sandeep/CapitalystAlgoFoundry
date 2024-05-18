@@ -78,8 +78,6 @@ public abstract class AbstractTradeStrategy
             Bar  bar  = history.getBarSeries().getBar( seriesIndex ) ;
             Date date = Date.from( bar.getEndTime().toInstant() ) ;
             
-            logger.log( date ) ;
-            
             signal = executeStrategy( seriesIndex, date, bar ) ;
             if( signal != null ) {
                 logger.log( signal.getType() + " signal" ) ;

@@ -22,8 +22,8 @@ public class StrategyLogger {
         listeners.clear() ;
     }
     
-    public void log( Date date ) {
-        logString( StringUtil.fmtDate( date ) ) ;
+    public void log( Date date, String str ) {
+        logString( StringUtil.fmtDate( date ) + " : " + str ) ;
     }
     
     public void log( String str ) {

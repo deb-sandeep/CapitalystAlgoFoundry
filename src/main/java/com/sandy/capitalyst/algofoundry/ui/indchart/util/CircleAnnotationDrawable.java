@@ -1,4 +1,4 @@
-package com.sandy.capitalyst.algofoundry.ui.indchart;
+package com.sandy.capitalyst.algofoundry.ui.indchart.util;
 
 import org.jfree.ui.Drawable;
 
@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 
-class CircleAnnotationDrawable implements Drawable {
+public class CircleAnnotationDrawable implements Drawable {
     
     private Paint fillPaint;
     

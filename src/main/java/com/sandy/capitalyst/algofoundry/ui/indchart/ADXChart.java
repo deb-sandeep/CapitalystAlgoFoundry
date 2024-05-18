@@ -3,6 +3,8 @@ package com.sandy.capitalyst.algofoundry.ui.indchart;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.ADXDayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
+import com.sandy.capitalyst.algofoundry.ui.indchart.util.CrossHairMoveListener;
+import com.sandy.capitalyst.algofoundry.ui.indchart.util.XCrosshairFollowingChart;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.renderer.xy.XYAreaRenderer;
 import org.jfree.chart.renderer.xy.XYDifferenceRenderer;
@@ -17,7 +19,7 @@ import java.util.List;
 import static com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory.PayloadType;
 
 @Slf4j
-public class ADXChart extends IndicatorChart {
+public class ADXChart extends XCrosshairFollowingChart {
     
     private static final Color POSITIVE_TREND_PAINT = new Color( 96, 145, 95, 61 ) ;
     private static final Color NEGATIVE_TREND_PAINT = new Color( 176, 82, 87, 61 ) ;
