@@ -1,13 +1,10 @@
 package com.sandy.capitalyst.algofoundry.ui.indchart;
 
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
-import com.sandy.capitalyst.algofoundry.core.util.StringUtil;
 import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.BollingerBandDayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.MADayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.OHLCVDayValue;
-import com.sandy.capitalyst.algofoundry.strategy.AbstractZonedTradeStrategy;
-import com.sandy.capitalyst.algofoundry.strategy.StrategyZoneListener;
 import com.sandy.capitalyst.algofoundry.strategy.TradeSignal;
 import com.sandy.capitalyst.algofoundry.strategy.TradeSignalListener;
 import com.sandy.capitalyst.algofoundry.ui.indchart.util.CircleAnnotationDrawable;
@@ -36,7 +33,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;

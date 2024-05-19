@@ -1,8 +1,6 @@
-package com.sandy.capitalyst.algofoundry.strategy.strategy;
+package com.sandy.capitalyst.algofoundry.strategy;
 
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
-import com.sandy.capitalyst.algofoundry.strategy.AbstractZonedTradeStrategy;
-import com.sandy.capitalyst.algofoundry.strategy.StrategyZoneListener;
 import com.sandy.capitalyst.algofoundry.strategy.rule.atom.adx.ADXDownTrendRule;
 import com.sandy.capitalyst.algofoundry.strategy.rule.atom.adx.ADXStrengthRule;
 import com.sandy.capitalyst.algofoundry.strategy.rule.atom.adx.ADXUpTrendRule;

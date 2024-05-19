@@ -3,6 +3,7 @@ package com.sandy.capitalyst.algofoundry.strategy;
 import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.DayValueListener;
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
+import com.sandy.capitalyst.algofoundry.strategy.log.StrategyLogger;
 import org.ta4j.core.Bar;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
 public abstract class AbstractTradeStrategy
         implements DayValueListener {
     
+    private final List<StrategyEventListener> eventListeners = new ArrayList<>() ;
     private final List<TradeSignalListener> listeners = new ArrayList<>() ;
     
     protected final EquityEODHistory history ;
@@ -29,6 +31,10 @@ public abstract class AbstractTradeStrategy
         return this.tradeBook ;
     }
     
+    public final void addStrategyEventListener( StrategyEventListener listener ) {
+        this.eventListeners.add( listener ) ;
+    }
+    
     public final void addTradeSignalListener( TradeSignalListener listener ) {
         listeners.add( listener ) ;
     }
@@ -39,6 +45,8 @@ public abstract class AbstractTradeStrategy
     
     public void clear() {
         lastIndexEvaluated = -1 ;
+        eventListeners.clear() ;
+        
         listeners.clear() ;
         tradeBook.clear() ;
         logger.clearListeners() ;

@@ -37,7 +37,7 @@ public class TradeBook {
         return ( currentSeriesIndex - lastTradeSeriesIndex ) <= POST_TRADE_COOLOFF_DAYS ;
     }
     
-    public void computeNotionalProfit( double closePrice ) {
+    private void computeNotionalProfit( double closePrice ) {
         notionalProfit = quantity * ( closePrice - avgPrice ) ;
     }
 
@@ -55,17 +55,24 @@ public class TradeBook {
                 buyTrades.add( trade ) ;
             }
             else {
-                quantity-- ;
-                TradeSignal buy = buyTrades.remove() ;
-                profitEarned += trade.getPrice() - buy.getPrice() ;
+                if( !buyTrades.isEmpty() ) {
+                    while( !buyTrades.isEmpty() ) {
+                        TradeSignal buy = buyTrades.remove() ;
+                        profitEarned += trade.getPrice() - buy.getPrice() ;
+                    }
+                    quantity = 0 ;
+                }
             }
         }
         
-        double cost = 0 ;
-        for( TradeSignal trade : buyTrades ) {
-            cost += trade.getPrice() ;
+        avgPrice = 0 ;
+        if( !buyTrades.isEmpty() ) {
+            double cost = 0 ;
+            for( TradeSignal trade : buyTrades ) {
+                cost += trade.getPrice() ;
+            }
+            avgPrice = cost/buyTrades.size() ;
         }
-        avgPrice = cost/buyTrades.size() ;
     }
     
     private void clearBookState() {

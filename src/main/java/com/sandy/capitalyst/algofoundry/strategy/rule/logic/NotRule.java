@@ -1,6 +1,6 @@
 package com.sandy.capitalyst.algofoundry.strategy.rule.logic;
 
-import com.sandy.capitalyst.algofoundry.strategy.TradeRule;
+import com.sandy.capitalyst.algofoundry.strategy.rule.TradeRule;
 
 public class NotRule extends LogicRule {
     

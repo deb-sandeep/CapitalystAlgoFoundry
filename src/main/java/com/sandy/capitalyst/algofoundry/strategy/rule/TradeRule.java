@@ -1,4 +1,4 @@
-package com.sandy.capitalyst.algofoundry.strategy;
+package com.sandy.capitalyst.algofoundry.strategy.rule;
 
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.strategy.rule.logic.AndRule;

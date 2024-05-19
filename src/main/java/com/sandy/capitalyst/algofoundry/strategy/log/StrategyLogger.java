@@ -1,6 +1,7 @@
-package com.sandy.capitalyst.algofoundry.strategy;
+package com.sandy.capitalyst.algofoundry.strategy.log;
 
 import com.sandy.capitalyst.algofoundry.core.util.StringUtil;
+import com.sandy.capitalyst.algofoundry.strategy.StrategyLogListener;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
