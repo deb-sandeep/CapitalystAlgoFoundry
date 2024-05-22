@@ -37,10 +37,6 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
         }
     }
     
-    public void removeZoneListeners() {
-        this.zoneListeners.clear() ;
-    }
-    
     protected boolean isInBlackoutPeriod() {
         return this.blackoutDaysLeft > 0 ;
     }
@@ -67,7 +63,7 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
         return 0 ;
     }
     
-    public final TradeSignal executeStrategy( int index, Date date, Bar bar ) {
+    public final TradeSignal executeSignalStrategy( int index ) {
         
         TradeSignal signal = null ;
         double closingPrice = bar.getClosePrice().doubleValue() ;
@@ -117,7 +113,7 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
             if( isExitConditionMet( index ) ) {
                 logger.log1( "EXIT" ) ;
                 signal = new TradeSignal( TradeSignal.Type.EXIT, date,
-                        history.getSymbol(), closingPrice ) ;
+                                          history.getSymbol(), closingPrice ) ;
             }
             else {
                 logger.log2( ">> Exit disqualified" ) ;

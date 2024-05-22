@@ -7,7 +7,7 @@ import java.util.Date;
 
 public class LogEvent extends StrategyEvent {
     
-    public enum Type { DEBUG, INFO }
+    public enum Type { DEBUG, INFO, ERROR }
     public enum Level { L0, L1, L2, L3 }
     
     @Getter private final Type type ;
@@ -20,5 +20,9 @@ public class LogEvent extends StrategyEvent {
         this.type = type ;
         this.level = level ;
         this.msg = msg ;
+    }
+    
+    public static LogEvent logEvent( Date date, Type type, Level level, String msg ) {
+        return new LogEvent( date, type, level, msg ) ;
     }
 }
