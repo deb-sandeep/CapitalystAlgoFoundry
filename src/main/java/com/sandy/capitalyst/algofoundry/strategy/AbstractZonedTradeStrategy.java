@@ -66,23 +66,19 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
         
         TradeSignal signal = null ;
         double closingPrice = bar.getClosePrice().doubleValue() ;
-        double volume = bar.getVolume().doubleValue() ;
         
         if( isInBlackoutPeriod() ) {
             publishCurrentZone( ZoneType.BLACKOUT, MovementType.CURRENT ) ;
             blackoutDaysLeft-- ;
         }
         else if( !( isInEntryActivePeriod() || isInExitActivePeriod() ) ) {
-            logger.log( date, "Lookout", true ) ;
             publishCurrentZone( ZoneType.LOOKOUT, MovementType.CURRENT ) ;
             if( isEntryZoneTriggered( index ) ) {
-                logger.log2( ">> ENTRY ZONE ACTIVATED" ) ;
                 publishCurrentZone( ZoneType.BUY, MovementType.ENTRY ) ;
                 activeEntryDaysLeft = ACTIVATION_WINDOW ;
                 activeExitDaysLeft = 0 ;
             }
             else if( isExitZoneTriggered( index ) ) {
-                logger.log2( ">> EXIT ZONE ACTIVATED" ) ;
                 publishCurrentZone( ZoneType.SELL, MovementType.ENTRY ) ;
                 activeEntryDaysLeft = 0 ;
                 activeExitDaysLeft = ACTIVATION_WINDOW ;
@@ -90,7 +86,6 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
         }
         
         if( isInEntryActivePeriod() ) {
-            logger.log( date, "Entry Check " + getNumDaysIntoEntryZone(), true ) ;
             publishCurrentZone( ZoneType.BUY, MovementType.CURRENT ) ;
             if( isEntryConditionMet( index ) ) {
                 logger.log2( ">> ENTRY" ) ;
@@ -102,14 +97,12 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
             }
             activeEntryDaysLeft-- ;
             if( isExitZoneTriggered( index ) ) {
-                logger.log2( ">> EXIT ZONE ACTIVATED" ) ;
                 publishCurrentZone( ZoneType.SELL, MovementType.ENTRY ) ;
                 activeEntryDaysLeft = 0 ;
                 activeExitDaysLeft = ACTIVATION_WINDOW ;
             }
         }
         else if( isInExitActivePeriod() ) {
-            logger.log( date, "Exit Check " + getNumDaysIntoExitZone(), true ) ;
             publishCurrentZone( ZoneType.SELL, MovementType.CURRENT ) ;
             if( isExitConditionMet( index ) ) {
                 logger.log1( "EXIT" ) ;
@@ -121,7 +114,6 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
             }
             activeExitDaysLeft-- ;
             if( isEntryZoneTriggered( index ) ) {
-                logger.log2( ">> ENTRY ZONE ACTIVATED" ) ;
                 publishCurrentZone( ZoneType.SELL, MovementType.ENTRY ) ;
                 activeEntryDaysLeft = ACTIVATION_WINDOW ;
                 activeExitDaysLeft = 0 ;

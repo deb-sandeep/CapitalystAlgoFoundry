@@ -8,6 +8,7 @@ import com.sandy.capitalyst.algofoundry.strategy.StrategyLogListener;
 import com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent;
 import com.sandy.capitalyst.algofoundry.strategy.event.LogEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.logging.LogLevel;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
@@ -18,6 +19,8 @@ import java.awt.event.KeyEvent;
 
 import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.* ;
 import static com.sandy.capitalyst.algofoundry.core.util.StringUtil.fmtDate;
+import static com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent.MovementType.* ;
+import static com.sandy.capitalyst.algofoundry.strategy.event.LogEvent.Level.*;
 
 @Slf4j
 public class LogDisplayWidget extends SimControlPanel.SimControlWidget
@@ -96,19 +99,24 @@ public class LogDisplayWidget extends SimControlPanel.SimControlWidget
         String logMsg = null ;
         
         if( event instanceof CurrentZoneEvent ze ) {
-            logMsg = ( fmtDate( ze.getDate() ) + " : " +
-                     ze.getMovementType() + " : " +
-                     ze.getZoneType() ) ;
+            
+            if( ze.getMovementType() != CURRENT ) {
+                logMsg = getIndent( L2 ) + ">> " + ze.getZoneType() + " Zone Activated" ;
+            }
+            else {
+                logMsg = ( fmtDate( ze.getDate() ) + " : " +
+                        ze.getZoneType() ) ;
+            }
         }
         else if( event instanceof LogEvent evt ) {
-            logMsg = getIndent( evt ) + evt.getMsg() ;
+            logMsg = getIndent( evt.getLevel() ) + evt.getMsg() ;
         }
         
         log( logMsg ) ;
     }
     
-    private String getIndent( LogEvent evt ) {
-        switch( evt.getLevel() ) {
+    private String getIndent( LogEvent.Level level ) {
+        switch( level ) {
             case L0 -> { return "" ; }
             case L1 -> { return "  " ; }
             case L2 -> { return "    " ; }
