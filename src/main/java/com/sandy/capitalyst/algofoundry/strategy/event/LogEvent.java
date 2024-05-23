@@ -2,6 +2,7 @@ package com.sandy.capitalyst.algofoundry.strategy.event;
 
 import com.sandy.capitalyst.algofoundry.strategy.StrategyEvent;
 import lombok.Getter;
+import org.ta4j.core.Bar;
 
 import java.util.Date;
 
@@ -15,14 +16,14 @@ public class LogEvent extends StrategyEvent {
     
     @Getter private final String msg ;
     
-    public LogEvent( Date date, Type type, Level level, String msg ) {
-        super( date ) ;
+    public static LogEvent logEvent( Date date, Bar bar, Type type, Level level, String msg ) {
+        return new LogEvent( date, bar, type, level, msg ) ;
+    }
+    
+    public LogEvent( Date date, Bar bar, Type type, Level level, String msg ) {
+        super( date, bar ) ;
         this.type = type ;
         this.level = level ;
         this.msg = msg ;
-    }
-    
-    public static LogEvent logEvent( Date date, Type type, Level level, String msg ) {
-        return new LogEvent( date, type, level, msg ) ;
     }
 }

@@ -57,39 +57,39 @@ public abstract class AbstractTradeStrategy
     }
     
     protected final void debug0( String msg ) {
-        publishEvent( logEvent( date, DEBUG, L0, msg ) ) ;
+        publishEvent( logEvent( date, bar, DEBUG, L0, msg ) ) ;
     }
     
     protected final void debug1( String msg ) {
-        publishEvent( logEvent( date, DEBUG, L1, msg ) ) ;
+        publishEvent( logEvent( date, bar, DEBUG, L1, msg ) ) ;
     }
     
     protected final void debug2( String msg ) {
-        publishEvent( logEvent( date, DEBUG, L2, msg ) ) ;
+        publishEvent( logEvent( date, bar, DEBUG, L2, msg ) ) ;
     }
     
     protected final void debug3( String msg ) {
-        publishEvent( logEvent( date, DEBUG, L3, msg ) ) ;
+        publishEvent( logEvent( date, bar, DEBUG, L3, msg ) ) ;
     }
     
     protected final void info0( String msg ) {
-        publishEvent( logEvent( date, INFO, L0, msg ) ) ;
+        publishEvent( logEvent( date, bar, INFO, L0, msg ) ) ;
     }
     
     protected final void info1( String msg ) {
-        publishEvent( logEvent( date, INFO, L1, msg ) ) ;
+        publishEvent( logEvent( date, bar, INFO, L1, msg ) ) ;
     }
     
     protected final void info2( String msg ) {
-        publishEvent( logEvent( date, INFO, L2, msg ) ) ;
+        publishEvent( logEvent( date, bar, INFO, L2, msg ) ) ;
     }
     
     protected final void info3( String msg ) {
-        publishEvent( logEvent( date, INFO, L3, msg ) ) ;
+        publishEvent( logEvent( date, bar, INFO, L3, msg ) ) ;
     }
     
     protected final void error( String msg ) {
-        publishEvent( logEvent( date, INFO, L0, msg ) ) ;
+        publishEvent( logEvent( date, bar, ERROR, L0, msg ) ) ;
     }
     
     public void clear() {

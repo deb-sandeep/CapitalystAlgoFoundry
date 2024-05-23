@@ -2,7 +2,11 @@ package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
 import com.sandy.capitalyst.algofoundry.core.ui.SwingUtils;
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
+import com.sandy.capitalyst.algofoundry.strategy.StrategyEvent;
+import com.sandy.capitalyst.algofoundry.strategy.StrategyEventListener;
 import com.sandy.capitalyst.algofoundry.strategy.StrategyLogListener;
+import com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent;
+import com.sandy.capitalyst.algofoundry.strategy.event.LogEvent;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -13,10 +17,11 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.* ;
+import static com.sandy.capitalyst.algofoundry.core.util.StringUtil.fmtDate;
 
 @Slf4j
 public class LogDisplayWidget extends SimControlPanel.SimControlWidget
-    implements StrategyLogListener {
+    implements StrategyLogListener, StrategyEventListener {
     
     private static class ScrollBarUI extends BasicScrollBarUI {
         @Override
@@ -83,5 +88,32 @@ public class LogDisplayWidget extends SimControlPanel.SimControlWidget
         String newText = textArea.getText() + "\n" + str ;
         textArea.setText( newText ) ;
         textArea.setCaretPosition( newText.length() ) ;
+    }
+    
+    @Override
+    public void handleStrategyEvent( StrategyEvent event ) {
+        
+        String logMsg = null ;
+        
+        if( event instanceof CurrentZoneEvent ze ) {
+            logMsg = ( fmtDate( ze.getDate() ) + " : " +
+                     ze.getMovementType() + " : " +
+                     ze.getZoneType() ) ;
+        }
+        else if( event instanceof LogEvent evt ) {
+            logMsg = getIndent( evt ) + evt.getMsg() ;
+        }
+        
+        log( logMsg ) ;
+    }
+    
+    private String getIndent( LogEvent evt ) {
+        switch( evt.getLevel() ) {
+            case L0 -> { return "" ; }
+            case L1 -> { return "  " ; }
+            case L2 -> { return "    " ; }
+            case L3 -> { return "      " ; }
+        }
+        return "" ;
     }
 }

@@ -44,10 +44,9 @@ public class MyTradeStrategy extends AbstractZonedTradeStrategy {
     private ADXDownTrendRule          adxDownTrend ;
     private ADXStrengthRule           adxStrength ;
 
-    public MyTradeStrategy( EquityEODHistory history, StrategyZoneListener zoneListener ) {
+    public MyTradeStrategy( EquityEODHistory history ) {
         
         super( history ) ;
-        super.addZoneListener( zoneListener ) ;
         
         ema5 = history.getEMAIndicator( 5 );
         ema20 = history.getEMAIndicator( 20 ) ;

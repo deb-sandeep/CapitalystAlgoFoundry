@@ -2,10 +2,7 @@ package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
-import com.sandy.capitalyst.algofoundry.strategy.AbstractZonedTradeStrategy;
-import com.sandy.capitalyst.algofoundry.strategy.StrategyZoneListener;
-import com.sandy.capitalyst.algofoundry.strategy.TradeSignalListener;
-import com.sandy.capitalyst.algofoundry.strategy.MyTradeStrategy;
+import com.sandy.capitalyst.algofoundry.strategy.*;
 import com.sandy.capitalyst.algofoundry.ui.indchart.*;
 import com.sandy.capitalyst.algofoundry.ui.indchart.util.CrossHairMoveListener;
 import lombok.extern.slf4j.Slf4j;
@@ -79,8 +76,7 @@ public class SimPanel extends JPanel {
     
     private void populateTradeStrategiesMap() {
         tradeStrategyMap.put( MyTradeStrategy.NAME,
-                              new MyTradeStrategy( history,
-                                                   (StrategyZoneListener)volumeChart ) ) ;
+                              new MyTradeStrategy( history ) ) ;
     }
     
     private void setUpUI() {
@@ -156,7 +152,11 @@ public class SimPanel extends JPanel {
         
         tradeStrategy = tradeStrategyMap.get( strategyName ) ;
         tradeStrategy.addTradeSignalListener( ( TradeSignalListener )this.priceChart ) ;
-        tradeStrategy.addLogListener( controlPanel.getLogDisplayWidget() );
+        tradeStrategy.addLogListener( controlPanel.getLogDisplayWidget() ) ;
+        
+        tradeStrategy.addStrategyEventListener( (StrategyEventListener)controlPanel.getLogDisplayWidget() ) ;
+        tradeStrategy.addStrategyEventListener( (StrategyEventListener)volumeChart ) ;
+        
         history.addDayValueListener( tradeStrategy ) ;
     }
     
