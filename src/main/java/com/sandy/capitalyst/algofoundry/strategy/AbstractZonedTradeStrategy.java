@@ -4,8 +4,9 @@ import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent;
 import com.sandy.capitalyst.algofoundry.strategy.event.TradeEvent;
 
-import static com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent.MovementType;
-import static com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent.ZoneType;
+import static com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent.* ;
+import static com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent.MovementType.* ;
+import static com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent.ZoneType.* ;
 
 public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
     
@@ -31,99 +32,109 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
         return this.blackoutDaysLeft > 0 ;
     }
     
-    protected boolean isInEntryActivePeriod() {
+    protected boolean isInBuyActivePeriod() {
         return this.activeEntryDaysLeft > 0 ;
     }
     
-    protected boolean isInExitActivePeriod() {
+    protected boolean isInSellActivePeriod() {
         return this.activeExitDaysLeft > 0 ;
     }
     
     protected int getNumDaysIntoEntryZone() {
-        if( isInEntryActivePeriod() ) {
+        if( isInBuyActivePeriod() ) {
             return ACTIVATION_WINDOW - activeEntryDaysLeft + 1 ;
         }
         return 0 ;
     }
     
     protected int getNumDaysIntoExitZone() {
-        if( isInExitActivePeriod() ) {
+        if( isInSellActivePeriod() ) {
             return ACTIVATION_WINDOW - activeExitDaysLeft + 1 ;
         }
         return 0 ;
     }
     
-    private void publishCurrentZone( ZoneType type, MovementType movementType ) {
-        CurrentZoneEvent zoneEvt = new CurrentZoneEvent( date, bar, type, movementType ) ;
-        super.publishEvent( zoneEvt ) ;
+    private void pubCurrentZone( ZoneType type ) {
+        super.publishEvent( new CurrentZoneEvent( date, bar, type, CURRENT ) ) ;
+    }
+    
+    private void pubBuyZoneEntry() {
+        super.publishEvent( new CurrentZoneEvent( date, bar, BUY, ENTRY ) ) ;
+        activeEntryDaysLeft = ACTIVATION_WINDOW ;
+        activeExitDaysLeft = 0 ;
+    }
+    
+    private void pubSellZoneEntry() {
+        super.publishEvent( new CurrentZoneEvent( date, bar, SELL, ENTRY ) ) ;
+        activeEntryDaysLeft = 0 ;
+        activeExitDaysLeft = ACTIVATION_WINDOW ;
+    }
+    
+    private void pubBuyZoneExit() {
+        super.publishEvent( new CurrentZoneEvent( date, bar, BUY, EXIT ) ) ;
+        activeEntryDaysLeft = activeExitDaysLeft = 0 ;
+    }
+    
+    private void pubSellZoneExit() {
+        super.publishEvent( new CurrentZoneEvent( date, bar, SELL, EXIT ) ) ;
+    }
+    
+    private void lookoutForZoneChange( int index, ZoneType... lookoutZoneTypes ) {
+        for( ZoneType zoneType : lookoutZoneTypes ) {
+            if( zoneType == BUY ) {
+                if( isBuyZoneActivated( index ) ) {
+                    if( isInSellActivePeriod() ) {
+                        pubSellZoneExit() ;
+                    }
+                    pubBuyZoneEntry() ;
+                }
+            }
+            else if( zoneType == SELL ) {
+                if( isSellZoneActivated( index ) ) {
+                    if( isInBuyActivePeriod() ) {
+                        pubBuyZoneExit() ;
+                    }
+                    pubSellZoneEntry() ;
+                }
+            }
+        }
     }
     
     public final void executeStrategy( int index ) {
         
-        double closingPrice = bar.getClosePrice().doubleValue() ;
-        
         if( isInBlackoutPeriod() ) {
-            publishCurrentZone( ZoneType.BLACKOUT, MovementType.CURRENT ) ;
+            pubCurrentZone( BLACKOUT ) ;
             blackoutDaysLeft-- ;
         }
-        else if( !( isInEntryActivePeriod() || isInExitActivePeriod() ) ) {
-            publishCurrentZone( ZoneType.LOOKOUT, MovementType.CURRENT ) ;
-            if( isEntryZoneTriggered( index ) ) {
-                publishCurrentZone( ZoneType.BUY, MovementType.ENTRY ) ;
-                activeEntryDaysLeft = ACTIVATION_WINDOW ;
-                activeExitDaysLeft = 0 ;
-            }
-            else if( isExitZoneTriggered( index ) ) {
-                publishCurrentZone( ZoneType.SELL, MovementType.ENTRY ) ;
-                activeEntryDaysLeft = 0 ;
-                activeExitDaysLeft = ACTIVATION_WINDOW ;
-            }
+        else if( !( isInBuyActivePeriod() || isInSellActivePeriod() ) ) {
+            pubCurrentZone( LOOKOUT ) ;
+            lookoutForZoneChange( index, BUY, SELL ) ;
         }
         
-        if( isInEntryActivePeriod() ) {
-            publishCurrentZone( ZoneType.BUY, MovementType.CURRENT ) ;
-            if( isEntryConditionMet( index ) ) {
-                publishTradeSignal( TradeEvent.Type.BUY ) ;
-            }
-            else {
-                super.debug2( ">> Entry disqualified" ); ;
+        if( isInBuyActivePeriod() ) {
+            pubCurrentZone( BUY ) ;
+            if( isBuyConditionMet( index ) ) {
+                pubTradeSignal( TradeEvent.Type.BUY ) ;
             }
             activeEntryDaysLeft-- ;
-            if( isExitZoneTriggered( index ) ) {
-                publishCurrentZone( ZoneType.SELL, MovementType.ENTRY ) ;
-                activeEntryDaysLeft = 0 ;
-                activeExitDaysLeft = ACTIVATION_WINDOW ;
-            }
+            lookoutForZoneChange( index, SELL ) ;
         }
-        else if( isInExitActivePeriod() ) {
-            publishCurrentZone( ZoneType.SELL, MovementType.CURRENT ) ;
-            if( isExitConditionMet( index ) ) {
-                publishTradeSignal( TradeEvent.Type.SELL ) ;
-            }
-            else {
-                debug2( ">> Exit disqualified" ); ;
+        else if( isInSellActivePeriod() ) {
+            pubCurrentZone( SELL ) ;
+            if( isSellConditionMet( index ) ) {
+                pubTradeSignal( TradeEvent.Type.SELL ) ;
             }
             activeExitDaysLeft-- ;
-            if( isEntryZoneTriggered( index ) ) {
-                publishCurrentZone( ZoneType.SELL, MovementType.ENTRY ) ;
-                activeEntryDaysLeft = ACTIVATION_WINDOW ;
-                activeExitDaysLeft = 0 ;
-            }
+            lookoutForZoneChange( index, BUY ) ;
         }
     }
     
-    protected void publishTradeSignal( TradeEvent.Type type ) {
-        super.publishTradeSignal( type ) ;
-        activeExitDaysLeft = 0 ;
-        activeEntryDaysLeft = 0 ;
-    }
+    protected abstract boolean isBuyZoneActivated( int index ) ;
     
-    protected abstract boolean isEntryZoneTriggered( int index ) ;
+    protected abstract boolean isSellZoneActivated( int index ) ;
     
-    protected abstract boolean isExitZoneTriggered( int index ) ;
+    protected abstract boolean isBuyConditionMet( int index ) ;
     
-    protected abstract boolean isEntryConditionMet( int index ) ;
-    
-    protected abstract boolean isExitConditionMet( int index ) ;
+    protected abstract boolean isSellConditionMet( int index ) ;
     
 }

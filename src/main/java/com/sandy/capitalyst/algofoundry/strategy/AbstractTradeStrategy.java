@@ -39,7 +39,7 @@ public abstract class AbstractTradeStrategy
         eventListeners.forEach( l -> l.handleStrategyEvent( event ) ) ;
     }
     
-    protected void publishTradeSignal( TradeEvent.Type type ) {
+    protected void pubTradeSignal( TradeEvent.Type type ) {
         publishEvent( new TradeEvent( date, bar, type ) ) ;
     }
     

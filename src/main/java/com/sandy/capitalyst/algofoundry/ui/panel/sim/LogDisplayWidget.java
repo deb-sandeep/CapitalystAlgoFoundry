@@ -96,8 +96,14 @@ public class LogDisplayWidget extends SimControlPanel.SimControlWidget
                 logMsg = getIndent( L2 ) + ">> " + ze.getZoneType() + " Zone Activated" ;
             }
             else {
-                logMsg = "\n" + ( fmtDate( ze.getDate() ) + " : " +
-                        ze.getZoneType() ) ;
+                if( ze.getZoneType() == CurrentZoneEvent.ZoneType.BLACKOUT ) {
+                    logMsg = ( fmtDate( ze.getDate() ) + " : " +
+                             ze.getZoneType() ) ;
+                }
+                else {
+                    logMsg = "\n" + ( fmtDate( ze.getDate() ) + " : " +
+                            ze.getZoneType() + " Zone" ) ;
+                }
             }
         }
         else if( event instanceof TradeEvent te ) {

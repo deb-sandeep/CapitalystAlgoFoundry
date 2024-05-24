@@ -18,25 +18,30 @@ import org.ta4j.core.num.Num;
 import java.util.Date;
 
 import static com.sandy.capitalyst.algofoundry.core.util.StringUtil.*;
+import static com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory.IndicatorName.CLOSING_PRICE;
 
 @Slf4j
 public class MyTradeStrategy extends AbstractZonedTradeStrategy {
     
     public static final String NAME = "My Strategy" ;
     
-    private static final int    ACTIVATION_TEST_GAP     = 3 ;
-    private static final double ACTIVATION_EMA_DIFF_THR = 2 ;
-    private static final double ACTIVATION_EMA_THR      = 1 ;
+    private static final int    ACTIVATION_TEST_GAP          = 3 ;
+    private static final double BUY_ACTIVATION_EMA_DIFF_THR  = 2 ;
+    private static final double BUY_ACTIVATION_EMA_THR       = 1 ;
+    private static final double SELL_ACTIVATION_EMA_DIFF_THR = -1 ;
+    private static final double SELL_ACTIVATION_EMA_THR      = -1 ;
     
-    private static final double SIGNAL_EMA_THR = 1 ;
+    private static final double BUY_SIGNAL_EMA_THR  = 1 ;
+    private static final double SELL_SIGNAL_EMA_THR = -1 ;
     
+    private final Indicator<Num> cp;
     private final EMAIndicator   ema5;
     private final EMAIndicator   ema20;
     private final Indicator<Num> emaDiff;
     
     private final boolean logRootCause = true ;
     
-    private MACDHistPositiveStartRule macdPosStart;
+    private MACDHistPositiveStartRule macdPositiveStart;
     private MACDHistNegativeStartRule macdNegStart;
     private EMAUpCrossoverRule        emaUpCrossover ;
     private EMADownCrossoverRule      emaDownCrossover ;
@@ -48,6 +53,7 @@ public class MyTradeStrategy extends AbstractZonedTradeStrategy {
         
         super( history ) ;
         
+        cp = history.ind( CLOSING_PRICE ) ;
         ema5 = history.getEMAIndicator( 5 );
         ema20 = history.getEMAIndicator( 20 ) ;
         emaDiff = NumericIndicator.of( ema5 ).minus( ema20 ) ;
@@ -56,7 +62,7 @@ public class MyTradeStrategy extends AbstractZonedTradeStrategy {
     }
     
     private void createRules() {
-        macdPosStart = new MACDHistPositiveStartRule( history ) ;
+        macdPositiveStart = new MACDHistPositiveStartRule( history ) ;
         macdNegStart = new MACDHistNegativeStartRule( history ) ;
         
         emaUpCrossover = new EMAUpCrossoverRule( history ) ;
@@ -69,18 +75,18 @@ public class MyTradeStrategy extends AbstractZonedTradeStrategy {
     }
     
     @Override
-    protected boolean isEntryZoneTriggered( int index ) {
+    protected boolean isBuyZoneActivated( int index ) {
         
-        boolean macdPosStartRes = macdPosStart.isTriggered( index ) ;
+        boolean macdPosStartRes = macdPositiveStart.isTriggered( index ) ;
         boolean emaUpCrossoverRes = emaUpCrossover.isTriggered( index ) ;
         boolean emaDiffJump = hasValuePctChanged( "EMA diff",
                                                     emaDiff, ema20, index,
                                                     ACTIVATION_TEST_GAP,
-                                                    ACTIVATION_EMA_DIFF_THR ) ;
+                                                    BUY_ACTIVATION_EMA_DIFF_THR ) ;
         boolean ema20Jump   = hasValuePctChanged( "EMA jump",
                                                     ema20, ema20, index,
                                                     ACTIVATION_TEST_GAP,
-                                                    ACTIVATION_EMA_THR ) ;
+                                                    BUY_ACTIVATION_EMA_THR ) ;
         
         boolean result = macdPosStartRes || emaUpCrossoverRes || emaDiffJump || ema20Jump ;
 
@@ -88,26 +94,26 @@ public class MyTradeStrategy extends AbstractZonedTradeStrategy {
         if( logRootCause ) {
             info2( bs( macdPosStartRes   ) + " MACD positive start" ) ;
             info2( bs( emaUpCrossoverRes ) + " EMA up crossover" ) ;
-            info2( bs( emaDiffJump       ) + " EMA diff > " + ACTIVATION_EMA_DIFF_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
-            info2( bs( ema20Jump         ) + " EMA 20 diff > " + ACTIVATION_EMA_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
+            info2( bs( emaDiffJump       ) + " EMA diff > " + BUY_ACTIVATION_EMA_DIFF_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
+            info2( bs( ema20Jump         ) + " EMA 20 diff > " + BUY_ACTIVATION_EMA_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
         }
         
         return result ;
     }
     
     @Override
-    protected boolean isExitZoneTriggered( int index ) {
+    protected boolean isSellZoneActivated( int index ) {
         
         boolean macdNegStartRes = macdNegStart.isTriggered( index ) ;
         boolean emaDownCrossoverRes = emaDownCrossover.isTriggered( index ) ;
         boolean emaDiffJump = hasValuePctChanged( "EMA diff",
                                                     emaDiff, ema20, index,
                                                     ACTIVATION_TEST_GAP,
-                                                    -ACTIVATION_EMA_DIFF_THR ) ;
+                                                    SELL_ACTIVATION_EMA_DIFF_THR ) ;
         boolean ema20Jump   = hasValuePctChanged( "EMA jump",
                                                     ema20, ema20, index,
                                                     ACTIVATION_TEST_GAP,
-                                                    -ACTIVATION_EMA_THR ) ;
+                                                    SELL_ACTIVATION_EMA_THR ) ;
         
         boolean result = macdNegStartRes || emaDownCrossoverRes || emaDiffJump || ema20Jump ;
 
@@ -115,57 +121,76 @@ public class MyTradeStrategy extends AbstractZonedTradeStrategy {
         if( logRootCause ) {
             info2( bs( macdNegStartRes     ) + " MACD negative start" ) ;
             info2( bs( emaDownCrossoverRes ) + " EMA down crossover" ) ;
-            info2( bs( emaDiffJump         ) + " EMA diff < -" + ACTIVATION_EMA_DIFF_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
-            info2( bs( ema20Jump           ) + " EMA 20 diff < -" + ACTIVATION_EMA_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
+            info2( bs( emaDiffJump         ) + " EMA diff < " + SELL_ACTIVATION_EMA_DIFF_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
+            info2( bs( ema20Jump           ) + " EMA 20 diff < " + SELL_ACTIVATION_EMA_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
         }
 
         return result ;
     }
     
     @Override
-    protected boolean isEntryConditionMet( int index ) {
+    protected boolean isBuyConditionMet( int index ) {
         
         int activationAge      = super.getNumDaysIntoEntryZone() ;
-        double pctThreshold    = SIGNAL_EMA_THR + (activationAge-1)*0.125 ;
+        double pctThreshold    = BUY_SIGNAL_EMA_THR + (activationAge-1)*0.125 ;
         boolean adxUpTrendRes  = adxUpTrend.isTriggered( index ) ;
         boolean adxStrengthRes = adxStrength.isTriggered( index ) ;
-        boolean ema20Jump      = hasValuePctChanged( "EMA jump",
-                                                    ema5, ema5, index,
-                                                    activationAge,
-                                                    pctThreshold ) ;
         
-        boolean result = ema20Jump && adxUpTrendRes && adxStrengthRes ;
+        boolean ema5JumpInActivationZone = hasValuePctChanged( "EMA jump",
+                                                     ema5, ema5, index,
+                                                     activationAge,
+                                                     pctThreshold ) ;
+        
+        boolean ema5JumpInLast2Days = hasValuePctChanged( "EMA jump",
+                                                     ema5, ema5, index,
+                                                     2,
+                                                     1 ) ;
+        
+        boolean cpJumpInLast2Days = hasValuePctChanged( "CP Jump",
+                                                     cp, cp, index, 1, 1 ) ;
+        
+        boolean result = ema5JumpInActivationZone &&
+                         ema5JumpInLast2Days &&
+                         cpJumpInLast2Days &&
+                         adxUpTrendRes &&
+                         adxStrengthRes ;
 
-        info1( bs( result ) + " Entry condition check" );
+        info1( bs( result ) + " Buy condition check" );
         if( logRootCause ) {
-            info2( bs( adxUpTrendRes  ) + " ADX up trend" ) ;
-            info2( bs( adxStrengthRes ) + " ADX strength > 25" ) ;
-            info2( bs( ema20Jump      ) + " EMA jump > " +
+            info2( bs( adxUpTrendRes     ) + " ADX up trend" ) ;
+            info2( bs( adxStrengthRes    ) + " ADX strength > 25" ) ;
+            info2( bs( cpJumpInLast2Days ) + " CP > 1% in 1 days" ) ;
+            info2( bs( ema5JumpInActivationZone ) + " EMA jump > " +
                     pctThreshold + "% in " + activationAge + " days" ) ;
+            info2( bs( ema5JumpInLast2Days ) + " EMA jump > 1% in 2 days" ) ;
         }
-        
         return result ;
     }
     
     @Override
-    protected boolean isExitConditionMet( int index ) {
+    protected boolean isSellConditionMet( int index ) {
         
         int activationAge = super.getNumDaysIntoExitZone() ;
-        double pctThreshold = -SIGNAL_EMA_THR - (activationAge-1)*0.125 ;
+        double  pctThreshold    = SELL_SIGNAL_EMA_THR ;
         boolean adxDownTrendRes = adxDownTrend.isTriggered( index ) ;
         boolean adxStrengthRes  = adxStrength.isTriggered( index ) ;
-        boolean ema20Jump       = hasValuePctChanged( "EMA jump",
+        
+        boolean ema5JumpInActivationZone = hasValuePctChanged( "EMA jump",
                                                         ema5, ema5, index,
                                                         activationAge,
                                                         pctThreshold ) ;
         
-        boolean result = ema20Jump && adxDownTrendRes && adxStrengthRes ;
+        boolean cpJumpInLast2Days = hasValuePctChanged( "CP Jump",
+                                    cp, cp, index, 1, -1 ) ;
+        
+        boolean result = ema5JumpInActivationZone && cpJumpInLast2Days && adxDownTrendRes && adxStrengthRes ;
 
-        info1( bs( result ) + " Exit condition check" );
+        info1( bs( result ) + " Sell condition check" );
         if( logRootCause ) {
             info2( bs( adxDownTrendRes ) + " ADX down trend" ) ;
             info2( bs( adxStrengthRes  ) + " ADX strength > 25" ) ;
-            info2( bs( ema20Jump       ) + " EMA jump < -" +
+            info2( bs( cpJumpInLast2Days ) + " CP < 1% in 1 days" ) ;
+            info2( bs( ema5JumpInActivationZone ) + " EMA jump < -" +
                     pctThreshold + "% in " + activationAge + " days" ) ;
         }
         
