@@ -1,5 +1,6 @@
 package com.sandy.capitalyst.algofoundry.apiclient.histeod;
 
+import com.sandy.capitalyst.algofoundry.core.offline.Offline;
 import com.sandy.capitalyst.algofoundry.core.util.CapitalystServerUtil;
 import com.sandy.capitalyst.algofoundry.dao.equity.HistoricEQData;
 import com.sandy.capitalyst.algofoundry.dao.equity.repo.HistoricEQDataRepo;
@@ -7,6 +8,7 @@ import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBarSeries;
 
@@ -19,18 +21,20 @@ import java.util.List;
 import static com.sandy.capitalyst.algofoundry.AlgoFoundry.* ;
 
 @Slf4j
+@Component
 public class EquityHistEODAPIClient {
     
     private static final String           RECO_URL = "http://{server}/Equity/HistoricData/{symbol}" ;
     private static       SimpleDateFormat SDF      = new SimpleDateFormat( "dd-MMM-yyyy" ) ;
-
+    
+    @Offline
     public List<DayCandle> getHistoricCandles( String symbol ) throws Exception {
         
         List<DayCandle> allCandles = new ArrayList<>() ;
         List<DayCandle> serverCandles = new ArrayList<>() ;
         List<DayCandle> prehistCandles ;
-                
-                String histCsv = CapitalystServerUtil.getResource(
+        
+        String histCsv = CapitalystServerUtil.getResource(
                 RECO_URL.replace( "{symbol}", symbol )
         ) ;
         
@@ -46,14 +50,6 @@ public class EquityHistEODAPIClient {
         allCandles.addAll( serverCandles ) ;
         
         return allCandles ;
-    }
-    
-    public EquityEODHistory getEquityEODHistory( String symbol ) throws Exception {
-        
-        BarSeries series = new BaseBarSeries( symbol ) ;
-        List<DayCandle> candles = getHistoricCandles( symbol ) ;
-        candles.forEach( c -> series.addBar( c.toBar() ) ) ;
-        return new EquityEODHistory( symbol, series ) ;
     }
     
     private List<DayCandle> getPrehistoicDayCandles( String symbol, Date endDate ){
@@ -76,7 +72,6 @@ public class EquityHistEODAPIClient {
         List<String[]>    records ;
         
         records = parser.parseAll( new StringReader( csvContent ) ) ;
-        log.info( records.size() + " records found." ) ;
         return records ;
     }
     

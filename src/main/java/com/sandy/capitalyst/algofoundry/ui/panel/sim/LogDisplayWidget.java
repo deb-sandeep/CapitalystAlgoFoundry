@@ -19,6 +19,7 @@ import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.* ;
 import static com.sandy.capitalyst.algofoundry.core.util.StringUtil.fmtDate;
 import static com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent.MovementType.* ;
 import static com.sandy.capitalyst.algofoundry.strategy.event.LogEvent.Level.*;
+import static com.sandy.capitalyst.algofoundry.strategy.event.LogEvent.getIndent;
 
 @Slf4j
 public class LogDisplayWidget extends SimControlPanel.SimControlWidget
@@ -107,16 +108,6 @@ public class LogDisplayWidget extends SimControlPanel.SimControlWidget
         }
         
         log( logMsg ) ;
-    }
-    
-    private String getIndent( LogEvent.Level level ) {
-        switch( level ) {
-            case L0 -> { return "" ; }
-            case L1 -> { return "  " ; }
-            case L2 -> { return "    " ; }
-            case L3 -> { return "      " ; }
-        }
-        return "" ;
     }
     
     private void log( String str ) {

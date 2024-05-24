@@ -21,7 +21,6 @@ public abstract class AbstractTradeStrategy
     private final List<StrategyEventListener> eventListeners = new ArrayList<>() ;
     
     protected final EquityEODHistory history ;
-    protected final TradeBook        tradeBook = new TradeBook() ;
     
     protected int lastIndexEvaluated = -1 ;
     protected Date date = null ;
@@ -30,10 +29,6 @@ public abstract class AbstractTradeStrategy
     protected AbstractTradeStrategy( EquityEODHistory history ) {
         this.history = history ;
         this.eventListeners.add( new StrategyConsoleLogger() ) ;
-    }
-    
-    public final TradeBook getTradeBook() {
-        return this.tradeBook ;
     }
     
     public final void addStrategyEventListener( StrategyEventListener listener ) {
@@ -92,21 +87,16 @@ public abstract class AbstractTradeStrategy
     @Override
     public final void handleDayValue( AbstractDayValue dayValue ) {
         int seriesIndex = dayValue.getSeriesIndex() ;
-        executeStrategy( seriesIndex ) ;
-    }
-    
-    public final void executeStrategy( int seriesIndex ) {
-        
         if( seriesIndex > lastIndexEvaluated ) {
             
             this.bar  = history.getBarSeries().getBar( seriesIndex ) ;
             this.date = Date.from( bar.getEndTime().toInstant() ) ;
             
-            executeSignalStrategy( seriesIndex ) ;
+            executeStrategy( seriesIndex ) ;
             
             this.lastIndexEvaluated = seriesIndex ;
         }
     }
     
-    public abstract void executeSignalStrategy( int seriesIndex ) ;
+    public abstract void executeStrategy( int seriesIndex ) ;
 }

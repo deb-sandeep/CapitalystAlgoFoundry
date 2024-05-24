@@ -4,9 +4,12 @@ import com.sandy.capitalyst.algofoundry.strategy.StrategyEvent;
 import com.sandy.capitalyst.algofoundry.strategy.StrategyEventListener;
 import com.sandy.capitalyst.algofoundry.strategy.event.LogEvent;
 import com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent;
+import com.sandy.capitalyst.algofoundry.strategy.event.TradeEvent;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.sandy.capitalyst.algofoundry.core.util.StringUtil.* ;
+import static com.sandy.capitalyst.algofoundry.strategy.event.LogEvent.Level.L2;
+import static com.sandy.capitalyst.algofoundry.strategy.event.LogEvent.getIndent;
 
 @Slf4j
 public class StrategyConsoleLogger implements StrategyEventListener {
@@ -19,8 +22,11 @@ public class StrategyConsoleLogger implements StrategyEventListener {
                       ze.getMovementType() + " : " +
                       ze.getZoneType() ) ;
         }
+        else if( event instanceof TradeEvent te ) {
+            log.info( getIndent( L2 ) + ">> " + te.getType() + " signal." ) ;
+        }
         else if( event instanceof LogEvent evt ) {
-            String indent = getIndent( evt ) ;
+            String indent = getIndent( evt.getLevel() ) ;
             String message = indent + evt.getMsg() ;
             
             switch( evt.getType() ) {
@@ -29,15 +35,5 @@ public class StrategyConsoleLogger implements StrategyEventListener {
                 case ERROR -> log.error( message ) ;
             }
         }
-    }
-    
-    private String getIndent( LogEvent evt ) {
-        switch( evt.getLevel() ) {
-            case L0 -> { return "" ; }
-            case L1 -> { return "  " ; }
-            case L2 -> { return "    " ; }
-            case L3 -> { return "      " ; }
-        }
-        return "" ;
     }
 }

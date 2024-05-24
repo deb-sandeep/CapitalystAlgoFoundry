@@ -1,10 +1,12 @@
 package com.sandy.capitalyst.algofoundry.equityhistory;
 
+import com.sandy.capitalyst.algofoundry.apiclient.histeod.DayCandle;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
+import org.ta4j.core.BaseBarSeries;
 import org.ta4j.core.Indicator;
 import org.ta4j.core.indicators.EMAIndicator;
 import org.ta4j.core.indicators.MACDIndicator;
@@ -20,12 +22,13 @@ import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.indicators.statistics.StandardDeviationIndicator;
 import org.ta4j.core.num.Num;
 
+import java.io.Serializable;
 import java.util.*;
 
 import static com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory.IndicatorName.*;
 
 @Slf4j
-public class EquityEODHistory {
+public class EquityEODHistory implements Serializable {
     
     public enum PayloadType {
         OHLCV,
@@ -66,9 +69,26 @@ public class EquityEODHistory {
 
     private final Set<DayValueListener> dayValueListeners = new HashSet<>() ;
     
-    public EquityEODHistory( String symbol, BarSeries barSeries ) {
-        this.barSeries = barSeries ;
+    public EquityEODHistory( String symbol, List<DayCandle> candles ) {
+        this.barSeries = buildBarSeries( candles ) ;
         this.symbol = symbol ;
+    }
+    
+    private BarSeries buildBarSeries( List<DayCandle> candles ) {
+        BarSeries series = new BaseBarSeries( symbol ) ;
+        candles.forEach( c -> {
+            Bar newBar = c.toBar() ;
+            if( !series.isEmpty() ) {
+                Bar lastSeriesBar = series.getBar( series.getEndIndex() ) ;
+                if( lastSeriesBar.getEndTime().isBefore( newBar.getEndTime() ) ) {
+                    series.addBar( c.toBar() ) ;
+                }
+            }
+            else {
+                series.addBar( c.toBar() ) ;
+            }
+        } ) ;
+        return series ;
     }
     
     public void addDayValueListener( DayValueListener listener ) {

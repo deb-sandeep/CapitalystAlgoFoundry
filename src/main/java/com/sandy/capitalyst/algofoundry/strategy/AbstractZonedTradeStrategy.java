@@ -58,7 +58,7 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
         super.publishEvent( zoneEvt ) ;
     }
     
-    public final void executeSignalStrategy( int index ) {
+    public final void executeStrategy( int index ) {
         
         double closingPrice = bar.getClosePrice().doubleValue() ;
         

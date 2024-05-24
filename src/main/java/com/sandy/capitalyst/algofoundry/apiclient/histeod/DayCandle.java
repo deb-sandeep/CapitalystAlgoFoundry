@@ -5,13 +5,14 @@ import org.ta4j.core.Bar;
 import org.ta4j.core.BaseBar;
 import org.ta4j.core.num.DecimalNum;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Data
-public class DayCandle {
+public class DayCandle implements Serializable {
     
     private Date date ;
     private float open ;

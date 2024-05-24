@@ -1,13 +1,17 @@
 package com.sandy.capitalyst.algofoundry.ui.panel.eqmeta;
 
+import com.sandy.capitalyst.algofoundry.AlgoFoundry;
 import com.sandy.capitalyst.algofoundry.apiclient.equitymeta.EquityMeta;
 import com.sandy.capitalyst.algofoundry.apiclient.equitymeta.EquityMetaAPIClient;
+import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+
+import static com.sandy.capitalyst.algofoundry.AlgoFoundry.* ;
 
 @Slf4j
 public class EquityMetaTablePanel extends JPanel {
@@ -16,7 +20,9 @@ public class EquityMetaTablePanel extends JPanel {
     
     public EquityMetaTablePanel() {
         
-        EquityMetaAPIClient apiClient = new EquityMetaAPIClient() ;
+        EquityMetaAPIClient apiClient = getBean( EquityMetaAPIClient.class ) ;
+        EquityHistEODAPIClient histClient = getBean( EquityHistEODAPIClient.class ) ;
+        
         List<EquityMeta> metaList ;
         
         try{

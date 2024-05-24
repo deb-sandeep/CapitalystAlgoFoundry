@@ -1,5 +1,6 @@
 package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
+import com.sandy.capitalyst.algofoundry.AlgoFoundry;
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
 import com.sandy.capitalyst.algofoundry.strategy.*;
@@ -13,6 +14,7 @@ import java.util.*;
 
 import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.getNewJPanel;
 import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.initPanelUI;
+import static com.sandy.capitalyst.algofoundry.AlgoFoundry.* ;
 
 @Slf4j
 public class SimPanel extends JPanel {
@@ -41,7 +43,11 @@ public class SimPanel extends JPanel {
     private AbstractZonedTradeStrategy tradeStrategy = null ;
     
     public SimPanel( String symbol ) throws Exception {
-        this.history = new EquityHistEODAPIClient().getEquityEODHistory( symbol ) ;
+        
+        EquityHistEODAPIClient apiClient = getBean( EquityHistEODAPIClient.class ) ;
+        
+        this.history = new EquityEODHistory( symbol,
+                                     apiClient.getHistoricCandles( symbol ) ) ;
         
         this.priceChart  = new PriceChart( symbol ) ;
         this.volumeChart = new VolumeChart( symbol ) ;

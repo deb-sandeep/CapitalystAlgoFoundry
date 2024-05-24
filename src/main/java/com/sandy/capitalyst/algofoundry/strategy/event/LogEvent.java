@@ -26,4 +26,14 @@ public class LogEvent extends StrategyEvent {
         this.level = level ;
         this.msg = msg ;
     }
+    
+    public static String getIndent( LogEvent.Level level ) {
+        switch( level ) {
+            case L0 -> { return "" ; }
+            case L1 -> { return "  " ; }
+            case L2 -> { return "    " ; }
+            case L3 -> { return "      " ; }
+        }
+        return "" ;
+    }
 }

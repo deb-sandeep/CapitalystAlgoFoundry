@@ -2,8 +2,10 @@ package com.sandy.capitalyst.algofoundry.apiclient.equitymeta;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sandy.capitalyst.algofoundry.core.offline.Offline;
 import com.sandy.capitalyst.algofoundry.core.util.CapitalystServerUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,10 +15,12 @@ import java.util.List;
 import static com.fasterxml.jackson.databind.DeserializationFeature.* ;
 
 @Slf4j
+@Component
 public class EquityMetaAPIClient {
     
     private static final String RECO_URL = "http://{server}/Equity/Recommendations" ;
 
+    @Offline
     public List<EquityMeta> getEquityMetaList() throws Exception {
         
         List<EquityMeta> metaList = new ArrayList<>() ;
