@@ -1,7 +1,6 @@
 package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
-import com.sandy.capitalyst.algofoundry.strategy.StrategyLogListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,7 +36,7 @@ public class SimControlPanel extends JPanel {
         add( this.playCtrlWidget, BorderLayout.SOUTH ) ;
     }
     
-    public StrategyLogListener getLogDisplayWidget() {
+    public LogDisplayWidget getLogDisplayWidget() {
         return this.logDisplayWidget ;
     }
 }

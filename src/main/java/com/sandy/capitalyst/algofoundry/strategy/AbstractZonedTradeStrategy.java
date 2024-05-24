@@ -2,16 +2,12 @@ package com.sandy.capitalyst.algofoundry.strategy;
 
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent;
+import com.sandy.capitalyst.algofoundry.strategy.event.TradeEvent;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import static com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent.* ;
+import static com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent.MovementType;
+import static com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent.ZoneType;
 
 public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
-    
-    public enum Zone { BLACKOUT, LOOKOUT, ENTRY_ACTIVE, EXIT_ACTIVE } ;
     
     private static final int ACTIVATION_WINDOW = 5 ;
     private static final int POST_TRADE_COOLOFF_PERIOD = 0 ;
@@ -62,9 +58,8 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
         super.publishEvent( zoneEvt ) ;
     }
     
-    public final TradeSignal executeSignalStrategy( int index ) {
+    public final void executeSignalStrategy( int index ) {
         
-        TradeSignal signal = null ;
         double closingPrice = bar.getClosePrice().doubleValue() ;
         
         if( isInBlackoutPeriod() ) {
@@ -88,12 +83,10 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
         if( isInEntryActivePeriod() ) {
             publishCurrentZone( ZoneType.BUY, MovementType.CURRENT ) ;
             if( isEntryConditionMet( index ) ) {
-                logger.log2( ">> ENTRY" ) ;
-                signal = new TradeSignal( TradeSignal.Type.ENTRY, date,
-                        history.getSymbol(), closingPrice ) ;
+                publishTradeSignal( TradeEvent.Type.BUY ) ;
             }
             else {
-                logger.log2( ">> Entry disqualified" ) ;
+                super.debug2( ">> Entry disqualified" ); ;
             }
             activeEntryDaysLeft-- ;
             if( isExitZoneTriggered( index ) ) {
@@ -105,12 +98,10 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
         else if( isInExitActivePeriod() ) {
             publishCurrentZone( ZoneType.SELL, MovementType.CURRENT ) ;
             if( isExitConditionMet( index ) ) {
-                logger.log1( "EXIT" ) ;
-                signal = new TradeSignal( TradeSignal.Type.EXIT, date,
-                                          history.getSymbol(), closingPrice ) ;
+                publishTradeSignal( TradeEvent.Type.SELL ) ;
             }
             else {
-                logger.log2( ">> Exit disqualified" ) ;
+                debug2( ">> Exit disqualified" ); ;
             }
             activeExitDaysLeft-- ;
             if( isEntryZoneTriggered( index ) ) {
@@ -119,14 +110,12 @@ public abstract class AbstractZonedTradeStrategy extends AbstractTradeStrategy {
                 activeExitDaysLeft = 0 ;
             }
         }
-        
-        if( signal != null ) {
-            activeExitDaysLeft = 0 ;
-            activeEntryDaysLeft = 0 ;
-            blackoutDaysLeft = POST_TRADE_COOLOFF_PERIOD ;
-        }
-        
-        return signal ;
+    }
+    
+    protected void publishTradeSignal( TradeEvent.Type type ) {
+        super.publishTradeSignal( type ) ;
+        activeExitDaysLeft = 0 ;
+        activeEntryDaysLeft = 0 ;
     }
     
     protected abstract boolean isEntryZoneTriggered( int index ) ;

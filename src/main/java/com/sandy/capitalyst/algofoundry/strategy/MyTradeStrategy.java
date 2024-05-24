@@ -84,12 +84,12 @@ public class MyTradeStrategy extends AbstractZonedTradeStrategy {
         
         boolean result = macdPosStartRes || emaUpCrossoverRes || emaDiffJump || ema20Jump ;
 
-        logger.log1( bs( result ) + " Entry zone trigger check" );
+        info1( bs( result ) + " Entry zone trigger check" );
         if( logRootCause ) {
-            logger.log2( bs( macdPosStartRes   ) + " MACD positive start" ) ;
-            logger.log2( bs( emaUpCrossoverRes ) + " EMA up crossover" ) ;
-            logger.log2( bs( emaDiffJump       ) + " EMA diff > " + ACTIVATION_EMA_DIFF_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
-            logger.log2( bs( ema20Jump         ) + " EMA 20 diff > " + ACTIVATION_EMA_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
+            info2( bs( macdPosStartRes   ) + " MACD positive start" ) ;
+            info2( bs( emaUpCrossoverRes ) + " EMA up crossover" ) ;
+            info2( bs( emaDiffJump       ) + " EMA diff > " + ACTIVATION_EMA_DIFF_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
+            info2( bs( ema20Jump         ) + " EMA 20 diff > " + ACTIVATION_EMA_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
         }
         
         return result ;
@@ -111,12 +111,12 @@ public class MyTradeStrategy extends AbstractZonedTradeStrategy {
         
         boolean result = macdNegStartRes || emaDownCrossoverRes || emaDiffJump || ema20Jump ;
 
-        logger.log1( bs( result ) + " Exit zone trigger check" );
+        info1( bs( result ) + " Exit zone trigger check" );
         if( logRootCause ) {
-            logger.log2( bs( macdNegStartRes     ) + " MACD negative start" ) ;
-            logger.log2( bs( emaDownCrossoverRes ) + " EMA down crossover" ) ;
-            logger.log2( bs( emaDiffJump         ) + " EMA diff < -" + ACTIVATION_EMA_DIFF_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
-            logger.log2( bs( ema20Jump           ) + " EMA 20 diff < -" + ACTIVATION_EMA_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
+            info2( bs( macdNegStartRes     ) + " MACD negative start" ) ;
+            info2( bs( emaDownCrossoverRes ) + " EMA down crossover" ) ;
+            info2( bs( emaDiffJump         ) + " EMA diff < -" + ACTIVATION_EMA_DIFF_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
+            info2( bs( ema20Jump           ) + " EMA 20 diff < -" + ACTIVATION_EMA_THR + "% in " + ACTIVATION_TEST_GAP + " days" ) ;
         }
 
         return result ;
@@ -136,11 +136,11 @@ public class MyTradeStrategy extends AbstractZonedTradeStrategy {
         
         boolean result = ema20Jump && adxUpTrendRes && adxStrengthRes ;
 
-        logger.log1( bs( result ) + " Entry condition check" );
+        info1( bs( result ) + " Entry condition check" );
         if( logRootCause ) {
-            logger.log2( bs( adxUpTrendRes  ) + " ADX up trend" ) ;
-            logger.log2( bs( adxStrengthRes ) + " ADX strength > 25" ) ;
-            logger.log2( bs( ema20Jump      ) + " EMA jump > " +
+            info2( bs( adxUpTrendRes  ) + " ADX up trend" ) ;
+            info2( bs( adxStrengthRes ) + " ADX strength > 25" ) ;
+            info2( bs( ema20Jump      ) + " EMA jump > " +
                     pctThreshold + "% in " + activationAge + " days" ) ;
         }
         
@@ -161,11 +161,11 @@ public class MyTradeStrategy extends AbstractZonedTradeStrategy {
         
         boolean result = ema20Jump && adxDownTrendRes && adxStrengthRes ;
 
-        logger.log1( bs( result ) + " Exit condition check" );
+        info1( bs( result ) + " Exit condition check" );
         if( logRootCause ) {
-            logger.log2( bs( adxDownTrendRes ) + " ADX down trend" ) ;
-            logger.log2( bs( adxStrengthRes  ) + " ADX strength > 25" ) ;
-            logger.log2( bs( ema20Jump       ) + " EMA jump < -" +
+            info2( bs( adxDownTrendRes ) + " ADX down trend" ) ;
+            info2( bs( adxStrengthRes  ) + " ADX strength > 25" ) ;
+            info2( bs( ema20Jump       ) + " EMA jump < -" +
                     pctThreshold + "% in " + activationAge + " days" ) ;
         }
         

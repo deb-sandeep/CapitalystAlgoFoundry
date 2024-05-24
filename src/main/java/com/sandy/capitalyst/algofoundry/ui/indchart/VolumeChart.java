@@ -5,10 +5,8 @@ import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.OHLCVDayValue;
 import com.sandy.capitalyst.algofoundry.strategy.StrategyEvent;
 import com.sandy.capitalyst.algofoundry.strategy.StrategyEventListener;
 import com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent;
-import com.sandy.capitalyst.algofoundry.ui.indchart.util.CircleAnnotationDrawable;
 import lombok.extern.slf4j.Slf4j;
-import org.jfree.chart.annotations.XYAnnotation;
-import org.jfree.chart.annotations.XYDrawableAnnotation;
+import org.jfree.chart.annotations.XYBoxAnnotation;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.time.Day;
@@ -26,8 +24,8 @@ public class VolumeChart extends IndicatorChart
     
     private static final Color BLACKOUT_COLOR     = new Color( 58, 57, 57 ) ;
     private static final Color LOOKOUT_COLOR      = new Color( 96, 96, 96 ) ;
-    private static final Color ENTRY_ACTIVE_COLOR = new Color( 81, 134, 62 ) ;
-    private static final Color EXIT_ACTIVE_COLOR  = new Color( 131, 52, 52 ) ;
+    private static final Color ENTRY_ACTIVE_COLOR = new Color( 81, 134, 62, 100 ) ;
+    private static final Color EXIT_ACTIVE_COLOR  = new Color( 131, 52, 52, 137 ) ;
     
     private TimeSeries dayVolumeTimeSeries ;
     
@@ -87,12 +85,13 @@ public class VolumeChart extends IndicatorChart
             
             double yVal = ze.getBar().getVolume().doubleValue()/1000 ;
             
-            CircleAnnotationDrawable cd = new CircleAnnotationDrawable( color ) ;
-            XYAnnotation annotation = new XYDrawableAnnotation(
-                    (double)(ze.getDate().getTime() + 86400*500),
+            XYBoxAnnotation annotation = new XYBoxAnnotation(
+                    (double)(ze.getDate().getTime()),
+                    0,
+                    (double)(ze.getDate().getTime() + 86400*1000),
                     yVal,
-                    5, 5, cd ) ;
-            
+                    null, null, color
+            ) ;
             SwingUtilities.invokeLater( () ->
                     plot.getRenderer().addAnnotation( annotation ) ) ;
         }

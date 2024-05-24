@@ -151,11 +151,10 @@ public class SimPanel extends JPanel {
         }
         
         tradeStrategy = tradeStrategyMap.get( strategyName ) ;
-        tradeStrategy.addTradeSignalListener( ( TradeSignalListener )this.priceChart ) ;
-        tradeStrategy.addLogListener( controlPanel.getLogDisplayWidget() ) ;
         
-        tradeStrategy.addStrategyEventListener( (StrategyEventListener)controlPanel.getLogDisplayWidget() ) ;
+        tradeStrategy.addStrategyEventListener( controlPanel.getLogDisplayWidget() ) ;
         tradeStrategy.addStrategyEventListener( (StrategyEventListener)volumeChart ) ;
+        tradeStrategy.addStrategyEventListener( (StrategyEventListener)priceChart );
         
         history.addDayValueListener( tradeStrategy ) ;
     }

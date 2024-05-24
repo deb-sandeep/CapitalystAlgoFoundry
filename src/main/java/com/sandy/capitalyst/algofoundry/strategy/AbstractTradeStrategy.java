@@ -3,9 +3,8 @@ package com.sandy.capitalyst.algofoundry.strategy;
 import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.DayValueListener;
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
-import com.sandy.capitalyst.algofoundry.strategy.event.LogEvent;
+import com.sandy.capitalyst.algofoundry.strategy.event.TradeEvent;
 import com.sandy.capitalyst.algofoundry.strategy.log.StrategyConsoleLogger;
-import com.sandy.capitalyst.algofoundry.strategy.log.StrategyLogger;
 import org.ta4j.core.Bar;
 
 import java.util.ArrayList;
@@ -20,7 +19,6 @@ public abstract class AbstractTradeStrategy
         implements DayValueListener {
     
     private final List<StrategyEventListener> eventListeners = new ArrayList<>() ;
-    private final List<TradeSignalListener> listeners = new ArrayList<>() ;
     
     protected final EquityEODHistory history ;
     protected final TradeBook        tradeBook = new TradeBook() ;
@@ -28,8 +26,6 @@ public abstract class AbstractTradeStrategy
     protected int lastIndexEvaluated = -1 ;
     protected Date date = null ;
     protected Bar bar = null ;
-    
-    protected StrategyLogger logger = new StrategyLogger() ;
     
     protected AbstractTradeStrategy( EquityEODHistory history ) {
         this.history = history ;
@@ -44,16 +40,12 @@ public abstract class AbstractTradeStrategy
         this.eventListeners.add( listener ) ;
     }
     
-    public final void addTradeSignalListener( TradeSignalListener listener ) {
-        listeners.add( listener ) ;
-    }
-    
-    public final void addLogListener( StrategyLogListener listener ) {
-        logger.addListener( listener ) ;
-    }
-    
     protected final void publishEvent( StrategyEvent event ) {
         eventListeners.forEach( l -> l.handleStrategyEvent( event ) ) ;
+    }
+    
+    protected void publishTradeSignal( TradeEvent.Type type ) {
+        publishEvent( new TradeEvent( date, bar, type ) ) ;
     }
     
     protected final void debug0( String msg ) {
@@ -95,10 +87,6 @@ public abstract class AbstractTradeStrategy
     public void clear() {
         lastIndexEvaluated = -1 ;
         eventListeners.clear() ;
-        
-        listeners.clear() ;
-        tradeBook.clear() ;
-        logger.clearListeners() ;
     }
     
     @Override
@@ -107,32 +95,18 @@ public abstract class AbstractTradeStrategy
         executeStrategy( seriesIndex ) ;
     }
     
-    public final TradeSignal executeStrategy( int seriesIndex ) {
+    public final void executeStrategy( int seriesIndex ) {
         
-        TradeSignal signal = null ;
         if( seriesIndex > lastIndexEvaluated ) {
             
             this.bar  = history.getBarSeries().getBar( seriesIndex ) ;
             this.date = Date.from( bar.getEndTime().toInstant() ) ;
             
-            signal = executeSignalStrategy( seriesIndex ) ;
-            if( signal != null ) {
-                if( signal.isEntrySignal() ) {
-                    if( tradeBook.getQuantity() > 0 ) {
-                        tradeBook.addTrade( signal ) ;
-                    }
-                }
-                for( TradeSignalListener l : listeners ) {
-                    l.handleTradeSignal( signal ) ;
-                }
-            }
+            executeSignalStrategy( seriesIndex ) ;
             
-            double closePrice = bar.getClosePrice().doubleValue() ;
-            tradeBook.handleTradeSignal( seriesIndex, date, closePrice, signal ) ;
             this.lastIndexEvaluated = seriesIndex ;
         }
-        return signal ;
     }
     
-    public abstract TradeSignal executeSignalStrategy( int seriesIndex ) ;
+    public abstract void executeSignalStrategy( int seriesIndex ) ;
 }

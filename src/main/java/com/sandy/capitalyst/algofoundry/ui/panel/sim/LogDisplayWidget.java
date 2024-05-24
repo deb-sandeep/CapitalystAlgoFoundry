@@ -1,14 +1,12 @@
 package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
-import com.sandy.capitalyst.algofoundry.core.ui.SwingUtils;
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
 import com.sandy.capitalyst.algofoundry.strategy.StrategyEvent;
 import com.sandy.capitalyst.algofoundry.strategy.StrategyEventListener;
-import com.sandy.capitalyst.algofoundry.strategy.StrategyLogListener;
 import com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent;
 import com.sandy.capitalyst.algofoundry.strategy.event.LogEvent;
+import com.sandy.capitalyst.algofoundry.strategy.event.TradeEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.logging.LogLevel;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
@@ -24,7 +22,7 @@ import static com.sandy.capitalyst.algofoundry.strategy.event.LogEvent.Level.*;
 
 @Slf4j
 public class LogDisplayWidget extends SimControlPanel.SimControlWidget
-    implements StrategyLogListener, StrategyEventListener {
+    implements StrategyEventListener {
     
     private static class ScrollBarUI extends BasicScrollBarUI {
         @Override
@@ -87,13 +85,6 @@ public class LogDisplayWidget extends SimControlPanel.SimControlWidget
     }
     
     @Override
-    public void log( String str ) {
-        String newText = textArea.getText() + "\n" + str ;
-        textArea.setText( newText ) ;
-        textArea.setCaretPosition( newText.length() ) ;
-    }
-    
-    @Override
     public void handleStrategyEvent( StrategyEvent event ) {
         
         String logMsg = null ;
@@ -104,9 +95,12 @@ public class LogDisplayWidget extends SimControlPanel.SimControlWidget
                 logMsg = getIndent( L2 ) + ">> " + ze.getZoneType() + " Zone Activated" ;
             }
             else {
-                logMsg = ( fmtDate( ze.getDate() ) + " : " +
+                logMsg = "\n" + ( fmtDate( ze.getDate() ) + " : " +
                         ze.getZoneType() ) ;
             }
+        }
+        else if( event instanceof TradeEvent te ) {
+            logMsg = getIndent( L2 ) + ">> " + te.getType() + " signal." ;
         }
         else if( event instanceof LogEvent evt ) {
             logMsg = getIndent( evt.getLevel() ) + evt.getMsg() ;
@@ -123,5 +117,11 @@ public class LogDisplayWidget extends SimControlPanel.SimControlWidget
             case L3 -> { return "      " ; }
         }
         return "" ;
+    }
+    
+    private void log( String str ) {
+        String newText = textArea.getText() + "\n" + str ;
+        textArea.setText( newText ) ;
+        textArea.setCaretPosition( newText.length() ) ;
     }
 }

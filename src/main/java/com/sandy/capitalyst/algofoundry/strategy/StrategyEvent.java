@@ -14,4 +14,8 @@ public class StrategyEvent {
         this.date = date ;
         this.bar = bar ;
     }
+    
+    public double getClosingPrice() {
+        return bar.getClosePrice().doubleValue() ;
+    }
 }

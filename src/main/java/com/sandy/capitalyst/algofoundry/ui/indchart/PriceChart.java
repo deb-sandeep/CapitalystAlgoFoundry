@@ -5,8 +5,9 @@ import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.BollingerBandDayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.MADayValue;
 import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.OHLCVDayValue;
-import com.sandy.capitalyst.algofoundry.strategy.TradeSignal;
-import com.sandy.capitalyst.algofoundry.strategy.TradeSignalListener;
+import com.sandy.capitalyst.algofoundry.strategy.StrategyEvent;
+import com.sandy.capitalyst.algofoundry.strategy.StrategyEventListener;
+import com.sandy.capitalyst.algofoundry.strategy.event.TradeEvent;
 import com.sandy.capitalyst.algofoundry.ui.indchart.util.CircleAnnotationDrawable;
 import com.sandy.capitalyst.algofoundry.ui.indchart.util.CrossHairMoveListener;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,7 @@ import static com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory.Pa
 
 @Slf4j
 public class PriceChart extends IndicatorChart
-    implements TradeSignalListener {
+    implements StrategyEventListener {
     
     private static final DecimalFormat    CROSSHAIR_PRICE_FMT = new DecimalFormat( "###.0" ) ;
     
@@ -231,17 +232,20 @@ public class PriceChart extends IndicatorChart
     }
     
     @Override
-    public void handleTradeSignal( TradeSignal signal ) {
+    public void handleStrategyEvent( StrategyEvent event ) {
         
-        Color color = ( signal.getType() == TradeSignal.Type.ENTRY ) ?
-                      Color.GREEN.darker() : Color.RED.darker() ;
-        CircleAnnotationDrawable cd = new CircleAnnotationDrawable( color ) ;
-        XYAnnotation annotation = new XYDrawableAnnotation(
-                                            (double)signal.getDate().getTime(),
-                                            signal.getPrice(),
-                                            10, 10, cd ) ;
-        
-        SwingUtilities.invokeLater( () -> plot.getRenderer()
-                                              .addAnnotation( annotation ) ) ;
+        if( event instanceof TradeEvent te ) {
+            
+            Color color = ( te.getType() == TradeEvent.Type.BUY ) ?
+                          Color.GREEN.darker() : Color.RED.darker() ;
+            CircleAnnotationDrawable cd = new CircleAnnotationDrawable( color ) ;
+            XYAnnotation annotation = new XYDrawableAnnotation(
+                    (double)te.getDate().getTime(),
+                    te.getClosingPrice(),
+                    10, 10, cd ) ;
+            
+            SwingUtilities.invokeLater( () -> plot.getRenderer()
+                    .addAnnotation( annotation ) ) ;
+        }
     }
 }
