@@ -1,10 +1,9 @@
 package com.sandy.capitalyst.algofoundry.ui.indchart;
 
-import com.sandy.capitalyst.algofoundry.core.ui.SwingUtils;
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
-import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
-import com.sandy.capitalyst.algofoundry.equityhistory.DayValueListener;
-import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
+import com.sandy.capitalyst.algofoundry.eodhistory.AbstractDayValue;
+import com.sandy.capitalyst.algofoundry.eodhistory.DayValueListener;
+import com.sandy.capitalyst.algofoundry.eodhistory.EquityEODHistory;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;

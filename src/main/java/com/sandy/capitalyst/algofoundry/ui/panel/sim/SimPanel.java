@@ -1,11 +1,12 @@
 package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
-import com.sandy.capitalyst.algofoundry.AlgoFoundry;
-import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
+import com.sandy.capitalyst.algofoundry.eodhistory.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
-import com.sandy.capitalyst.algofoundry.strategy.*;
-import com.sandy.capitalyst.algofoundry.strategy.tradebook.DefaultTradeBook;
-import com.sandy.capitalyst.algofoundry.strategy.tradebook.TradeBook;
+import com.sandy.capitalyst.algofoundry.strategy.signal.AbstractZonedSignalStrategy;
+import com.sandy.capitalyst.algofoundry.strategy.signal.MySignalStrategy;
+import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEventListener;
+import com.sandy.capitalyst.algofoundry.strategy.trade.DefaultTradeBook;
+import com.sandy.capitalyst.algofoundry.strategy.trade.TradeBook;
 import com.sandy.capitalyst.algofoundry.ui.indchart.*;
 import com.sandy.capitalyst.algofoundry.ui.indchart.util.CrossHairMoveListener;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,7 @@ public class SimPanel extends JPanel {
     private static final int RSI_CHART_HEIGHT = 150 ;
     private static final int ADX_CHART_HEIGHT = 150 ;
     
-    private final Map<String, AbstractZonedTradeStrategy> tradeStrategyMap = new LinkedHashMap<>() ;
+    private final Map<String, AbstractZonedSignalStrategy> tradeStrategyMap = new LinkedHashMap<>() ;
     
     private final EquityEODHistory history ;
     
@@ -42,7 +43,7 @@ public class SimPanel extends JPanel {
     
     private int curBarSeriesIndex = 0 ;
     
-    private AbstractZonedTradeStrategy tradeStrategy = null ;
+    private AbstractZonedSignalStrategy tradeStrategy = null ;
     
     private TradeBook tradeBook = new DefaultTradeBook() ;
     
@@ -86,8 +87,8 @@ public class SimPanel extends JPanel {
     }
     
     private void populateTradeStrategiesMap() {
-        tradeStrategyMap.put( MyTradeStrategy.NAME,
-                              new MyTradeStrategy( history ) ) ;
+        tradeStrategyMap.put( MySignalStrategy.NAME,
+                              new MySignalStrategy( history ) ) ;
     }
     
     private void setUpUI() {
@@ -166,8 +167,8 @@ public class SimPanel extends JPanel {
         tradeStrategy = tradeStrategyMap.get( strategyName ) ;
         
         tradeStrategy.addStrategyEventListener( controlPanel.getLogDisplayWidget() ) ;
-        tradeStrategy.addStrategyEventListener( (StrategyEventListener)volumeChart ) ;
-        tradeStrategy.addStrategyEventListener( (StrategyEventListener)priceChart ) ;
+        tradeStrategy.addStrategyEventListener( ( SignalStrategyEventListener )volumeChart ) ;
+        tradeStrategy.addStrategyEventListener( ( SignalStrategyEventListener )priceChart ) ;
         tradeStrategy.addStrategyEventListener( tradeBook ) ;
         
         history.addDayValueListener( tradeStrategy ) ;

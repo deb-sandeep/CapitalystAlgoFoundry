@@ -1,8 +1,6 @@
 package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
-import com.sandy.capitalyst.algofoundry.equityhistory.DayValueListener;
-import org.ta4j.core.Trade;
 
 import javax.swing.*;
 import java.awt.*;

@@ -4,13 +4,10 @@ import com.sandy.capitalyst.algofoundry.core.offline.Offline;
 import com.sandy.capitalyst.algofoundry.core.util.CapitalystServerUtil;
 import com.sandy.capitalyst.algofoundry.dao.equity.HistoricEQData;
 import com.sandy.capitalyst.algofoundry.dao.equity.repo.HistoricEQDataRepo;
-import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.ta4j.core.BarSeries;
-import org.ta4j.core.BaseBarSeries;
 
 import java.io.StringReader;
 import java.text.SimpleDateFormat;

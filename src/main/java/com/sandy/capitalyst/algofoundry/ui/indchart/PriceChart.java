@@ -1,13 +1,13 @@
 package com.sandy.capitalyst.algofoundry.ui.indchart;
 
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
-import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
-import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.BollingerBandDayValue;
-import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.MADayValue;
-import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.OHLCVDayValue;
-import com.sandy.capitalyst.algofoundry.strategy.StrategyEvent;
-import com.sandy.capitalyst.algofoundry.strategy.StrategyEventListener;
-import com.sandy.capitalyst.algofoundry.strategy.event.TradeEvent;
+import com.sandy.capitalyst.algofoundry.eodhistory.AbstractDayValue;
+import com.sandy.capitalyst.algofoundry.eodhistory.dayvalue.BollingerBandDayValue;
+import com.sandy.capitalyst.algofoundry.eodhistory.dayvalue.MADayValue;
+import com.sandy.capitalyst.algofoundry.eodhistory.dayvalue.OHLCVDayValue;
+import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEvent;
+import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEventListener;
+import com.sandy.capitalyst.algofoundry.strategy.signal.event.TradeSignalEvent;
 import com.sandy.capitalyst.algofoundry.ui.indchart.util.CircleAnnotationDrawable;
 import com.sandy.capitalyst.algofoundry.ui.indchart.util.CrossHairMoveListener;
 import lombok.extern.slf4j.Slf4j;
@@ -40,11 +40,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory.PayloadType;
+import static com.sandy.capitalyst.algofoundry.eodhistory.EquityEODHistory.PayloadType;
 
 @Slf4j
 public class PriceChart extends IndicatorChart
-    implements StrategyEventListener {
+    implements SignalStrategyEventListener {
     
     private static final DecimalFormat    CROSSHAIR_PRICE_FMT = new DecimalFormat( "###.0" ) ;
     
@@ -261,11 +261,11 @@ public class PriceChart extends IndicatorChart
     }
     
     @Override
-    public void handleStrategyEvent( StrategyEvent event ) {
+    public void handleStrategyEvent( SignalStrategyEvent event ) {
         
-        if( event instanceof TradeEvent te ) {
+        if( event instanceof TradeSignalEvent te ) {
             
-            Color color = ( te.getType() == TradeEvent.Type.BUY ) ?
+            Color color = ( te.getType() == TradeSignalEvent.Type.BUY ) ?
                           Color.GREEN.darker() : Color.RED.darker() ;
             CircleAnnotationDrawable cd = new CircleAnnotationDrawable( color ) ;
             XYAnnotation annotation = new XYDrawableAnnotation(

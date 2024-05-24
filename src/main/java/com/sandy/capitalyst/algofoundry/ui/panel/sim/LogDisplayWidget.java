@@ -1,11 +1,11 @@
 package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
-import com.sandy.capitalyst.algofoundry.strategy.StrategyEvent;
-import com.sandy.capitalyst.algofoundry.strategy.StrategyEventListener;
-import com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent;
-import com.sandy.capitalyst.algofoundry.strategy.event.LogEvent;
-import com.sandy.capitalyst.algofoundry.strategy.event.TradeEvent;
+import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEvent;
+import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEventListener;
+import com.sandy.capitalyst.algofoundry.strategy.signal.event.CurrentSignalZoneEvent;
+import com.sandy.capitalyst.algofoundry.strategy.signal.event.SignalStrategyLogEvent;
+import com.sandy.capitalyst.algofoundry.strategy.signal.event.TradeSignalEvent;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -17,13 +17,13 @@ import java.awt.event.KeyEvent;
 
 import static com.sandy.capitalyst.algofoundry.core.ui.SwingUtils.* ;
 import static com.sandy.capitalyst.algofoundry.core.util.StringUtil.fmtDate;
-import static com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent.MovementType.* ;
-import static com.sandy.capitalyst.algofoundry.strategy.event.LogEvent.Level.*;
-import static com.sandy.capitalyst.algofoundry.strategy.event.LogEvent.getIndent;
+import static com.sandy.capitalyst.algofoundry.strategy.signal.event.CurrentSignalZoneEvent.MovementType.* ;
+import static com.sandy.capitalyst.algofoundry.strategy.signal.event.SignalStrategyLogEvent.Level.*;
+import static com.sandy.capitalyst.algofoundry.strategy.signal.event.SignalStrategyLogEvent.getIndent;
 
 @Slf4j
 public class LogDisplayWidget extends SimControlPanel.SimControlWidget
-    implements StrategyEventListener {
+    implements SignalStrategyEventListener {
     
     private static class ScrollBarUI extends BasicScrollBarUI {
         @Override
@@ -86,30 +86,30 @@ public class LogDisplayWidget extends SimControlPanel.SimControlWidget
     }
     
     @Override
-    public void handleStrategyEvent( StrategyEvent event ) {
+    public void handleStrategyEvent( SignalStrategyEvent event ) {
         
         String logMsg = null ;
         
-        if( event instanceof CurrentZoneEvent ze ) {
+        if( event instanceof CurrentSignalZoneEvent ze ) {
             
             if( ze.getMovementType() != CURRENT ) {
                 logMsg = getIndent( L2 ) + ">> " + ze.getZoneType() + " Zone Activated" ;
             }
             else {
-                if( ze.getZoneType() == CurrentZoneEvent.ZoneType.BLACKOUT ) {
+                if( ze.getZoneType() == CurrentSignalZoneEvent.ZoneType.BLACKOUT ) {
                     logMsg = ( fmtDate( ze.getDate() ) + " : " +
                              ze.getZoneType() ) ;
                 }
                 else {
                     logMsg = "\n" + ( fmtDate( ze.getDate() ) + " : " +
-                            ze.getZoneType() + " Zone" ) ;
+                             ze.getZoneType() + " Zone" ) ;
                 }
             }
         }
-        else if( event instanceof TradeEvent te ) {
+        else if( event instanceof TradeSignalEvent te ) {
             logMsg = getIndent( L2 ) + ">> " + te.getType() + " signal." ;
         }
-        else if( event instanceof LogEvent evt ) {
+        else if( event instanceof SignalStrategyLogEvent evt ) {
             logMsg = getIndent( evt.getLevel() ) + evt.getMsg() ;
         }
         

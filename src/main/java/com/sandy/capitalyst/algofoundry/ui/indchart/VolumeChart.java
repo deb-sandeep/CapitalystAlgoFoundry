@@ -1,10 +1,10 @@
 package com.sandy.capitalyst.algofoundry.ui.indchart;
 
-import com.sandy.capitalyst.algofoundry.equityhistory.AbstractDayValue;
-import com.sandy.capitalyst.algofoundry.equityhistory.dayvalue.OHLCVDayValue;
-import com.sandy.capitalyst.algofoundry.strategy.StrategyEvent;
-import com.sandy.capitalyst.algofoundry.strategy.StrategyEventListener;
-import com.sandy.capitalyst.algofoundry.strategy.event.CurrentZoneEvent;
+import com.sandy.capitalyst.algofoundry.eodhistory.AbstractDayValue;
+import com.sandy.capitalyst.algofoundry.eodhistory.dayvalue.OHLCVDayValue;
+import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEvent;
+import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEventListener;
+import com.sandy.capitalyst.algofoundry.strategy.signal.event.CurrentSignalZoneEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.annotations.XYBoxAnnotation;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
@@ -16,11 +16,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-import static com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory.PayloadType;
+import static com.sandy.capitalyst.algofoundry.eodhistory.EquityEODHistory.PayloadType;
 
 @Slf4j
 public class VolumeChart extends IndicatorChart
-        implements StrategyEventListener {
+        implements SignalStrategyEventListener {
     
     private static final Color BLACKOUT_COLOR     = new Color( 58, 57, 57 ) ;
     private static final Color LOOKOUT_COLOR      = new Color( 96, 96, 96 ) ;
@@ -74,8 +74,8 @@ public class VolumeChart extends IndicatorChart
     }
     
     @Override
-    public void handleStrategyEvent( StrategyEvent event ) {
-        if( event instanceof CurrentZoneEvent ze ) {
+    public void handleStrategyEvent( SignalStrategyEvent event ) {
+        if( event instanceof CurrentSignalZoneEvent ze ) {
             Color color = BLACKOUT_COLOR ;
             switch( ze.getZoneType() ) {
                 case LOOKOUT -> color = LOOKOUT_COLOR ;

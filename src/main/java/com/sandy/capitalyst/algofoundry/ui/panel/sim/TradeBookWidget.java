@@ -1,8 +1,8 @@
 package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
-import com.sandy.capitalyst.algofoundry.strategy.tradebook.TradeBook;
-import com.sandy.capitalyst.algofoundry.strategy.tradebook.TradeBookListener;
+import com.sandy.capitalyst.algofoundry.strategy.trade.TradeBook;
+import com.sandy.capitalyst.algofoundry.strategy.trade.TradeBookListener;
 import info.clearthought.layout.TableLayout;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,9 +22,10 @@ public class TradeBookWidget extends SimControlPanel.SimControlWidget
     
     private final TradeBook tradeBook ;
     
-    private JLabel holdingQtyValLabel = null ;
-    private JLabel profitPctValLabel  = null ;
-    private JLabel avgCostPriceLabel  = null ;
+    private JLabel holdingQtyValLabel   = null ;
+    private JLabel profitPctValLabel    = null ;
+    private JLabel avgCostPriceLabel    = null ;
+    private JLabel notProfitPctValLabel = null ;
     
     public TradeBookWidget( SimPanel simPanel) {
         super( simPanel ) ;
@@ -37,26 +38,31 @@ public class TradeBookWidget extends SimControlPanel.SimControlWidget
         initPanelUI( this ) ;
         double size[][] = {
             { 0.8, 0.2 },
-            { 0.33, 0.33, 0.33 }
+            { 0.25, 0.25, 0.25, 0.25 }
         } ;
         super.setLayout( new TableLayout( size ) ) ;
         
         JLabel holdingQty   = getAttributeLabel( "Holding quantity" ) ;
         JLabel avgCostPrice = getAttributeLabel( "Avg. cost price" ) ;
         JLabel profitPct    = getAttributeLabel( "Total Profit %" ) ;
+        JLabel notProfitPct = getAttributeLabel( "Notional Profit %" ) ;
         
-        holdingQtyValLabel = getValueLabel() ;
-        profitPctValLabel  = getValueLabel() ;
-        avgCostPriceLabel  = getValueLabel() ;
+        holdingQtyValLabel   = getValueLabel() ;
+        profitPctValLabel    = getValueLabel() ;
+        avgCostPriceLabel    = getValueLabel() ;
+        notProfitPctValLabel = getValueLabel() ;
         
-        add( holdingQty, "0, 0" ) ;
-        add( holdingQtyValLabel, "1, 0" ) ;
+        add( profitPct,  "0, 0" ) ;
+        add( profitPctValLabel, "1, 0" ) ;
         
-        add( avgCostPrice, "0, 1" ) ;
-        add( avgCostPriceLabel, "1, 1" ) ;
+        add( holdingQty, "0, 1" ) ;
+        add( holdingQtyValLabel, "1, 1" ) ;
         
-        add( profitPct,  "0, 2" ) ;
-        add( profitPctValLabel, "1, 2" ) ;
+        add( avgCostPrice, "0, 2" ) ;
+        add( avgCostPriceLabel, "1, 2" ) ;
+        
+        add( notProfitPct,  "0, 3" ) ;
+        add( notProfitPctValLabel, "1, 3" ) ;
         
         setBorder( BorderFactory.createEmptyBorder( 5, 5, 5, 5 ) );
     }
@@ -79,12 +85,15 @@ public class TradeBookWidget extends SimControlPanel.SimControlWidget
     @Override
     public void tradeBookUpdated( TradeBook tradeBook ) {
         
-        double profitPct = tradeBook.getTotalProfitPct() ;
+        double profitPct    = tradeBook.getTotalProfitPct() ;
+        double notProfitPct = tradeBook.getNotionalProfitPct() ;
         
         holdingQtyValLabel.setText( String.valueOf( tradeBook.getHoldingQty() ) ) ;
         profitPctValLabel.setText( PCT_DF.format( profitPct ) + " %" ) ;
         avgCostPriceLabel.setText( DF.format( tradeBook.getAvgCostPrice() ) ) ;
+        notProfitPctValLabel.setText( PCT_DF.format( notProfitPct ) + " %" ) ;
         
         profitPctValLabel.setForeground( profitPct > 0 ? Color.GREEN : Color.RED ) ;
+        notProfitPctValLabel.setForeground( notProfitPct > 0 ? Color.GREEN : Color.RED ) ;
     }
 }
