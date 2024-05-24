@@ -50,6 +50,8 @@ public class PriceChart extends IndicatorChart
     private static final Color CLOSING_PRICE_COLOR = new Color( 178, 255, 102 ).darker() ;
     private static final Color EMA5_COLOR          = new Color( 121, 168, 252, 255 ) ;
     private static final Color BOLLINGER_MID_COLOR = new Color( 175, 65, 65, 255 ) ;
+    private static final Color POS_EMA5_LABEL_COLOR= new Color( 43, 229, 7, 126 ) ;
+    private static final Color NEG_EMA5_LABEL_COLOR= new Color( 175, 65, 65, 144 ) ;
     
     private TimeSeries ema5TimeSeries ;
     private TimeSeries closePriceTimeSeries ;
@@ -83,8 +85,8 @@ public class PriceChart extends IndicatorChart
     private void attachCrosshair() {
         
         this.xCrosshair = createXCrosshair() ;
-        this.ema5Crosshair = createEMACrosshair() ;
-        this.ema20Crosshair = createEMACrosshair() ;
+        this.ema20Crosshair = createEMACrosshair( null ) ;
+        this.ema5Crosshair = createEMACrosshair( ema20Crosshair ) ;
         
         crosshairOverlay.addDomainCrosshair( xCrosshair ) ;
         crosshairOverlay.addRangeCrosshair( ema5Crosshair ) ;
@@ -102,11 +104,23 @@ public class PriceChart extends IndicatorChart
         return crosshair ;
     }
     
-    private Crosshair createEMACrosshair() {
+    private Crosshair createEMACrosshair( Crosshair refCrosshair ) {
         Crosshair crosshair = createGenericCrosshair() ;
-        crosshair.setLabelGenerator( c ->
-                CROSSHAIR_PRICE_FMT.format( c.getValue() )
-        ) ;
+        crosshair.setLabelGenerator( c -> {
+            if( refCrosshair == null ) {
+                return CROSSHAIR_PRICE_FMT.format( c.getValue() );
+            }
+            else {
+                double refVal = refCrosshair.getValue() ;
+                double val = crosshair.getValue() ;
+                double pct = ((val-refVal)/refVal)*100 ;
+                
+                Color labelBgColor = (pct>0)?POS_EMA5_LABEL_COLOR:NEG_EMA5_LABEL_COLOR ;
+                ema5Crosshair.setLabelBackgroundPaint( labelBgColor ) ;
+
+                return CROSSHAIR_PRICE_FMT.format( pct ) + " %" ;
+            }
+        } ) ;
         return crosshair ;
     }
     

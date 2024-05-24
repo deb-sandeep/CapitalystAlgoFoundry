@@ -115,4 +115,8 @@ public class LogDisplayWidget extends SimControlPanel.SimControlWidget
         textArea.setText( newText ) ;
         textArea.setCaretPosition( newText.length() ) ;
     }
+    
+    public void clear() {
+        textArea.setText( "" ) ;
+    }
 }

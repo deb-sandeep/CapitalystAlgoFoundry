@@ -148,6 +148,7 @@ public class SimPanel extends JPanel {
         for( IndicatorChart chart : charts ) {
             chart.clearChart() ;
         }
+        controlPanel.getLogDisplayWidget().clear() ;
     }
     
     public void setTradeStrategy( String strategyName ) {
