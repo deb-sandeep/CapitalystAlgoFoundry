@@ -1,5 +1,6 @@
 package com.sandy.capitalyst.algofoundry.strategy.trade;
 
+import com.sandy.capitalyst.algofoundry.core.indicator.NumberSeries;
 import com.sandy.capitalyst.algofoundry.eodhistory.AbstractDayValue;
 import com.sandy.capitalyst.algofoundry.eodhistory.DayValueListener;
 import com.sandy.capitalyst.algofoundry.eodhistory.dayvalue.OHLCVDayValue;
@@ -34,6 +35,8 @@ public abstract class TradeBook
     
     private double latestClosingPrice = 0 ;
     
+    protected final NumberSeries notionalProfitPctSeries = new NumberSeries() ;
+    
     public void clear() {
         this.trades.clear() ;
         this.buyTrades.clear() ;
@@ -46,6 +49,8 @@ public abstract class TradeBook
         this.totalBuyPrice     = 0 ;
         this.holdingQty        = 0 ;
         this.avgCostPrice      = 0 ;
+        
+        this.notionalProfitPctSeries.clear() ;
         
         notifyListeners() ;
     }
@@ -83,19 +88,21 @@ public abstract class TradeBook
         }
     }
     
-    private void updateAttributes( boolean notify ) {
+    protected void updateAttributes( boolean notify ) {
         this.holdingQty = computeUnsoldQty() ;
         this.avgCostPrice = computeAvgCostPrice() ;
         this.totalProfit = computeTotalProfit( latestClosingPrice ) ;
         this.totalProfitPct = computeTotalProfitPct() ;
         this.notionalProfitPct = computeNotionalProfitPct() ;
         
+        this.notionalProfitPctSeries.add( notionalProfitPct ) ;
+        
         if( notify ) {
             notifyListeners() ;
         }
     }
     
-    private void processSellTrade( SellTrade sellTrade ) {
+    protected void processSellTrade( SellTrade sellTrade ) {
         
         int sellQty = sellTrade.getQuantity() ;
         int remainingSellQty = sellQty ;
@@ -109,12 +116,19 @@ public abstract class TradeBook
         sellTrades.add( sellTrade ) ;
         while( remainingSellQty > 0 ) {
      
-            BuyTrade buyTrade = this.buyTrades.remove( 0 ) ;
-     
-            buyTrade.setSellTrade( sellTrade ) ;
-            sellTrade.addBuyTrade( buyTrade ) ;
+            BuyTrade buyTrade = this.buyTrades.get( 0 ) ;
+            int buyQtyLeft = buyTrade.getQuantityLeft() ;
+            int qtyToSell  = Math.min( remainingSellQty, buyQtyLeft ) ;
             
-            remainingSellQty -= buyTrade.getQuantity() ;
+            
+            buyTrade.addSellTrade( sellTrade, qtyToSell ) ;
+            sellTrade.addBuyTrade( buyTrade, qtyToSell ) ;
+            
+            remainingSellQty -= qtyToSell ;
+            
+            if( buyTrade.getQuantityLeft() == 0 ) {
+                this.buyTrades.remove( 0 ) ;
+            }
         }
     }
     
@@ -122,7 +136,7 @@ public abstract class TradeBook
     private int computeUnsoldQty() {
         holdingQty = 0 ;
         for( BuyTrade trade : buyTrades ) {
-            holdingQty += trade.getQuantity() ;
+            holdingQty += trade.getQuantityLeft() ;
         }
         return this.holdingQty ;
     }
@@ -132,7 +146,7 @@ public abstract class TradeBook
         avgCostPrice = 0 ;
         if( !buyTrades.isEmpty() ) {
             for( BuyTrade trade : buyTrades ) {
-                avgCostPrice += trade.getQuantity()*trade.getPrice() ;
+                avgCostPrice += trade.getQuantityLeft()*trade.getPrice() ;
             }
             avgCostPrice /= this.holdingQty ;
         }
@@ -147,12 +161,12 @@ public abstract class TradeBook
 
     // Compute - 4
     private double computeSellProfit() {
-        double profit = 0 ;
+        double sellProfit = 0 ;
         for( SellTrade sell : sellTrades ) {
-            profit += sell.getProfit() ;
+            sellProfit += sell.getProfit() ;
         }
-        log.debug( "Sell profit = {}", profit );
-        return profit ;
+        log.debug( "Sell profit = {}", sellProfit );
+        return sellProfit ;
     }
     
     // Compute - 5
@@ -160,7 +174,7 @@ public abstract class TradeBook
         notionalProfit = 0 ;
         if( !buyTrades.isEmpty() ) {
             for( BuyTrade buyTrade : buyTrades ) {
-                notionalProfit += (currentPrice-buyTrade.getPrice())*buyTrade.getQuantity() ;
+                notionalProfit += (currentPrice-buyTrade.getPrice())*buyTrade.getQuantityLeft() ;
             }
         }
         log.debug( "Notional profit = {}", notionalProfit );

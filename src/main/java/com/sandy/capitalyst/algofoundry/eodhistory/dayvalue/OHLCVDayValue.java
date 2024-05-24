@@ -18,7 +18,7 @@ public class OHLCVDayValue extends AbstractDayValue {
     
     public OHLCVDayValue( Date date, String symbol, Bar bar, double ema60Price ) {
 
-        super( EquityEODHistory.PayloadType.OHLCV, date, symbol ) ;
+        super( EquityEODHistory.PayloadType.OHLCV, date, bar, symbol ) ;
         
         this.open   = bar.getOpenPrice().doubleValue() ;
         this.high   = bar.getHighPrice().doubleValue() ;

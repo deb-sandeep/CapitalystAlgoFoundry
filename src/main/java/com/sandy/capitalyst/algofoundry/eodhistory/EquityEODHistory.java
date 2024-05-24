@@ -127,11 +127,11 @@ public class EquityEODHistory implements Serializable {
         AbstractDayValue payload = null ;
         switch( pType ) {
             case OHLCV     -> payload = buildOHLCVPayload( index, date, bar ) ;
-            case BOLLINGER -> payload = buildBollingerPayload( index, date ) ;
-            case MACD      -> payload = buildMACDPayload( index, date ) ;
-            case RSI       -> payload = buildRSIPayload( index, date ) ;
-            case ADX       -> payload = buildADXPayload( index, date ) ;
-            case EMA5      -> payload = buildEMAPayload( index, date, 5 ) ;
+            case BOLLINGER -> payload = buildBollingerPayload( index, date, bar ) ;
+            case MACD      -> payload = buildMACDPayload( index, date, bar ) ;
+            case RSI       -> payload = buildRSIPayload( index, date, bar ) ;
+            case ADX       -> payload = buildADXPayload( index, date, bar ) ;
+            case EMA5      -> payload = buildEMAPayload( index, date, bar, 5 ) ;
         }
         return payload ;
     }
@@ -141,32 +141,32 @@ public class EquityEODHistory implements Serializable {
         return new OHLCVDayValue( date, symbol, bar, ema60Val ) ;
     }
     
-    private BollingerBandDayValue buildBollingerPayload( int index, Date date ) {
-        return new BollingerBandDayValue( date, symbol,
+    private BollingerBandDayValue buildBollingerPayload( int index, Date date, Bar bar ) {
+        return new BollingerBandDayValue( date, bar, symbol,
                                      getIndVal( BOLLINGER_UP, index ),
                                      getIndVal( BOLLINGER_MID, index ),
                                      getIndVal( BOLLINGER_LOW, index ) );
     }
     
-    private MACDDayValue buildMACDPayload( int index, Date date ) {
-        return new MACDDayValue( date, symbol,
+    private MACDDayValue buildMACDPayload( int index, Date date, Bar bar ) {
+        return new MACDDayValue( date, bar, symbol,
                                 getIndVal( MACD, index ),
                                 getIndVal( MACD_SIGNAL, index ) ) ;
     }
     
-    private RSIDayValue buildRSIPayload( int index, Date date ) {
-        return new RSIDayValue( date, symbol, getIndVal( RSI, index ) ) ;
+    private RSIDayValue buildRSIPayload( int index, Date date, Bar bar ) {
+        return new RSIDayValue( date, bar, symbol, getIndVal( RSI, index ) ) ;
     }
     
-    private ADXDayValue buildADXPayload( int index, Date date ) {
-        return new ADXDayValue( date, symbol,
+    private ADXDayValue buildADXPayload( int index, Date date, Bar bar ) {
+        return new ADXDayValue( date, bar, symbol,
                                getIndVal( ADX, index ),
                                getIndVal( ADX_PLUS_DMI, index ),
                                getIndVal( ADX_MINUS_DMI, index ) ) ;
     }
     
-    private MADayValue buildEMAPayload( int index, Date date, int windowSz ) {
-        return new MADayValue( date, symbol,
+    private MADayValue buildEMAPayload( int index, Date date, Bar bar, int windowSz ) {
+        return new MADayValue( date, bar, symbol,
                                MADayValue.MAType.EMA,
                                getEMAIndicator( windowSz ).getValue( index )
                                                           .doubleValue() ) ;
