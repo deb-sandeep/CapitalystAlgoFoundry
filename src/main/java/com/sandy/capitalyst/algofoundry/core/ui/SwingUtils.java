@@ -88,4 +88,11 @@ public class SwingUtils {
         panel.setBackground( UITheme.BACKGROUND_COLOR ) ;
         panel.setLayout( new BorderLayout() ) ;
     }
+    
+    public static JLabel getNewJLabel( String text ) {
+        JLabel label = new JLabel( text ) ;
+        label.setBackground( UITheme.BACKGROUND_COLOR ) ;
+        label.setForeground( Color.LIGHT_GRAY ) ;
+        return label ;
+    }
 }

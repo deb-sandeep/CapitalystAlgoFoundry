@@ -15,4 +15,8 @@ public class TradeEvent extends StrategyEvent {
         super( date, bar ) ;
         this.type = type ;
     }
+    
+    public boolean isBuy() {
+        return this.type == Type.BUY ;
+    }
 }

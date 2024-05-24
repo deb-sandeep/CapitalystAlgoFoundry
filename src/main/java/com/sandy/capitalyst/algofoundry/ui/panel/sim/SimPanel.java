@@ -4,6 +4,8 @@ import com.sandy.capitalyst.algofoundry.AlgoFoundry;
 import com.sandy.capitalyst.algofoundry.equityhistory.EquityEODHistory;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.EquityHistEODAPIClient;
 import com.sandy.capitalyst.algofoundry.strategy.*;
+import com.sandy.capitalyst.algofoundry.strategy.tradebook.DefaultTradeBook;
+import com.sandy.capitalyst.algofoundry.strategy.tradebook.TradeBook;
 import com.sandy.capitalyst.algofoundry.ui.indchart.*;
 import com.sandy.capitalyst.algofoundry.ui.indchart.util.CrossHairMoveListener;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +44,8 @@ public class SimPanel extends JPanel {
     
     private AbstractZonedTradeStrategy tradeStrategy = null ;
     
+    private TradeBook tradeBook = new DefaultTradeBook() ;
+    
     public SimPanel( String symbol ) throws Exception {
         
         EquityHistEODAPIClient apiClient = getBean( EquityHistEODAPIClient.class ) ;
@@ -75,6 +79,7 @@ public class SimPanel extends JPanel {
         populateTradeStrategiesMap() ;
 
         this.controlPanel = new SimControlPanel( this ) ;
+        this.history.addDayValueListener( tradeBook ) ;
         
         setUpUI() ;
         doPrePlayProcessing() ;
@@ -149,6 +154,7 @@ public class SimPanel extends JPanel {
             chart.clearChart() ;
         }
         controlPanel.getLogDisplayWidget().clear() ;
+        tradeBook.clear() ;
     }
     
     public void setTradeStrategy( String strategyName ) {
@@ -161,10 +167,15 @@ public class SimPanel extends JPanel {
         
         tradeStrategy.addStrategyEventListener( controlPanel.getLogDisplayWidget() ) ;
         tradeStrategy.addStrategyEventListener( (StrategyEventListener)volumeChart ) ;
-        tradeStrategy.addStrategyEventListener( (StrategyEventListener)priceChart );
+        tradeStrategy.addStrategyEventListener( (StrategyEventListener)priceChart ) ;
+        tradeStrategy.addStrategyEventListener( tradeBook ) ;
         
         history.addDayValueListener( tradeStrategy ) ;
     }
     
     public void doPrePlayProcessing() {}
+    
+    public TradeBook getTradeBook() {
+        return this.tradeBook ;
+    }
 }
