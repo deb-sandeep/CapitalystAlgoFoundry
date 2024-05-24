@@ -28,6 +28,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.YIntervalDataItem;
 import org.jfree.data.xy.YIntervalSeries;
 import org.jfree.data.xy.YIntervalSeriesCollection;
+import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.RectangleEdge;
 
 import javax.swing.*;
@@ -58,8 +59,9 @@ public class PriceChart extends IndicatorChart
     private YIntervalSeries bollingerBandsSeries ;
     
     private Crosshair xCrosshair ;
-    private Crosshair ema5Crosshair;
-    private Crosshair ema20Crosshair;
+    private Crosshair ema5Crosshair ;
+    private Crosshair ema20Crosshair ;
+    private Crosshair cpCrosshair ;
     
     private final CrosshairOverlay crosshairOverlay = new CrosshairOverlay() ;
     private boolean crosshairEnabled = false ;
@@ -87,10 +89,12 @@ public class PriceChart extends IndicatorChart
         this.xCrosshair = createXCrosshair() ;
         this.ema20Crosshair = createEMACrosshair( null ) ;
         this.ema5Crosshair = createEMACrosshair( ema20Crosshair ) ;
+        this.cpCrosshair = createCPCrosshair() ;
         
         crosshairOverlay.addDomainCrosshair( xCrosshair ) ;
         crosshairOverlay.addRangeCrosshair( ema5Crosshair ) ;
         crosshairOverlay.addRangeCrosshair( ema20Crosshair ) ;
+        crosshairOverlay.addRangeCrosshair( cpCrosshair ) ;
         
         chartPanel.addChartMouseListener( getCrosshairMouseListener() );
     }
@@ -115,12 +119,20 @@ public class PriceChart extends IndicatorChart
                 double val = crosshair.getValue() ;
                 double pct = ((val-refVal)/refVal)*100 ;
                 
-                Color labelBgColor = (pct>0)?POS_EMA5_LABEL_COLOR:NEG_EMA5_LABEL_COLOR ;
+                Color labelBgColor = ( pct>0 )? POS_EMA5_LABEL_COLOR :
+                                                NEG_EMA5_LABEL_COLOR ;
                 ema5Crosshair.setLabelBackgroundPaint( labelBgColor ) ;
 
                 return CROSSHAIR_PRICE_FMT.format( pct ) + " %" ;
             }
         } ) ;
+        return crosshair ;
+    }
+    
+    private Crosshair createCPCrosshair() {
+        Crosshair crosshair = createGenericCrosshair() ;
+        crosshair.setLabelGenerator( c -> CROSSHAIR_PRICE_FMT.format( c.getValue() ) ) ;
+        crosshair.setLabelAnchor( RectangleAnchor.TOP_RIGHT );
         return crosshair ;
     }
     
@@ -149,6 +161,9 @@ public class PriceChart extends IndicatorChart
                 
                 double ema20 = DatasetUtilities.findYValue( plot.getDataset(1), 0, x ) ;
                 ema20Crosshair.setValue( ema20 ) ;
+                
+                double cp = DatasetUtilities.findYValue( plot.getDataset(0), 0, x ) ;
+                cpCrosshair.setValue( cp ) ;
                 
                 crossHairMoveListeners.forEach( l -> l.xCrosshairMoved( x ) ) ;
             }

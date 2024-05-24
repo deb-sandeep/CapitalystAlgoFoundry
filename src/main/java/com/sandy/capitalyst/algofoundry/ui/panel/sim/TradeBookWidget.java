@@ -18,11 +18,13 @@ public class TradeBookWidget extends SimControlPanel.SimControlWidget
     implements TradeBookListener {
     
     private static final DecimalFormat PCT_DF = new DecimalFormat( "##0.0" ) ;
+    private static final DecimalFormat DF = new DecimalFormat( "##0.0" ) ;
     
     private final TradeBook tradeBook ;
     
     private JLabel holdingQtyValLabel = null ;
     private JLabel profitPctValLabel  = null ;
+    private JLabel avgCostPriceLabel  = null ;
     
     public TradeBookWidget( SimPanel simPanel) {
         super( simPanel ) ;
@@ -35,20 +37,26 @@ public class TradeBookWidget extends SimControlPanel.SimControlWidget
         initPanelUI( this ) ;
         double size[][] = {
             { 0.8, 0.2 },
-            { 0.5, 0.5 }
+            { 0.33, 0.33, 0.33 }
         } ;
         super.setLayout( new TableLayout( size ) ) ;
         
-        JLabel holdingQty = getAttributeLabel( "Holding quantity" ) ;
-        JLabel profitPct  = getAttributeLabel( "Profit %" ) ;
+        JLabel holdingQty   = getAttributeLabel( "Holding quantity" ) ;
+        JLabel avgCostPrice = getAttributeLabel( "Avg. cost price" ) ;
+        JLabel profitPct    = getAttributeLabel( "Total Profit %" ) ;
         
         holdingQtyValLabel = getValueLabel() ;
         profitPctValLabel  = getValueLabel() ;
+        avgCostPriceLabel  = getValueLabel() ;
         
         add( holdingQty, "0, 0" ) ;
         add( holdingQtyValLabel, "1, 0" ) ;
-        add( profitPct,  "0, 1" ) ;
-        add( profitPctValLabel, "1, 1" ) ;
+        
+        add( avgCostPrice, "0, 1" ) ;
+        add( avgCostPriceLabel, "1, 1" ) ;
+        
+        add( profitPct,  "0, 2" ) ;
+        add( profitPctValLabel, "1, 2" ) ;
         
         setBorder( BorderFactory.createEmptyBorder( 5, 5, 5, 5 ) );
     }
@@ -75,6 +83,7 @@ public class TradeBookWidget extends SimControlPanel.SimControlWidget
         
         holdingQtyValLabel.setText( String.valueOf( tradeBook.getHoldingQty() ) ) ;
         profitPctValLabel.setText( PCT_DF.format( profitPct ) + " %" ) ;
+        avgCostPriceLabel.setText( DF.format( tradeBook.getAvgCostPrice() ) ) ;
         
         profitPctValLabel.setForeground( profitPct > 0 ? Color.GREEN : Color.RED ) ;
     }

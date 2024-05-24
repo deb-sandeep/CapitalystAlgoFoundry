@@ -28,6 +28,7 @@ public abstract class TradeBook
     @Getter private double totalProfitPct = 0 ;
     @Getter private double totalBuyPrice  = 0 ;
     @Getter private int    holdingQty     = 0 ;
+    @Getter private double avgCostPrice   = 0 ;
     
     private double latestClosingPrice = 0 ;
     
@@ -41,6 +42,7 @@ public abstract class TradeBook
         this.totalProfitPct = 0 ;
         this.totalBuyPrice  = 0 ;
         this.holdingQty     = 0 ;
+        this.avgCostPrice   = 0 ;
         
         notifyListeners() ;
     }
@@ -81,6 +83,7 @@ public abstract class TradeBook
         this.holdingQty = computeUnsoldQty() ;
         this.totalProfit = computeTotalProfit( latestClosingPrice ) ;
         this.totalProfitPct = computeProfitPct( latestClosingPrice ) ;
+        this.avgCostPrice = computeAvgCostPrice() ;
         
         if( notify ) {
             notifyListeners() ;
@@ -118,6 +121,17 @@ public abstract class TradeBook
         return this.holdingQty ;
     }
     
+    private double computeAvgCostPrice() {
+        avgCostPrice = 0 ;
+        if( !buyTrades.isEmpty() ) {
+            for( BuyTrade trade : buyTrades ) {
+                avgCostPrice += trade.getQuantity()*trade.getPrice() ;
+            }
+            avgCostPrice /= buyTrades.size() ;
+        }
+        return this.avgCostPrice ;
+    }
+    
     private double computeTotalProfit( double currentPrice ) {
         totalProfit = computeSellProfit() + computeNotionalProfit( currentPrice ) ;
         return totalProfit ;
@@ -129,6 +143,7 @@ public abstract class TradeBook
         }
         else {
             totalProfitPct = ( this.totalProfit / totalBuyPrice )*100 ;
+            log.debug( "Total buy price - {}", totalBuyPrice ) ;
         }
         return totalProfitPct;
     }
