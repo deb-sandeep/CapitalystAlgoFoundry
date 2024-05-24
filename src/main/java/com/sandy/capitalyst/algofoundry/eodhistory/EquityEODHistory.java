@@ -126,7 +126,7 @@ public class EquityEODHistory implements Serializable {
         
         AbstractDayValue payload = null ;
         switch( pType ) {
-            case OHLCV     -> payload = buildOHLCVPayload( date, bar ) ;
+            case OHLCV     -> payload = buildOHLCVPayload( index, date, bar ) ;
             case BOLLINGER -> payload = buildBollingerPayload( index, date ) ;
             case MACD      -> payload = buildMACDPayload( index, date ) ;
             case RSI       -> payload = buildRSIPayload( index, date ) ;
@@ -136,8 +136,9 @@ public class EquityEODHistory implements Serializable {
         return payload ;
     }
     
-    private OHLCVDayValue buildOHLCVPayload( Date date, Bar bar ) {
-        return new OHLCVDayValue( date, symbol, bar ) ;
+    private OHLCVDayValue buildOHLCVPayload( int index, Date date, Bar bar ) {
+        double ema60Val = getEMAIndicator( 60 ).getValue( index ).doubleValue() ;
+        return new OHLCVDayValue( date, symbol, bar, ema60Val ) ;
     }
     
     private BollingerBandDayValue buildBollingerPayload( int index, Date date ) {

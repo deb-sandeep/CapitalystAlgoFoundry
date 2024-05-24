@@ -30,13 +30,14 @@ public abstract class TradeBook
     @Getter private int    holdingQty        = 0 ;
     @Getter private double avgCostPrice      = 0 ;
     
+    protected double ema60Price = 0 ;
+    
     private double latestClosingPrice = 0 ;
     
     public void clear() {
         this.trades.clear() ;
         this.buyTrades.clear() ;
         this.sellTrades.clear() ;
-        this.listeners.clear() ;
         
         this.totalProfit       = 0 ;
         this.totalProfitPct    = 0 ;
@@ -77,6 +78,7 @@ public abstract class TradeBook
     public void handleDayValue( AbstractDayValue dayValue ) {
         if( dayValue instanceof OHLCVDayValue ohlc ) {
             this.latestClosingPrice = ohlc.getClose() ;
+            this.ema60Price = ohlc.getEma60Price() ;
             updateAttributes( true ) ;
         }
     }

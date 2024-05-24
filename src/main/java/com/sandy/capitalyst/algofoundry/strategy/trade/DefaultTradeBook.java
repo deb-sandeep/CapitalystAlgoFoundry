@@ -6,12 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DefaultTradeBook extends TradeBook {
     
-    private static final int BUY_QUANTUM_AMT = 10000 ;
-    
     @Override
     protected BuyTrade handleBuySignal( TradeSignalEvent te ) {
         
-        int quantity = (int)(BUY_QUANTUM_AMT/te.getClosingPrice()) ;
+        double investmentQuantum = Math.min( 5*ema60Price, 10000 ) ;
+        int quantity = (int)(investmentQuantum/te.getClosingPrice()) ;
         if( quantity > 0 ) {
             log.debug( "Buying {} stocks", quantity ) ;
             return new BuyTrade( te.getDate(), te.getClosingPrice(), quantity ) ;
