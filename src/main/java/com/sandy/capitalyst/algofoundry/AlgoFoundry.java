@@ -71,7 +71,7 @@ public class AlgoFoundry
         log.debug( "- Initializing AlgoFoundryFrame" ) ;
         SwingUtilities.invokeLater( () -> {
             this.frame = new AlgoFoundryFrame();
-            Event e = new Event( EventCatalog.EVT_SHOW_STOCK_SIM_PANEL, "ABBOTINDIA" ) ;
+            Event e = new Event( EventCatalog.EVT_SHOW_STOCK_SIM_PANEL, "RECLTD" ) ;
             this.frame.handleEvent( e ) ;
         } ) ;
 

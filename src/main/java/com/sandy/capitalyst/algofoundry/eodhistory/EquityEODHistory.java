@@ -1,5 +1,6 @@
 package com.sandy.capitalyst.algofoundry.eodhistory;
 
+import com.sandy.capitalyst.algofoundry.AlgoFoundry;
 import com.sandy.capitalyst.algofoundry.apiclient.histeod.DayCandle;
 import com.sandy.capitalyst.algofoundry.eodhistory.dayvalue.*;
 import lombok.Getter;
@@ -75,6 +76,10 @@ public class EquityEODHistory implements Serializable {
     }
     
     private BarSeries buildBarSeries( List<DayCandle> candles ) {
+        
+        int maxSeriesLen = AlgoFoundry.getConfig().getMaxSimSeriesLength() ;
+        while( candles.size() > maxSeriesLen ) { candles.remove( 0 ) ; }
+        
         BarSeries series = new BaseBarSeries( symbol ) ;
         candles.forEach( c -> {
             Bar newBar = c.toBar() ;

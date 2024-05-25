@@ -55,7 +55,7 @@ public abstract class TradeBook
         
         this.notionalProfitPctSeries.clear() ;
         
-        notifyListeners() ;
+        notifyTradeBookUpdated() ;
     }
     
     public void addListener( TradeBookListener listener ) {
@@ -76,18 +76,13 @@ public abstract class TradeBook
             
             if( trade != null ) {
                 
-                allTrades.add( trade ) ;
-                
                 if( trade instanceof BuyTrade buyTrade ) {
                     processBuyTrade( buyTrade ) ;
-                    listeners.forEach( l -> l.buyTradeExecuted( buyTrade ) ) ;
                 }
                 else {
                     SellTrade sellTrade = (SellTrade)trade ;
                     processSellTrade( sellTrade ) ;
-                    listeners.forEach( l -> l.sellTradeExecuted( sellTrade ) ) ;
                 }
-                print() ;
             }
         }
     }
@@ -95,14 +90,16 @@ public abstract class TradeBook
     @Override
     public void handleDayValue( AbstractDayValue dayValue ) {
         if( dayValue instanceof OHLCVDayValue ohlc ) {
-            this.latestClosingPrice = ohlc.getClose() ;
+            latestClosingPrice = ohlc.getClose() ;
             computeProfit() ;
-            notifyListeners() ;
+            notionalProfitPctSeries.add( notionalProfitPct ) ;
+            notifyTradeBookUpdated() ;
         }
     }
     
     protected void processBuyTrade( BuyTrade buyTrade ) {
         
+        allTrades.add( buyTrade ) ;
         buyTrades.add( buyTrade ) ;
         
         totalBuyPrice += buyTrade.getPrice()*buyTrade.getQuantity() ;
@@ -110,7 +107,9 @@ public abstract class TradeBook
         avgCostPrice = computeAvgCostPrice() ;
         
         computeProfit() ;
-        notifyListeners() ;
+        listeners.forEach( l -> l.buyTradeExecuted( buyTrade ) ) ;
+        notifyTradeBookUpdated() ;
+        print() ;
     }
     
     protected void processSellTrade( SellTrade sellTrade ) {
@@ -124,6 +123,7 @@ public abstract class TradeBook
                         "remaining quantity in trade book." ) ;
         }
         
+        allTrades.add( sellTrade ) ;
         sellTrades.add( sellTrade ) ;
         
         while( remainingSellQty > 0 ) {
@@ -148,7 +148,9 @@ public abstract class TradeBook
         avgCostPrice     = computeAvgCostPrice() ;
         
         computeProfit() ;
-        notifyListeners() ;
+        listeners.forEach( l -> l.sellTradeExecuted( sellTrade ) ) ;
+        notifyTradeBookUpdated() ;
+        print() ;
     }
     
     private double computeAvgCostPrice() {
@@ -182,7 +184,7 @@ public abstract class TradeBook
         }
     }
     
-    private void notifyListeners() {
+    private void notifyTradeBookUpdated() {
         listeners.forEach( l -> l.tradeBookUpdated( this ) ) ;
     }
     
@@ -192,7 +194,7 @@ public abstract class TradeBook
     
     public void print() {
         
-        String hdr = " | " + rightPad( "SELL", 5 ) +
+        String hdr = " | " + rightPad( " ", 5 ) +
                      " | " + rightPad( "Date", 10 ) +
                      " | " + rightPad( "Price", 8 ) +
                      " | " + rightPad( "Qty",   5 ) +

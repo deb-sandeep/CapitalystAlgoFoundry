@@ -10,6 +10,8 @@ import com.sandy.capitalyst.algofoundry.tradebook.SellTrade;
 import com.sandy.capitalyst.algofoundry.tradebook.TradeBook;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.sandy.capitalyst.algofoundry.core.util.StringUtil.fmtDbl;
+
 @Slf4j
 public class DefaultTradeBook extends TradeBook {
     
@@ -18,7 +20,8 @@ public class DefaultTradeBook extends TradeBook {
     private final ConstantSeries minProfitThreshold ;
     private final ConstantSeries maxLossThreshold ;
     
-    private int buyCooloffDaysLeft = 0 ;
+    private int     buyCooloffDaysLeft     = 0 ;
+    private boolean ignoreStopLossTomorrow = false ;
     
     public DefaultTradeBook() {
         
@@ -37,8 +40,15 @@ public class DefaultTradeBook extends TradeBook {
             int quantity = (int)(investmentQuantum/te.getClosingPrice()) ;
             if( quantity > 0 ) {
                 buyCooloffDaysLeft = 6 ;
+                ignoreStopLossTomorrow = true ;
                 return new BuyTrade( te.getDate(), te.getClosingPrice(), quantity ) ;
             }
+            else {
+                log.debug( "Single share price exceeds 25000. Ignoring buy signal." );
+            }
+        }
+        else {
+            log.debug( "In cooloff period. Ignoring buy signal." ) ;
         }
         return null ;
     }
@@ -57,40 +67,46 @@ public class DefaultTradeBook extends TradeBook {
         super.handleDayValue( dayValue ) ;
         
         if( dayValue instanceof OHLCVDayValue ohlcv ) {
+            
             if( buyCooloffDaysLeft > 0 ) { buyCooloffDaysLeft-- ; }
+            
+            // If we bought yesterday, don't compute stop loss today
+            // since the notional profit % would have dropped significantly.
+            if( ignoreStopLossTomorrow ) {
+                ignoreStopLossTomorrow = false ;
+                return ;
+            }
+            
+            // Don't do stop loss check if there is no holding.
+            if( super.getHoldingQty() <= 0 ) return ;
+            
             int index = notionalProfitPctSeries.getSize()-1 ;
             
             if( index > 0 ) {
                 
                 double lastNotionalProfitPct = notionalProfitPctSeries.getValue( index-1 ) ;
                 double curNotionalProfitPct  = notionalProfitPctSeries.getValue( index ) ;
-                double newThresholdValue = 10 ;
                 
-                if( lastNotionalProfitPct > 30 ) {
-                    newThresholdValue = 25 ;
+                if( lastNotionalProfitPct > 10 ) {
+                    double newThreshold = (((int)lastNotionalProfitPct/5)-1)*5 ;
+                    if( newThreshold > 10 ) {
+                        minProfitThreshold.setThreshold( newThreshold ) ;
+                        log.debug( "Setting new min profit threshold as {}", fmtDbl( newThreshold ) ) ;
+                    }
                 }
-                else if( lastNotionalProfitPct > 25 ) {
-                    newThresholdValue = 20 ;
-                }
-                else if( lastNotionalProfitPct > 20 ) {
-                    newThresholdValue = 15 ;
-                }
-                
-                minProfitThreshold.setThreshold( newThresholdValue ) ;
                 
                 boolean minProfitBreached = minProfitIndicator.isSatisfied( index ) ;
                 boolean maxLossBreached   = maxLossIndicator.isSatisfied( index ) ;
                 
                 if( minProfitBreached || maxLossBreached ) {
-                    
                     if( minProfitBreached ) {
                         log.info( "Min profit breached." ) ;
-                        log.debug( "  Last profit % - {}", lastNotionalProfitPct ) ;
-                        log.debug( "  Cur profit % - {}", curNotionalProfitPct ) ;
                     }
                     else {
                         log.info( "Max loss breached." ) ;
                     }
+                    log.debug( "  Last profit % - {}", fmtDbl( lastNotionalProfitPct ) ) ;
+                    log.debug( "  Cur profit % - {}", fmtDbl( curNotionalProfitPct ) ) ;
                     processSellTrade( new SellTrade( dayValue.getDate(),
                             dayValue.getBar().getClosePrice().doubleValue(),
                             super.getHoldingQty() ) ) ;

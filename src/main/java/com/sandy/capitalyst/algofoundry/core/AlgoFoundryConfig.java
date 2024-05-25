@@ -17,4 +17,5 @@ public class AlgoFoundryConfig {
     private String serverName = null ;
     private boolean workOffline = false ;
     private int dateWindowSize = 260 ;
+    private int maxSimSeriesLength = 260 ;
 }
