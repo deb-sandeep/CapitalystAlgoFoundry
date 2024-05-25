@@ -7,6 +7,7 @@ import com.sandy.capitalyst.algofoundry.strategy.signal.MySignalStrategy;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEventListener;
 import com.sandy.capitalyst.algofoundry.strategy.trade.DefaultTradeBook;
 import com.sandy.capitalyst.algofoundry.tradebook.TradeBook;
+import com.sandy.capitalyst.algofoundry.tradebook.TradeBookListener;
 import com.sandy.capitalyst.algofoundry.ui.indchart.*;
 import com.sandy.capitalyst.algofoundry.ui.indchart.util.CrossHairMoveListener;
 import lombok.extern.slf4j.Slf4j;
@@ -81,6 +82,7 @@ public class SimPanel extends JPanel {
 
         this.controlPanel = new SimControlPanel( this ) ;
         this.history.addDayValueListener( tradeBook ) ;
+        this.tradeBook.addListener( (TradeBookListener)priceChart ) ;
         
         setUpUI() ;
         doPrePlayProcessing() ;

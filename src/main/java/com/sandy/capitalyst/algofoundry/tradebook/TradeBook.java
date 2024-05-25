@@ -13,9 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.sandy.capitalyst.algofoundry.core.util.StringUtil.fmtDate;
-import static com.sandy.capitalyst.algofoundry.core.util.StringUtil.fmtDbl;
-import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.repeat;
+import static org.apache.commons.lang3.StringUtils.rightPad;
 
 @Slf4j
 public abstract class TradeBook
@@ -81,11 +80,13 @@ public abstract class TradeBook
                 
                 if( trade instanceof BuyTrade buyTrade ) {
                     processBuyTrade( buyTrade ) ;
+                    listeners.forEach( l -> l.buyTradeExecuted( buyTrade ) ) ;
                 }
                 else {
-                    processSellTrade( ( SellTrade )trade );
+                    SellTrade sellTrade = (SellTrade)trade ;
+                    processSellTrade( sellTrade ) ;
+                    listeners.forEach( l -> l.sellTradeExecuted( sellTrade ) ) ;
                 }
-                
                 print() ;
             }
         }

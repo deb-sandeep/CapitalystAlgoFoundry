@@ -36,7 +36,7 @@ public class DefaultTradeBook extends TradeBook {
             double investmentQuantum = 25000 ;
             int quantity = (int)(investmentQuantum/te.getClosingPrice()) ;
             if( quantity > 0 ) {
-                buyCooloffDaysLeft = 5 ;
+                buyCooloffDaysLeft = 6 ;
                 return new BuyTrade( te.getDate(), te.getClosingPrice(), quantity ) ;
             }
         }
@@ -74,9 +74,6 @@ public class DefaultTradeBook extends TradeBook {
                 }
                 else if( lastNotionalProfitPct > 20 ) {
                     newThresholdValue = 15 ;
-                }
-                else {
-                    newThresholdValue = 10 ;
                 }
                 
                 minProfitThreshold.setThreshold( newThresholdValue ) ;
