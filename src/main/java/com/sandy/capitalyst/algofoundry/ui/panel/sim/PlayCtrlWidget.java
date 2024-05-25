@@ -86,7 +86,7 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
     private final ImageIcon pauseIcon ;
     
     private PlayState playState = PlayState.YET_TO_START;
-    private int emitDelayMs = 200 ;
+    private int emitDelayMs = 25 ;
     
     private Thread playDaemon ;
     
@@ -136,9 +136,8 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
 
         simPanel.getTradeStrategyNames().forEach( strategyComboBox::addItem ) ;
         
-        strategyComboBox.addActionListener( ( e) -> {
-            simPanel.setTradeStrategy( (String)strategyComboBox.getSelectedItem() ) ;
-        } ) ;
+        strategyComboBox.addActionListener( (e) ->
+                simPanel.setTradeStrategy( (String)strategyComboBox.getSelectedItem() ) ) ;
     }
     
     private void setUpUI() {

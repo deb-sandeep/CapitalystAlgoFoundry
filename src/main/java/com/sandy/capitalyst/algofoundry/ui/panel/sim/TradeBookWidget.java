@@ -37,7 +37,7 @@ public class TradeBookWidget extends SimControlPanel.SimControlWidget
     private void setUpUI() {
         initPanelUI( this ) ;
         double size[][] = {
-            { 0.8, 0.2 },
+            { 0.7, 0.3 },
             { 0.25, 0.25, 0.25, 0.25 }
         } ;
         super.setLayout( new TableLayout( size ) ) ;

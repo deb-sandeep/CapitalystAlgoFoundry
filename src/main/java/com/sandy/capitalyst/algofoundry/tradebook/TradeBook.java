@@ -36,6 +36,7 @@ public abstract class TradeBook
     @Getter private double totalBuyPrice     = 0 ;
     
     private double latestClosingPrice = 0 ;
+    private double recoveredCorpus = 0 ;
     
     protected final NumberSeries notionalProfitPctSeries = new NumberSeries() ;
     
@@ -102,7 +103,13 @@ public abstract class TradeBook
         allTrades.add( buyTrade ) ;
         buyTrades.add( buyTrade ) ;
         
-        totalBuyPrice += buyTrade.getPrice()*buyTrade.getQuantity() ;
+        double buyPrice = buyTrade.getPrice() * buyTrade.getQuantity() ;
+        double corpusFromRecovery = Math.min( recoveredCorpus, buyPrice ) ;
+        double freshCorpus = Math.max( 0, (buyPrice - corpusFromRecovery) ) ;
+        
+        recoveredCorpus -= corpusFromRecovery ;
+        totalBuyPrice += freshCorpus ;
+        
         holdingQty += buyTrade.getQuantity() ;
         avgCostPrice = computeAvgCostPrice() ;
         
@@ -144,6 +151,12 @@ public abstract class TradeBook
             }
         }
         
+        double sellPrice = sellTrade.getPrice() * sellTrade.getQuantity() ;
+        double costPrice = sellPrice - sellTrade.getProfit() ;
+        
+        // Note that we may be in loss, thus cost price can be greater than the
+        // sell price. Hence we take the min of sell price and cost price.
+        recoveredCorpus += Math.min( sellPrice, costPrice ) ;
         totalSellProfit += sellTrade.getProfit() ;
         avgCostPrice     = computeAvgCostPrice() ;
         
