@@ -1,10 +1,12 @@
-package com.sandy.capitalyst.algofoundry.core.indicator;
+package com.sandy.capitalyst.algofoundry.core.numseries.series;
+
+import com.sandy.capitalyst.algofoundry.core.numseries.NumberSeries;
 
 public class ConstantSeries extends NumberSeries {
 
     private double constantVal ;
     
-    public static ConstantSeries constantSeries( double val ) {
+    public static ConstantSeries of( double val ) {
         return new ConstantSeries( val ) ;
     }
     

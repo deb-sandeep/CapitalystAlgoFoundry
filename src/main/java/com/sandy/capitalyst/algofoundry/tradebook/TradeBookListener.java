@@ -1,4 +1,4 @@
-package com.sandy.capitalyst.algofoundry.strategy.trade;
+package com.sandy.capitalyst.algofoundry.tradebook;
 
 public interface TradeBookListener {
     

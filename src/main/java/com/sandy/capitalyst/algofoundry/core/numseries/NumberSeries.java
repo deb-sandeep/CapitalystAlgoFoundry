@@ -1,11 +1,11 @@
-package com.sandy.capitalyst.algofoundry.core.indicator;
+package com.sandy.capitalyst.algofoundry.core.numseries;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class NumberSeries {
     
-    private List<Double> values = new ArrayList<>() ;
+    private final List<Double> values = new ArrayList<>() ;
     
     public NumberSeries(){}
     

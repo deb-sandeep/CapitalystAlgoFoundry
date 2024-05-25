@@ -1,16 +1,17 @@
-package com.sandy.capitalyst.algofoundry.strategy.trade;
+package com.sandy.capitalyst.algofoundry.tradebook;
 
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 
-public class AbstractTrade {
+public abstract class Trade {
     
     @Getter private Date date ;
     @Getter private double price ;
     @Getter private int quantity ;
     
-    protected AbstractTrade( Date date, double price, int quantity ) {
+    protected Trade( Date date, double price, int quantity ) {
         this.date = date ;
         this.price = price ;
         this.quantity = quantity ;

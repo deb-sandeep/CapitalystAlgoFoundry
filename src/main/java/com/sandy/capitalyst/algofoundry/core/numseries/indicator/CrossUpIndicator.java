@@ -1,11 +1,14 @@
-package com.sandy.capitalyst.algofoundry.core.indicator;
+package com.sandy.capitalyst.algofoundry.core.numseries.indicator;
 
-public class CrossDownIndicator implements SeriesIndicator {
+import com.sandy.capitalyst.algofoundry.core.numseries.SeriesIndicator;
+import com.sandy.capitalyst.algofoundry.core.numseries.NumberSeries;
+
+public class CrossUpIndicator implements SeriesIndicator {
     
     private final NumberSeries series1 ;
     private final NumberSeries series2 ;
     
-    public CrossDownIndicator( NumberSeries series1, NumberSeries series2 ) {
+    public CrossUpIndicator( NumberSeries series1, NumberSeries series2 ) {
         this.series1 = series1 ;
         this.series2 = series2 ;
     }
@@ -19,6 +22,6 @@ public class CrossDownIndicator implements SeriesIndicator {
         double diffLast = series1.getValue( index-1 ) - series2.getValue( index-1 ) ;
         double diffCurr = series1.getValue( index ) - series2.getValue( index ) ;
         
-        return diffLast >= 0 && diffCurr < 0 ;
+        return diffLast <= 0 && diffCurr > 0 ;
     }
 }

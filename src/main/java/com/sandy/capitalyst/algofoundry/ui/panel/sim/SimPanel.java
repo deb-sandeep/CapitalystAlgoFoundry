@@ -6,7 +6,7 @@ import com.sandy.capitalyst.algofoundry.strategy.signal.AbstractZonedSignalStrat
 import com.sandy.capitalyst.algofoundry.strategy.signal.MySignalStrategy;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEventListener;
 import com.sandy.capitalyst.algofoundry.strategy.trade.DefaultTradeBook;
-import com.sandy.capitalyst.algofoundry.strategy.trade.TradeBook;
+import com.sandy.capitalyst.algofoundry.tradebook.TradeBook;
 import com.sandy.capitalyst.algofoundry.ui.indchart.*;
 import com.sandy.capitalyst.algofoundry.ui.indchart.util.CrossHairMoveListener;
 import lombok.extern.slf4j.Slf4j;
@@ -155,7 +155,7 @@ public class SimPanel extends JPanel {
             chart.clearChart() ;
         }
         controlPanel.getLogDisplayWidget().clear() ;
-        tradeBook.clear() ;
+        tradeBook.clearState() ;
     }
     
     public void setTradeStrategy( String strategyName ) {

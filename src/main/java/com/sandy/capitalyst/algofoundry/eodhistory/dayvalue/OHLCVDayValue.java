@@ -14,9 +14,8 @@ public class OHLCVDayValue extends AbstractDayValue {
     @Getter private double low ;
     @Getter private double close ;
     @Getter private long   volume ;
-    @Getter private double ema60Price ;
     
-    public OHLCVDayValue( Date date, String symbol, Bar bar, double ema60Price ) {
+    public OHLCVDayValue( Date date, String symbol, Bar bar ) {
 
         super( EquityEODHistory.PayloadType.OHLCV, date, bar, symbol ) ;
         
@@ -25,7 +24,5 @@ public class OHLCVDayValue extends AbstractDayValue {
         this.low    = bar.getLowPrice().doubleValue() ;
         this.close  = bar.getClosePrice().doubleValue() ;
         this.volume = bar.getVolume().longValue() ;
-        
-        this.ema60Price = ema60Price ;
     }
 }

@@ -1,8 +1,8 @@
 package com.sandy.capitalyst.algofoundry.ui.panel.sim;
 
 import com.sandy.capitalyst.algofoundry.core.ui.UITheme;
-import com.sandy.capitalyst.algofoundry.strategy.trade.TradeBook;
-import com.sandy.capitalyst.algofoundry.strategy.trade.TradeBookListener;
+import com.sandy.capitalyst.algofoundry.tradebook.TradeBook;
+import com.sandy.capitalyst.algofoundry.tradebook.TradeBookListener;
 import info.clearthought.layout.TableLayout;
 import lombok.extern.slf4j.Slf4j;
 

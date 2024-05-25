@@ -212,11 +212,6 @@ public class MySignalStrategy extends AbstractZonedSignalStrategy {
                         .getValue( index - gapDays ).doubleValue();
         
         double chgPct = ( change/refVal )*100 ;
-        log.debug( "Jump check - {}", label ) ;
-        log.debug( "Current date = {}", fmtDate( Date.from( currentBar.getEndTime().toInstant() ) ) ) ;
-        log.debug( "Past    date = {}", fmtDate( Date.from( prevBar.getEndTime().toInstant() ) ) ) ;
-        log.debug( "  #Days = {}, Change = {}, ref = {}, changePct = {}%, threshold={}%",
-                   gapDays, fmtDbl( change ), fmtDbl( refVal ), fmtDbl( chgPct ), pct ) ;
         
         return pct > 0 ? chgPct >= pct : chgPct <= pct ;
     }

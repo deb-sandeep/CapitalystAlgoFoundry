@@ -1,10 +1,13 @@
 package com.sandy.capitalyst.algofoundry.strategy.trade;
 
-import com.sandy.capitalyst.algofoundry.core.indicator.ConstantSeries;
-import com.sandy.capitalyst.algofoundry.core.indicator.CrossDownIndicator;
+import com.sandy.capitalyst.algofoundry.core.numseries.series.ConstantSeries;
+import com.sandy.capitalyst.algofoundry.core.numseries.indicator.CrossDownIndicator;
 import com.sandy.capitalyst.algofoundry.eodhistory.AbstractDayValue;
 import com.sandy.capitalyst.algofoundry.eodhistory.dayvalue.OHLCVDayValue;
 import com.sandy.capitalyst.algofoundry.strategy.signal.event.TradeSignalEvent;
+import com.sandy.capitalyst.algofoundry.tradebook.BuyTrade;
+import com.sandy.capitalyst.algofoundry.tradebook.SellTrade;
+import com.sandy.capitalyst.algofoundry.tradebook.TradeBook;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -19,8 +22,8 @@ public class DefaultTradeBook extends TradeBook {
     
     public DefaultTradeBook() {
         
-        minProfitThreshold = ConstantSeries.constantSeries( 10 ) ;
-        maxLossThreshold   = ConstantSeries.constantSeries( -10 ) ;
+        minProfitThreshold = ConstantSeries.of( 10 ) ;
+        maxLossThreshold   = ConstantSeries.of( -10 ) ;
         
         maxLossIndicator = new CrossDownIndicator( notionalProfitPctSeries, maxLossThreshold ) ;
         minProfitIndicator = new CrossDownIndicator( notionalProfitPctSeries, minProfitThreshold ) ;
@@ -30,23 +33,22 @@ public class DefaultTradeBook extends TradeBook {
     protected BuyTrade handleBuySignal( TradeSignalEvent te ) {
         
         if( buyCooloffDaysLeft <= 0 ) {
-            double investmentQuantum = Math.min( 5*ema60Price, 25000 ) ;
+            double investmentQuantum = 25000 ;
             int quantity = (int)(investmentQuantum/te.getClosingPrice()) ;
             if( quantity > 0 ) {
-                log.debug( "Buying {} stocks", quantity ) ;
                 buyCooloffDaysLeft = 5 ;
                 return new BuyTrade( te.getDate(), te.getClosingPrice(), quantity ) ;
             }
-        }
-        else {
-            log.debug( "In buy cool off period. {} days left", buyCooloffDaysLeft );
         }
         return null ;
     }
     
     @Override
     protected SellTrade handleSellSignal( TradeSignalEvent te ) {
-        return new SellTrade( te.getDate(), te.getClosingPrice(), super.getHoldingQty() ) ;
+        if( super.getHoldingQty() > 0 ) {
+            return new SellTrade( te.getDate(), te.getClosingPrice(), super.getHoldingQty() ) ;
+        }
+        return null ;
     }
     
     @Override
@@ -95,8 +97,6 @@ public class DefaultTradeBook extends TradeBook {
                     processSellTrade( new SellTrade( dayValue.getDate(),
                             dayValue.getBar().getClosePrice().doubleValue(),
                             super.getHoldingQty() ) ) ;
-                    
-                    super.updateAttributes( true ) ;
                 }
             }
         }

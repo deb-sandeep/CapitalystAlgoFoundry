@@ -137,8 +137,7 @@ public class EquityEODHistory implements Serializable {
     }
     
     private OHLCVDayValue buildOHLCVPayload( int index, Date date, Bar bar ) {
-        double ema60Val = getEMAIndicator( 60 ).getValue( index ).doubleValue() ;
-        return new OHLCVDayValue( date, symbol, bar, ema60Val ) ;
+        return new OHLCVDayValue( date, symbol, bar ) ;
     }
     
     private BollingerBandDayValue buildBollingerPayload( int index, Date date, Bar bar ) {

@@ -27,7 +27,7 @@ public abstract class AbstractSignalStrategy
     
     protected AbstractSignalStrategy( EquityEODHistory history ) {
         this.history = history ;
-        this.eventListeners.add( new SignalStrategyConsoleLogger() ) ;
+        //this.eventListeners.add( new SignalStrategyConsoleLogger() ) ;
     }
     
     public final void addStrategyEventListener( SignalStrategyEventListener listener ) {
