@@ -25,7 +25,7 @@ public class DefaultTradeBook extends TradeBook {
     
     public DefaultTradeBook() {
         
-        minProfitThreshold = ConstantSeries.of( 10 ) ;
+        minProfitThreshold = ConstantSeries.of( 15 ) ;
         maxLossThreshold   = ConstantSeries.of( -10 ) ;
         
         maxLossIndicator = new CrossDownIndicator( notionalProfitPctSeries, maxLossThreshold ) ;
@@ -87,14 +87,6 @@ public class DefaultTradeBook extends TradeBook {
                 double lastNotionalProfitPct = notionalProfitPctSeries.getValue( index-1 ) ;
                 double curNotionalProfitPct  = notionalProfitPctSeries.getValue( index ) ;
                 
-                if( lastNotionalProfitPct > 10 ) {
-                    double newThreshold = (((int)lastNotionalProfitPct/5)-1)*5 ;
-                    if( newThreshold > 10 ) {
-                        minProfitThreshold.setThreshold( newThreshold ) ;
-                        log.debug( "Setting new min profit threshold as {}", fmtDbl( newThreshold ) ) ;
-                    }
-                }
-                
                 boolean minProfitBreached = minProfitIndicator.isSatisfied( index ) ;
                 boolean maxLossBreached   = maxLossIndicator.isSatisfied( index ) ;
                 
@@ -110,6 +102,7 @@ public class DefaultTradeBook extends TradeBook {
                     processSellTrade( new SellTrade( dayValue.getDate(),
                             dayValue.getBar().getClosePrice().doubleValue(),
                             super.getHoldingQty() ) ) ;
+                    minProfitThreshold.setThreshold( 10 ) ;
                 }
             }
         }

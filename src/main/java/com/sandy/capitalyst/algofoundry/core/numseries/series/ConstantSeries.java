@@ -14,6 +14,8 @@ public class ConstantSeries extends NumberSeries {
         this.constantVal = newVal ;
     }
     
+    public double getThreshold() { return this.constantVal ; }
+    
     public ConstantSeries( double val ) {
         this.constantVal = val ;
     }
