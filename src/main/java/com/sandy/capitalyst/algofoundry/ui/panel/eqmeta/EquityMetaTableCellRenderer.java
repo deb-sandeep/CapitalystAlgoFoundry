@@ -122,6 +122,9 @@ public class EquityMetaTableCellRenderer extends DefaultTableCellRenderer {
             else if( modelCol >= COL_PERF_1D && modelCol <= COL_PERF_12M ) {
                 label.setText( PCT_DF.format( value ) ) ;
             }
+            else if( modelCol == COL_SWING ) {
+                label.setText( PCT_DF.format( value ) ) ;
+            }
         }
         else if( value instanceof String ) {
             if( modelCol == COL_SYMBOL ) {

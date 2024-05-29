@@ -47,6 +47,7 @@ public class EquityMetaTableModel extends AbstractTableModel {
             { "Mkt Cap",  Double.class },
             { "Price",    Double.class },
             { "52W Range",Range52W.class },
+            { "Swing %",  Double.class },
             { "1D %",     Double.class },
             { "1W %",     Double.class },
             { "2W %",     Double.class },
@@ -67,7 +68,8 @@ public class EquityMetaTableModel extends AbstractTableModel {
     public static final int COL_MKT_CAP  = COL_NAME + 1 ;
     public static final int COL_PRICE    = COL_MKT_CAP + 1 ;
     public static final int COL_52W_RANGE= COL_PRICE + 1 ;
-    public static final int COL_PERF_1D  = COL_52W_RANGE + 1 ;
+    public static final int COL_SWING    = COL_52W_RANGE + 1 ;
+    public static final int COL_PERF_1D  = COL_SWING + 1 ;
     public static final int COL_PERF_1W  = COL_PERF_1D + 1 ;
     public static final int COL_PERF_2W  = COL_PERF_1D + 2 ;
     public static final int COL_PERF_1M  = COL_PERF_1D + 3 ;
@@ -127,6 +129,7 @@ public class EquityMetaTableModel extends AbstractTableModel {
             case COL_MKT_CAP   -> m.getMarketCap() ;
             case COL_PRICE     -> m.getCurrentPrice();
             case COL_52W_RANGE -> new Range52W( m.getLow52(), m.getHigh52(), m.getCurrentPrice() ) ;
+            case COL_SWING     -> getSwing( m ) ;
             case COL_PERF_1D   -> m.getPerf1d() ;
             case COL_PERF_1W   -> m.getPerf1w() ;
             case COL_PERF_2W   -> m.getPerf2w() ;
@@ -142,6 +145,11 @@ public class EquityMetaTableModel extends AbstractTableModel {
             case COL_PERF_12M  -> m.getPerf12m() ;
             default -> null;
         } ;
+    }
+    
+    private double getSwing( EquityMeta m ) {
+        double highLowBand = m.getHigh52() - m.getLow52() ;
+        return (highLowBand/m.getCurrentPrice())*100 ;
     }
     
     private void computeTTMPerfRange() {

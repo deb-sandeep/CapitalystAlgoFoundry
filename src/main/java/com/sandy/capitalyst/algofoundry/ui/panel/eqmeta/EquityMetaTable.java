@@ -66,6 +66,7 @@ public class EquityMetaTable extends JTable {
         setColumnProperties( COL_MKT_CAP,   100 ) ;
         setColumnProperties( COL_PRICE,      75 ) ;
         setColumnProperties( COL_52W_RANGE, 150 ) ;
+        setColumnProperties( COL_SWING,      75 ) ;
         for( int col=COL_PERF_1D; col<=COL_PERF_12M; col++ ) {
             setColumnProperties( col, 65 ) ;
         }
