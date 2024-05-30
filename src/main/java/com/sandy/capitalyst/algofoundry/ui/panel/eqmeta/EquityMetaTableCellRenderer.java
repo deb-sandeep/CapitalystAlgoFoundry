@@ -123,7 +123,7 @@ public class EquityMetaTableCellRenderer extends DefaultTableCellRenderer {
                 label.setText( PCT_DF.format( value ) ) ;
             }
             else if( modelCol == COL_SWING ) {
-                label.setText( PCT_DF.format( value ) ) ;
+                label.setText( String.valueOf( value ) ) ;
             }
         }
         else if( value instanceof String ) {

@@ -93,7 +93,8 @@ public class LogDisplayWidget extends SimControlPanel.SimControlWidget
         if( event instanceof CurrentSignalZoneEvent ze ) {
             
             if( ze.getMovementType() != CURRENT ) {
-                logMsg = getIndent( L2 ) + ">> " + ze.getZoneType() + " Zone Activated" ;
+                logMsg = getIndent( L2 ) + ">> " + ze.getZoneType() + " Zone " +
+                        (ze.getMovementType() == ENTRY ? "Activated" : "Deactivated") ;
             }
             else {
                 if( ze.getZoneType() == CurrentSignalZoneEvent.ZoneType.BLACKOUT ) {

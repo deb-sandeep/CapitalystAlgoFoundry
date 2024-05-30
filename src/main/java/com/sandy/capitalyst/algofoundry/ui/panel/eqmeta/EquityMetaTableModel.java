@@ -47,7 +47,7 @@ public class EquityMetaTableModel extends AbstractTableModel {
             { "Mkt Cap",  Double.class },
             { "Price",    Double.class },
             { "52W Range",Range52W.class },
-            { "Swing %",  Double.class },
+            { "<-> %",    Integer.class },
             { "1D %",     Double.class },
             { "1W %",     Double.class },
             { "2W %",     Double.class },
@@ -147,9 +147,10 @@ public class EquityMetaTableModel extends AbstractTableModel {
         } ;
     }
     
-    private double getSwing( EquityMeta m ) {
+    private int getSwing( EquityMeta m ) {
         double highLowBand = m.getHigh52() - m.getLow52() ;
-        return (highLowBand/m.getCurrentPrice())*100 ;
+        double avgPrice    = ( m.getHigh52() + m.getLow52() )/2 ;
+        return (int)Math.round( (highLowBand/avgPrice)*100 ) ;
     }
     
     private void computeTTMPerfRange() {
