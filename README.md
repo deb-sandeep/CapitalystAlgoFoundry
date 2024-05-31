@@ -2,7 +2,7 @@
 
 A foundry for casting the right algorithms for Equity trading.
 
-[Offline setup](doc/offline-setup.md)
+[Offline setup](algo-foundry-ui/doc/offline-setup.md)
 
 <hr>
 Very thankful to JetBrains for <a href="https://www.jetbrains.com/community/opensource/#support">supporting</a> my open source initiatives.
