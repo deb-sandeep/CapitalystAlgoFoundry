@@ -1,13 +1,15 @@
-package com.sandy.capitalyst.algofoundry.strategy.eodhistory.dayvalue;
+package com.sandy.capitalyst.algofoundry.strategy.candleseries.dayvalue;
 
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.EquityEODHistory;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.AbstractDayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValue;
 import lombok.Getter;
 import org.ta4j.core.Bar;
 
 import java.util.Date;
 
-public class OHLCVDayValue extends AbstractDayValue {
+import static com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries.* ;
+
+public class OHLCVDayValue extends DayValue {
 
     @Getter private double open ;
     @Getter private double high ;
@@ -17,7 +19,7 @@ public class OHLCVDayValue extends AbstractDayValue {
     
     public OHLCVDayValue( Date date, String symbol, Bar bar ) {
 
-        super( EquityEODHistory.PayloadType.OHLCV, date, bar, symbol ) ;
+        super( DayValueType.OHLCV, date, bar, symbol ) ;
         
         this.open   = bar.getOpenPrice().doubleValue() ;
         this.high   = bar.getHighPrice().doubleValue() ;

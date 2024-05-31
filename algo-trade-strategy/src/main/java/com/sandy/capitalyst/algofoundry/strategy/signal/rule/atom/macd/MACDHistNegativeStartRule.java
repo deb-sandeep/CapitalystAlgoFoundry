@@ -1,12 +1,12 @@
 package com.sandy.capitalyst.algofoundry.strategy.signal.rule.atom.macd;
 
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.EquityEODHistory;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries;
 import org.ta4j.core.Rule;
 import org.ta4j.core.rules.CrossedDownIndicatorRule;
 
 public class MACDHistNegativeStartRule extends AbstractMACDRule {
     
-    public MACDHistNegativeStartRule( EquityEODHistory history) {
+    public MACDHistNegativeStartRule( CandleSeries history) {
         super( history );
     }
     

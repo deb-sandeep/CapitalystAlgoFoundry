@@ -1,6 +1,6 @@
 package com.sandy.capitalyst.algofoundry.app.equity;
 
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.DayCandle;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.Candle;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -48,8 +48,8 @@ public class HistoricEQData {
     @Column( precision=16 )
     private float totalTradeVal = 0.0F ;
     
-    public DayCandle toDayCandle() {
-        DayCandle candle = new DayCandle() ;
+    public Candle toDayCandle() {
+        Candle candle = new Candle() ;
         candle.setDate  ( this.date  ) ;
         candle.setOpen  ( this.open  ) ;
         candle.setHigh  ( this.high  ) ;

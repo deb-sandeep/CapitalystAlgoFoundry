@@ -1,6 +1,6 @@
 package com.sandy.capitalyst.algofoundry.strategy.signal;
 
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.EquityEODHistory;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries;
 import com.sandy.capitalyst.algofoundry.strategy.signal.rule.atom.adx.ADXDownTrendRule;
 import com.sandy.capitalyst.algofoundry.strategy.signal.rule.atom.adx.ADXUpTrendRule;
 import com.sandy.capitalyst.algofoundry.strategy.signal.rule.atom.ema.EMADownCrossoverRule;
@@ -44,11 +44,11 @@ public class MySignalStrategy extends AbstractZonedSignalStrategy {
     private ADXDownTrendRule          adxDownTrend ;
     private ADXStrengthRule           adxStrength ;
 
-    public MySignalStrategy( EquityEODHistory history ) {
+    public MySignalStrategy( CandleSeries history ) {
         
         super( history ) ;
         
-        cp = history.ind( EquityEODHistory.IndicatorName.CLOSING_PRICE ) ;
+        cp = history.ind( CandleSeries.IndicatorName.CLOSING_PRICE ) ;
         ema5 = history.getEMAIndicator( 5 );
         ema20 = history.getEMAIndicator( 20 ) ;
         

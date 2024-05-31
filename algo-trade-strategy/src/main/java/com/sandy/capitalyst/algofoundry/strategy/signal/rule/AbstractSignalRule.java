@@ -1,13 +1,13 @@
 package com.sandy.capitalyst.algofoundry.strategy.signal.rule;
 
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.EquityEODHistory;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries;
 import org.ta4j.core.Rule;
 
 public abstract class AbstractSignalRule extends SignalRule {
     
     private Rule rule ;
     
-    public AbstractSignalRule( EquityEODHistory history ) {
+    public AbstractSignalRule( CandleSeries history ) {
         super( history ) ;
     }
     

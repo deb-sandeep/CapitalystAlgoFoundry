@@ -1,6 +1,6 @@
-package com.sandy.capitalyst.algofoundry.strategy.eodhistory;
+package com.sandy.capitalyst.algofoundry.strategy.candleseries;
 
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.dayvalue.*;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.dayvalue.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -25,12 +25,12 @@ import org.ta4j.core.num.Num;
 import java.io.Serializable;
 import java.util.*;
 
-import static com.sandy.capitalyst.algofoundry.strategy.eodhistory.EquityEODHistory.IndicatorName.*;
+import static com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries.IndicatorName.*;
 
 @Slf4j
-public class EquityEODHistory implements Serializable {
+public class CandleSeries implements Serializable {
     
-    public enum PayloadType {
+    public enum DayValueType {
         OHLCV,
         BOLLINGER,
         MACD,
@@ -62,7 +62,7 @@ public class EquityEODHistory implements Serializable {
     @Getter private final BarSeries barSeries ;
     @Getter private final String symbol ;
     
-    @Setter private int maxSimSeriesLength = Integer.MAX_VALUE ;
+    @Setter private int maxSeriesLength = Integer.MAX_VALUE ;
     
     private final Map<IndicatorName, Indicator<Num>>       cache      = new HashMap<>() ;
     private final Map<Integer, SMAIndicator>               smaCache   = new HashMap<>() ;
@@ -71,14 +71,14 @@ public class EquityEODHistory implements Serializable {
 
     private final Set<DayValueListener> dayValueListeners = new HashSet<>() ;
     
-    public EquityEODHistory( String symbol, List<DayCandle> candles ) {
+    public CandleSeries( String symbol, List<Candle> candles ) {
         this.barSeries = buildBarSeries( candles ) ;
         this.symbol = symbol ;
     }
     
-    private BarSeries buildBarSeries( List<DayCandle> candles ) {
+    private BarSeries buildBarSeries( List<Candle> candles ) {
         
-        while( candles.size() > maxSimSeriesLength ) { candles.remove( 0 ) ; }
+        while( candles.size() > maxSeriesLength ) { candles.remove( 0 ) ; }
         
         BarSeries series = new BaseBarSeries( symbol ) ;
         candles.forEach( c -> {
@@ -108,30 +108,62 @@ public class EquityEODHistory implements Serializable {
         return barSeries.getBarCount() ;
     }
     
-    public synchronized void emitDayValues( int index, Collection<PayloadType> payloadTypes ) {
-        payloadTypes.forEach( pType -> emitValue( index, pType ) ) ;
+    public synchronized void emitDayValues( int index, Collection<DayValueType> dayValueTypes ) {
+        dayValueTypes.forEach( pType -> emitValue( index, pType ) ) ;
     }
     
-    public synchronized void emitValue( int index, PayloadType pType ) {
+    public synchronized void emitValue( int index, DayValueType pType ) {
         
         if( index >= barSeries.getBarCount() ) {
             throw new IllegalArgumentException( "Index is out of bounds." ) ;
         }
         
-        AbstractDayValue dayValue = buildPayload( index, pType ) ;
+        DayValue dayValue = buildPayload( index, pType ) ;
         dayValue.setSeriesIndex( index ) ;
 
         dayValueListeners.forEach( l -> l.handleDayValue( dayValue ) );
     }
     
-    private AbstractDayValue buildPayload( int index, PayloadType pType ) {
+    public SMAIndicator getSMAIndicator( int window ) {
+        return smaCache.computeIfAbsent( window, this::createSMAIndicator ) ;
+    }
+    
+    public EMAIndicator getEMAIndicator( int window ) {
+        return emaCache.computeIfAbsent( window, this::createEMAIndicator ) ;
+    }
+    
+    public StandardDeviationIndicator getStDevIndicator( int window ) {
+        return stDevCache.computeIfAbsent( window, this::createStDevIndicator ) ;
+    }
+    
+    public Indicator<Num> ind( IndicatorName key ) {
+        Indicator<Num> ind = cache.get( key ) ;
+        if( ind == null ) {
+            switch( key ) {
+                case CLOSING_PRICE -> ind = createClosePriceIndicator() ;
+                case BOLLINGER_LOW -> ind = createBollingerLowerIndicator() ;
+                case BOLLINGER_UP  -> ind = createBollingerUpperIndicator() ;
+                case BOLLINGER_MID -> ind = createBollingerMiddleIndicator() ;
+                case MACD          -> ind = createMACDIndicator() ;
+                case MACD_SIGNAL   -> ind = createMACDSignalIndicator() ;
+                case RSI           -> ind = createRSIIndicator() ;
+                case ADX           -> ind = createADXIndicator() ;
+                case ADX_PLUS_DMI  -> ind = createADXPlusDMIIndicator() ;
+                case ADX_MINUS_DMI -> ind = createADXMinusDMIIndicator() ;
+            }
+            cache.put( key, ind ) ;
+        }
+        return ind ;
+    }
+    
+    private DayValue buildPayload( int index, DayValueType pType ) {
         
         Bar  bar  = barSeries.getBar( index ) ;
         Date date = Date.from( bar.getEndTime().toInstant() ) ;
         
-        AbstractDayValue payload = null ;
+        DayValue payload = null ;
         switch( pType ) {
-            case OHLCV     -> payload = buildOHLCVPayload( index, date, bar ) ;
+            case OHLCV     -> payload = buildOHLCVPayload( date, bar ) ;
             case BOLLINGER -> payload = buildBollingerPayload( index, date, bar ) ;
             case MACD      -> payload = buildMACDPayload( index, date, bar ) ;
             case RSI       -> payload = buildRSIPayload( index, date, bar ) ;
@@ -141,7 +173,7 @@ public class EquityEODHistory implements Serializable {
         return payload ;
     }
     
-    private OHLCVDayValue buildOHLCVPayload( int index, Date date, Bar bar ) {
+    private OHLCVDayValue buildOHLCVPayload( Date date, Bar bar ) {
         return new OHLCVDayValue( date, symbol, bar ) ;
     }
     
@@ -178,38 +210,6 @@ public class EquityEODHistory implements Serializable {
     
     private double getIndVal( IndicatorName indName, int index ) {
         return ind( indName ).getValue( index ).doubleValue() ;
-    }
-    
-    public SMAIndicator getSMAIndicator( int window ) {
-        return smaCache.computeIfAbsent( window, this::createSMAIndicator ) ;
-    }
-    
-    public EMAIndicator getEMAIndicator( int window ) {
-        return emaCache.computeIfAbsent( window, this::createEMAIndicator ) ;
-    }
-    
-    public StandardDeviationIndicator getStDevIndicator( int window ) {
-        return stDevCache.computeIfAbsent( window, this::createStDevIndicator ) ;
-    }
-    
-    public Indicator<Num> ind( IndicatorName key ) {
-        Indicator<Num> ind = cache.get( key ) ;
-        if( ind == null ) {
-            switch( key ) {
-                case CLOSING_PRICE -> ind = createClosePriceIndicator() ;
-                case BOLLINGER_LOW -> ind = createBollingerLowerIndicator() ;
-                case BOLLINGER_UP  -> ind = createBollingerUpperIndicator() ;
-                case BOLLINGER_MID -> ind = createBollingerMiddleIndicator() ;
-                case MACD          -> ind = createMACDIndicator() ;
-                case MACD_SIGNAL   -> ind = createMACDSignalIndicator() ;
-                case RSI           -> ind = createRSIIndicator() ;
-                case ADX           -> ind = createADXIndicator() ;
-                case ADX_PLUS_DMI  -> ind = createADXPlusDMIIndicator() ;
-                case ADX_MINUS_DMI -> ind = createADXMinusDMIIndicator() ;
-            }
-            cache.put( key, ind ) ;
-        }
-        return ind ;
     }
     
     private Indicator<Num> createClosePriceIndicator() {

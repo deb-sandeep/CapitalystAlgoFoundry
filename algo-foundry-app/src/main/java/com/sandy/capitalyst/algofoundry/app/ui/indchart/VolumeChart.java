@@ -1,7 +1,7 @@
 package com.sandy.capitalyst.algofoundry.app.ui.indchart;
 
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.AbstractDayValue;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.dayvalue.OHLCVDayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.dayvalue.OHLCVDayValue;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEvent;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEventListener;
 import com.sandy.capitalyst.algofoundry.strategy.signal.event.CurrentSignalZoneEvent;
@@ -16,7 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-import static com.sandy.capitalyst.algofoundry.strategy.eodhistory.EquityEODHistory.PayloadType;
+import static com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries.DayValueType;
 
 @Slf4j
 public class VolumeChart extends IndicatorChart
@@ -35,7 +35,7 @@ public class VolumeChart extends IndicatorChart
     }
     
     protected void postInitializeChart() {
-        consumedPayloadTypes.add( PayloadType.OHLCV ) ;
+        consumedDayValueTypes.add( DayValueType.OHLCV ) ;
         attachVolumeTimeSeries() ;
     }
     
@@ -45,12 +45,12 @@ public class VolumeChart extends IndicatorChart
     }
     
     @Override
-    public List<PayloadType> getConsumedPayloadTypes() {
-        return this.consumedPayloadTypes ;
+    public List<DayValueType> getConsumedPayloadTypes() {
+        return this.consumedDayValueTypes;
     }
 
     @Override
-    protected void consumeDayValue( AbstractDayValue payload ) {
+    protected void consumeDayValue( DayValue payload ) {
         Day day = new Day( payload.getDate() ) ;
         if( payload instanceof OHLCVDayValue ohlcv ) {
             double vol = ohlcv.getVolume() ;

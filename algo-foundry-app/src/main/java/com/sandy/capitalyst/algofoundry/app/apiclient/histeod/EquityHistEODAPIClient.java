@@ -4,7 +4,7 @@ import com.sandy.capitalyst.algofoundry.app.equity.HistoricEQData;
 import com.sandy.capitalyst.algofoundry.app.equity.repo.HistoricEQDataRepo;
 import com.sandy.capitalyst.algofoundry.app.core.offline.Offline;
 import com.sandy.capitalyst.algofoundry.app.core.util.CapitalystServerUtil;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.DayCandle;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.Candle;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +26,11 @@ public class EquityHistEODAPIClient {
     private static       SimpleDateFormat SDF      = new SimpleDateFormat( "dd-MMM-yyyy" ) ;
     
     @Offline
-    public List<DayCandle> getHistoricCandles( String symbol ) throws Exception {
+    public List<Candle> getHistoricCandles( String symbol ) throws Exception {
         
-        List<DayCandle> allCandles = new ArrayList<>() ;
-        List<DayCandle> serverCandles = new ArrayList<>() ;
-        List<DayCandle> prehistCandles ;
+        List<Candle> allCandles    = new ArrayList<>() ;
+        List<Candle> serverCandles = new ArrayList<>() ;
+        List<Candle> prehistCandles ;
         
         String histCsv = CapitalystServerUtil.getResource(
                 RECO_URL.replace( "{symbol}", symbol )
@@ -41,7 +41,7 @@ public class EquityHistEODAPIClient {
             serverCandles.add( buildCandle( candleRecords.get( i ) ) ) ;
         }
         
-        DayCandle earliestCandle = serverCandles.get( 0 ) ;
+        Candle earliestCandle = serverCandles.get( 0 ) ;
         prehistCandles = getPrehistoicDayCandles( symbol, earliestCandle.getDate() ) ;
         
         allCandles.addAll( prehistCandles ) ;
@@ -50,11 +50,11 @@ public class EquityHistEODAPIClient {
         return allCandles ;
     }
     
-    private List<DayCandle> getPrehistoicDayCandles( String symbol, Date endDate ){
+    private List<Candle> getPrehistoicDayCandles( String symbol, Date endDate ){
         
         HistoricEQDataRepo   eodRepo ;
         List<HistoricEQData> histRecords ;
-        List<DayCandle>      candles = new ArrayList<>() ;
+        List<Candle>         candles = new ArrayList<>() ;
 
         eodRepo = getBean( HistoricEQDataRepo.class ) ;
         histRecords = eodRepo.getHistoricData( symbol, endDate ) ;
@@ -73,10 +73,10 @@ public class EquityHistEODAPIClient {
         return records ;
     }
     
-    private DayCandle buildCandle( String[] values )
+    private Candle buildCandle( String[] values )
         throws Exception {
         
-        DayCandle candle = new DayCandle() ;
+        Candle candle = new Candle() ;
         
         candle.setDate  ( SDF.parse( values[1] ) ) ;
         candle.setOpen  ( Float.parseFloat( values[2] ) ) ;

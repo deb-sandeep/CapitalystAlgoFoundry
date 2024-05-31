@@ -1,7 +1,7 @@
 package com.sandy.capitalyst.algofoundry.app.ui.indchart;
 
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.AbstractDayValue;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.dayvalue.RSIDayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.dayvalue.RSIDayValue;
 import com.sandy.capitalyst.algofoundry.app.core.ui.UITheme;
 import com.sandy.capitalyst.algofoundry.app.ui.indchart.util.XCrosshairFollowingChart;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import java.awt.*;
 import java.util.List;
 
-import static com.sandy.capitalyst.algofoundry.strategy.eodhistory.EquityEODHistory.PayloadType;
+import static com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries.DayValueType;
 
 @Slf4j
 public class RSIChart extends XCrosshairFollowingChart {
@@ -38,7 +38,7 @@ public class RSIChart extends XCrosshairFollowingChart {
     }
     
     protected void postInitializeChart() {
-        consumedPayloadTypes.add( PayloadType.RSI ) ;
+        consumedDayValueTypes.add( DayValueType.RSI ) ;
         attachDifferenceTimeSeries() ;
         attachCeilingCrossoverTimeSeries() ;
     }
@@ -84,8 +84,8 @@ public class RSIChart extends XCrosshairFollowingChart {
     }
     
     @Override
-    public List<PayloadType> getConsumedPayloadTypes() {
-        return this.consumedPayloadTypes ;
+    public List<DayValueType> getConsumedPayloadTypes() {
+        return this.consumedDayValueTypes;
     }
     
     @Override
@@ -94,7 +94,7 @@ public class RSIChart extends XCrosshairFollowingChart {
     }
     
     @Override
-    protected void consumeDayValue( AbstractDayValue payload ) {
+    protected void consumeDayValue( DayValue payload ) {
         Day day = new Day( payload.getDate() ) ;
         if( payload instanceof RSIDayValue rsi ) {
             rsiTimeSeries.add( day, rsi.getRsi() ) ;

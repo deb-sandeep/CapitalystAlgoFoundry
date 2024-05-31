@@ -1,8 +1,8 @@
 package com.sandy.capitalyst.algofoundry.strategy.signal;
 
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.AbstractDayValue;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.DayValueListener;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.EquityEODHistory;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValueListener;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries;
 import com.sandy.capitalyst.algofoundry.strategy.signal.event.SignalStrategyLogEvent;
 import com.sandy.capitalyst.algofoundry.strategy.signal.event.TradeSignalEvent;
 import org.ta4j.core.Bar;
@@ -16,13 +16,13 @@ public abstract class AbstractSignalStrategy
     
     private final List<SignalStrategyEventListener> eventListeners = new ArrayList<>() ;
     
-    protected final EquityEODHistory history ;
+    protected final CandleSeries history ;
     
     protected int lastIndexEvaluated = -1 ;
     protected Date date = null ;
     protected Bar bar = null ;
     
-    protected AbstractSignalStrategy( EquityEODHistory history ) {
+    protected AbstractSignalStrategy( CandleSeries history ) {
         this.history = history ;
         //this.eventListeners.add( new SignalStrategyConsoleLogger() ) ;
     }
@@ -81,7 +81,7 @@ public abstract class AbstractSignalStrategy
     }
     
     @Override
-    public final void handleDayValue( AbstractDayValue dayValue ) {
+    public final void handleDayValue( DayValue dayValue ) {
         int seriesIndex = dayValue.getSeriesIndex() ;
         if( seriesIndex > lastIndexEvaluated ) {
             

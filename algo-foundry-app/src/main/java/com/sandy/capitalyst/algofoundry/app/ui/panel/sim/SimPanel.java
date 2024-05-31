@@ -4,7 +4,7 @@ import com.sandy.capitalyst.algofoundry.app.apiclient.histeod.EquityHistEODAPICl
 import com.sandy.capitalyst.algofoundry.app.core.ui.SwingUtils;
 import com.sandy.capitalyst.algofoundry.app.ui.indchart.*;
 import com.sandy.capitalyst.algofoundry.app.ui.indchart.util.CrossHairMoveListener;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.EquityEODHistory;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries;
 import com.sandy.capitalyst.algofoundry.strategy.signal.AbstractZonedSignalStrategy;
 import com.sandy.capitalyst.algofoundry.strategy.signal.MySignalStrategy;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEventListener;
@@ -30,7 +30,7 @@ public class SimPanel extends JPanel {
     
     private final Map<String, AbstractZonedSignalStrategy> tradeStrategyMap = new LinkedHashMap<>() ;
     
-    private final EquityEODHistory history ;
+    private final CandleSeries history ;
     
     private final IndicatorChart priceChart ;
     private final IndicatorChart volumeChart ;
@@ -52,7 +52,7 @@ public class SimPanel extends JPanel {
         
         EquityHistEODAPIClient apiClient = getBean( EquityHistEODAPIClient.class ) ;
         
-        this.history = new EquityEODHistory( symbol,
+        this.history = new CandleSeries( symbol,
                                      apiClient.getHistoricCandles( symbol ) ) ;
         
         this.priceChart  = new PriceChart( symbol ) ;
@@ -138,13 +138,13 @@ public class SimPanel extends JPanel {
     
     public boolean playCurrentBarSeriesData() {
         
-        Set<EquityEODHistory.PayloadType> payloadTypes = new HashSet<>() ;
+        Set<CandleSeries.DayValueType> dayValueTypes = new HashSet<>() ;
         for( IndicatorChart chart : charts ) {
-            payloadTypes.addAll( chart.getConsumedPayloadTypes() ) ;
+            dayValueTypes.addAll( chart.getConsumedPayloadTypes() ) ;
         }
         
         if( curBarSeriesIndex < history.getBarCount() ) {
-            history.emitDayValues( curBarSeriesIndex, payloadTypes ) ;
+            history.emitDayValues( curBarSeriesIndex, dayValueTypes ) ;
             this.curBarSeriesIndex++ ;
             return true ;
         }

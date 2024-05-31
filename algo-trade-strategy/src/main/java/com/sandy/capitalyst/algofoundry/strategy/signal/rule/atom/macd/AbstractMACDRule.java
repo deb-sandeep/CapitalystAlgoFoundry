@@ -1,6 +1,6 @@
 package com.sandy.capitalyst.algofoundry.strategy.signal.rule.atom.macd;
 
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.EquityEODHistory;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries;
 import com.sandy.capitalyst.algofoundry.strategy.signal.rule.AbstractSignalRule;
 import lombok.extern.slf4j.Slf4j;
 import org.ta4j.core.Indicator;
@@ -14,10 +14,10 @@ public abstract class AbstractMACDRule extends AbstractSignalRule {
     protected Indicator<Num> macdSignal ;
     protected Indicator<Num> macdHist ;
     
-    public AbstractMACDRule( EquityEODHistory history ) {
+    public AbstractMACDRule( CandleSeries history ) {
         super( history ) ;
-        macd = history.ind( EquityEODHistory.IndicatorName.MACD ) ;
-        macdSignal = history.ind( EquityEODHistory.IndicatorName.MACD_SIGNAL ) ;
+        macd = history.ind( CandleSeries.IndicatorName.MACD ) ;
+        macdSignal = history.ind( CandleSeries.IndicatorName.MACD_SIGNAL ) ;
         macdHist = NumericIndicator.of( macd ).minus( macdSignal ) ;
     }
 }

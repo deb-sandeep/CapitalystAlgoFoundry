@@ -3,10 +3,10 @@ package com.sandy.capitalyst.algofoundry.app.ui.indchart;
 import com.sandy.capitalyst.algofoundry.app.core.ui.UITheme;
 import com.sandy.capitalyst.algofoundry.app.ui.indchart.util.CircleAnnotationDrawable;
 import com.sandy.capitalyst.algofoundry.app.ui.indchart.util.CrossHairMoveListener;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.AbstractDayValue;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.dayvalue.BollingerBandDayValue;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.dayvalue.MADayValue;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.dayvalue.OHLCVDayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.dayvalue.BollingerBandDayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.dayvalue.MADayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.dayvalue.OHLCVDayValue;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEvent;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEventListener;
 import com.sandy.capitalyst.algofoundry.strategy.signal.event.TradeSignalEvent;
@@ -43,7 +43,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static com.sandy.capitalyst.algofoundry.strategy.eodhistory.EquityEODHistory.PayloadType;
+import static com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries.DayValueType;
 
 @Slf4j
 public class PriceChart extends IndicatorChart
@@ -81,9 +81,9 @@ public class PriceChart extends IndicatorChart
     }
     
     protected void postInitializeChart() {
-        consumedPayloadTypes.add( PayloadType.OHLCV ) ;
-        consumedPayloadTypes.add( PayloadType.BOLLINGER ) ;
-        consumedPayloadTypes.add( PayloadType.EMA5 ) ;
+        consumedDayValueTypes.add( DayValueType.OHLCV ) ;
+        consumedDayValueTypes.add( DayValueType.BOLLINGER ) ;
+        consumedDayValueTypes.add( DayValueType.EMA5 ) ;
 
         attachClosePriceTimeSeries() ;
         attachBollingerBands() ;
@@ -181,8 +181,8 @@ public class PriceChart extends IndicatorChart
     }
     
     @Override
-    public List<PayloadType> getConsumedPayloadTypes() {
-        return this.consumedPayloadTypes ;
+    public List<DayValueType> getConsumedPayloadTypes() {
+        return this.consumedDayValueTypes;
     }
     
     @Override
@@ -193,7 +193,7 @@ public class PriceChart extends IndicatorChart
     }
     
     @Override
-    protected void consumeDayValue( AbstractDayValue payload ) {
+    protected void consumeDayValue( DayValue payload ) {
         Day day = new Day( payload.getDate() ) ;
         if( payload instanceof OHLCVDayValue ohlcv ) {
             closePriceTimeSeries.add( day, ohlcv.getClose()  ) ;

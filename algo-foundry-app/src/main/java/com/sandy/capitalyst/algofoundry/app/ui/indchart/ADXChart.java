@@ -2,8 +2,8 @@ package com.sandy.capitalyst.algofoundry.app.ui.indchart;
 
 import com.sandy.capitalyst.algofoundry.app.core.ui.UITheme;
 import com.sandy.capitalyst.algofoundry.app.ui.indchart.util.XCrosshairFollowingChart;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.dayvalue.ADXDayValue;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.AbstractDayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.dayvalue.ADXDayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValue;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.renderer.xy.XYAreaRenderer;
 import org.jfree.chart.renderer.xy.XYDifferenceRenderer;
@@ -15,7 +15,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import java.awt.*;
 import java.util.List;
 
-import static com.sandy.capitalyst.algofoundry.strategy.eodhistory.EquityEODHistory.PayloadType;
+import static com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries.DayValueType;
 
 @Slf4j
 public class ADXChart extends XCrosshairFollowingChart {
@@ -41,7 +41,7 @@ public class ADXChart extends XCrosshairFollowingChart {
     }
     
     protected void postInitializeChart() {
-        consumedPayloadTypes.add( PayloadType.ADX ) ;
+        consumedDayValueTypes.add( DayValueType.ADX ) ;
         attachDITimeSeries() ;
         attachHistogramTimeSeries() ;
         attachY25TimeSeries() ;
@@ -110,8 +110,8 @@ public class ADXChart extends XCrosshairFollowingChart {
     }
     
     @Override
-    public List<PayloadType> getConsumedPayloadTypes() {
-        return this.consumedPayloadTypes ;
+    public List<DayValueType> getConsumedPayloadTypes() {
+        return this.consumedDayValueTypes;
     }
     
     @Override
@@ -123,7 +123,7 @@ public class ADXChart extends XCrosshairFollowingChart {
     }
     
     @Override
-    protected void consumeDayValue( AbstractDayValue payload ) {
+    protected void consumeDayValue( DayValue payload ) {
         Day day = new Day( payload.getDate() ) ;
         if( payload instanceof ADXDayValue adx ) {
             adxTimeSeries.add( day, adx.getAdx() ) ;

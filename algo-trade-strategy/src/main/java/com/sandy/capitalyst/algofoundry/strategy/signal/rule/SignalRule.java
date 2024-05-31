@@ -1,15 +1,15 @@
 package com.sandy.capitalyst.algofoundry.strategy.signal.rule;
 
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.EquityEODHistory;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries;
 import com.sandy.capitalyst.algofoundry.strategy.signal.rule.logic.AndRule;
 import com.sandy.capitalyst.algofoundry.strategy.signal.rule.logic.NotRule;
 import com.sandy.capitalyst.algofoundry.strategy.signal.rule.logic.OrRule;
 
 public abstract class SignalRule {
     
-    protected final EquityEODHistory history ;
+    protected final CandleSeries history ;
     
-    protected SignalRule( EquityEODHistory history ) {
+    protected SignalRule( CandleSeries history ) {
         this.history = history ;
     }
     

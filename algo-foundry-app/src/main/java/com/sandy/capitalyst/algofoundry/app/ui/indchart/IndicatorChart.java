@@ -1,9 +1,9 @@
 package com.sandy.capitalyst.algofoundry.app.ui.indchart;
 
 import com.sandy.capitalyst.algofoundry.app.core.ui.UITheme;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.AbstractDayValue;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.DayValueListener;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.EquityEODHistory;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValueListener;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -42,7 +42,7 @@ public abstract class IndicatorChart extends JPanel
     protected XYPlot               plot           = null ;
     protected TimeSeriesCollection primaryDataset = null ;
     
-    protected final List<EquityEODHistory.PayloadType> consumedPayloadTypes = new ArrayList<>() ;
+    protected final List<CandleSeries.DayValueType> consumedDayValueTypes = new ArrayList<>() ;
     
     private final String title ;
     private final String yAxisLabel ;
@@ -178,7 +178,7 @@ public abstract class IndicatorChart extends JPanel
         xAxis.setTickLabelsVisible( false ) ;
     }
     
-    public abstract List<EquityEODHistory.PayloadType> getConsumedPayloadTypes() ;
+    public abstract List<CandleSeries.DayValueType> getConsumedPayloadTypes() ;
     
     public abstract void clearChart() ;
     
@@ -188,13 +188,13 @@ public abstract class IndicatorChart extends JPanel
         }
     }
     
-    public final void handleDayValue( AbstractDayValue dayValue ) {
+    public final void handleDayValue( DayValue dayValue ) {
         SwingUtilities.invokeLater( () -> {
             consumeDayValue( dayValue ) ;
         } );
     }
     
-    protected abstract void consumeDayValue( AbstractDayValue dayValue ) ;
+    protected abstract void consumeDayValue( DayValue dayValue ) ;
     
     protected Crosshair createGenericCrosshair() {
         

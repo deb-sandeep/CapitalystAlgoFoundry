@@ -2,8 +2,8 @@ package com.sandy.capitalyst.algofoundry.app.ui.indchart;
 
 import com.sandy.capitalyst.algofoundry.app.core.ui.UITheme;
 import com.sandy.capitalyst.algofoundry.app.ui.indchart.util.XCrosshairFollowingChart;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.AbstractDayValue;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.dayvalue.MACDDayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.dayvalue.MACDDayValue;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.renderer.xy.XYDifferenceRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -14,7 +14,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import java.awt.*;
 import java.util.List;
 
-import static com.sandy.capitalyst.algofoundry.strategy.eodhistory.EquityEODHistory.PayloadType;
+import static com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries.DayValueType;
 
 @Slf4j
 public class MACDChart extends XCrosshairFollowingChart {
@@ -33,7 +33,7 @@ public class MACDChart extends XCrosshairFollowingChart {
     }
     
     protected void postInitializeChart() {
-        consumedPayloadTypes.add( PayloadType.MACD ) ;
+        consumedDayValueTypes.add( DayValueType.MACD ) ;
         attachSignalTimeSeries() ;
         attachHistogramTimeSeries() ;
     }
@@ -80,8 +80,8 @@ public class MACDChart extends XCrosshairFollowingChart {
     }
     
     @Override
-    public List<PayloadType> getConsumedPayloadTypes() {
-        return this.consumedPayloadTypes ;
+    public List<DayValueType> getConsumedPayloadTypes() {
+        return this.consumedDayValueTypes;
     }
     
     @Override
@@ -93,7 +93,7 @@ public class MACDChart extends XCrosshairFollowingChart {
     }
     
     @Override
-    protected void consumeDayValue( AbstractDayValue payload ) {
+    protected void consumeDayValue( DayValue payload ) {
         Day day = new Day( payload.getDate() ) ;
         if( payload instanceof MACDDayValue macd ) {
             macdTimeSeries.add( day, macd.getMacd() ) ;

@@ -1,4 +1,4 @@
-package com.sandy.capitalyst.algofoundry.strategy.eodhistory;
+package com.sandy.capitalyst.algofoundry.strategy.candleseries;
 
 import lombok.Data;
 import org.ta4j.core.Bar;
@@ -12,7 +12,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Data
-public class DayCandle implements Serializable {
+public class Candle implements Serializable {
     
     private Date date ;
     private float open ;

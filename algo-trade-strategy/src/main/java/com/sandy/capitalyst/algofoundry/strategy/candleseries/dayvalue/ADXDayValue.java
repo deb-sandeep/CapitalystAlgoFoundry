@@ -1,13 +1,15 @@
-package com.sandy.capitalyst.algofoundry.strategy.eodhistory.dayvalue;
+package com.sandy.capitalyst.algofoundry.strategy.candleseries.dayvalue;
 
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.AbstractDayValue;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.EquityEODHistory;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries;
 import lombok.Getter;
 import org.ta4j.core.Bar;
 
 import java.util.Date;
 
-public class ADXDayValue extends AbstractDayValue {
+import static com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries.* ;
+
+public class ADXDayValue extends DayValue {
 
     @Getter private final double adx;
     @Getter private final double plusDMI ;
@@ -16,7 +18,7 @@ public class ADXDayValue extends AbstractDayValue {
     public ADXDayValue( Date date, Bar bar, String symbol,
                         double adx, double plusDMI, double minusDMI ) {
 
-        super( EquityEODHistory.PayloadType.ADX, date, bar, symbol ) ;
+        super( DayValueType.ADX, date, bar, symbol ) ;
         
         this.adx = adx ;
         this.plusDMI = plusDMI ;

@@ -1,6 +1,4 @@
-package com.sandy.capitalyst.algofoundry.strategy.numseries.series;
-
-import com.sandy.capitalyst.algofoundry.strategy.numseries.NumberSeries;
+package com.sandy.capitalyst.algofoundry.strategy.numseries;
 
 public class ConstantSeries extends NumberSeries {
 

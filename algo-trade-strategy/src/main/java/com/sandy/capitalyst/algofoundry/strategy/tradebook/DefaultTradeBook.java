@@ -1,13 +1,10 @@
 package com.sandy.capitalyst.algofoundry.strategy.tradebook;
 
-import com.sandy.capitalyst.algofoundry.strategy.numseries.series.ConstantSeries;
+import com.sandy.capitalyst.algofoundry.strategy.numseries.ConstantSeries;
 import com.sandy.capitalyst.algofoundry.strategy.numseries.indicator.CrossDownIndicator;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.AbstractDayValue;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.dayvalue.OHLCVDayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.dayvalue.OHLCVDayValue;
 import com.sandy.capitalyst.algofoundry.strategy.signal.event.TradeSignalEvent;
-import com.sandy.capitalyst.algofoundry.strategy.tradebook.BuyTrade;
-import com.sandy.capitalyst.algofoundry.strategy.tradebook.SellTrade;
-import com.sandy.capitalyst.algofoundry.strategy.tradebook.TradeBook;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.sandy.capitalyst.algofoundry.strategy.util.StringUtil.* ;
@@ -62,7 +59,7 @@ public class DefaultTradeBook extends TradeBook {
     }
     
     @Override
-    public void handleDayValue( AbstractDayValue dayValue ) {
+    public void handleDayValue( DayValue dayValue ) {
         
         super.handleDayValue( dayValue ) ;
         

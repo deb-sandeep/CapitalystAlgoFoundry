@@ -1,9 +1,9 @@
 package com.sandy.capitalyst.algofoundry.strategy.tradebook;
 
 import com.sandy.capitalyst.algofoundry.strategy.numseries.NumberSeries;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.AbstractDayValue;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.DayValueListener;
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.dayvalue.OHLCVDayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValue;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValueListener;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.dayvalue.OHLCVDayValue;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEvent;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEventListener;
 import com.sandy.capitalyst.algofoundry.strategy.signal.event.TradeSignalEvent;
@@ -89,7 +89,7 @@ public abstract class TradeBook
     }
     
     @Override
-    public void handleDayValue( AbstractDayValue dayValue ) {
+    public void handleDayValue( DayValue dayValue ) {
         if( dayValue instanceof OHLCVDayValue ohlc ) {
             latestClosingPrice = ohlc.getClose() ;
             computeProfit() ;

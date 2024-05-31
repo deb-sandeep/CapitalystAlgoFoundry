@@ -1,6 +1,6 @@
 package com.sandy.capitalyst.algofoundry.strategy.signal;
 
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.EquityEODHistory;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries;
 import com.sandy.capitalyst.algofoundry.strategy.signal.event.CurrentSignalZoneEvent;
 import com.sandy.capitalyst.algofoundry.strategy.signal.event.TradeSignalEvent;
 
@@ -16,7 +16,7 @@ public abstract class AbstractZonedSignalStrategy extends AbstractSignalStrategy
     private int activeEntryDaysLeft = 0 ;
     private int activeExitDaysLeft  = 0 ;
     
-    protected AbstractZonedSignalStrategy( EquityEODHistory history ) {
+    protected AbstractZonedSignalStrategy( CandleSeries history ) {
         super( history ) ;
     }
     

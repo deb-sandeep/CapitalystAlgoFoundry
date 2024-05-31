@@ -1,16 +1,16 @@
 package com.sandy.capitalyst.algofoundry.strategy.signal.rule.atom.ema;
 
-import com.sandy.capitalyst.algofoundry.strategy.eodhistory.EquityEODHistory;
+import com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries;
 import org.ta4j.core.Rule;
 import org.ta4j.core.rules.UnderIndicatorRule;
 
 public class EMADownTrendRule extends AbstractEMARule {
     
-    public EMADownTrendRule( EquityEODHistory history ) {
+    public EMADownTrendRule( CandleSeries history ) {
         super( history ) ;
     }
     
-    public EMADownTrendRule( EquityEODHistory history, int minWindow, int maxWindow ) {
+    public EMADownTrendRule( CandleSeries history, int minWindow, int maxWindow ) {
         super( history, minWindow, maxWindow ) ;
     }
     
