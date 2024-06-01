@@ -1,5 +1,6 @@
 package com.sandy.capitalyst.algofoundry.app.ui.panel.eqmeta;
 
+import com.sandy.capitalyst.algofoundry.app.AlgoFoundry;
 import com.sandy.capitalyst.algofoundry.app.apiclient.equitymeta.EquityMeta;
 import com.sandy.capitalyst.algofoundry.app.apiclient.equitymeta.EquityMetaAPIClient;
 import com.sandy.capitalyst.algofoundry.app.apiclient.histeod.EquityHistEODAPIClient;
@@ -30,6 +31,19 @@ public class EquityMetaTablePanel extends JPanel {
             
             log.debug( "Fetched meta list. {} records.", metaList.size() );
             this.table = new EquityMetaTable( metaList ) ;
+            
+            if( AlgoFoundry.getConfig().isRefreshOfflineCache() ) {
+                log.debug( "Refreshing entire offline cache." ) ;
+                metaList.forEach( m -> {
+                    try {
+                        log.debug( "  Refreshing offline candles for {}", m.getSymbol() ) ;
+                        histClient.getHistoricCandles( m.getSymbol() );
+                    }
+                    catch( Exception e ) {
+                        throw new RuntimeException( e ) ;
+                    }
+                } );
+            }
             
             setUpUI() ;
         }

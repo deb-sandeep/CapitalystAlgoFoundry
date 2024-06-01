@@ -1,7 +1,7 @@
 package com.sandy.capitalyst.algofoundry.app.ui.indchart;
 
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValue;
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.dayvalue.OHLCVDayValue;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.DayValue;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.dayvalue.OHLCVDayValue;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEvent;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEventListener;
 import com.sandy.capitalyst.algofoundry.strategy.signal.event.CurrentSignalZoneEvent;
@@ -16,7 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-import static com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries.DayValueType;
+import static com.sandy.capitalyst.algofoundry.strategy.series.candleseries.CandleSeries.DayValueType;
 
 @Slf4j
 public class VolumeChart extends IndicatorChart

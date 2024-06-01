@@ -13,7 +13,7 @@ public class BuyTrade extends Trade {
     
     private final List<SellTrade> sellTrades = new ArrayList<>() ;
     
-    @Getter private int unsoldQty = 0 ;
+    @Getter private int unsoldQty ;
     
     public BuyTrade( Date date, double price, int quantity ) {
         super( date, price, quantity ) ;

@@ -1,6 +1,6 @@
 package com.sandy.capitalyst.algofoundry.strategy.signal.rule.atom.macd;
 
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.CandleSeries;
 import com.sandy.capitalyst.algofoundry.strategy.signal.rule.AbstractSignalRule;
 import lombok.extern.slf4j.Slf4j;
 import org.ta4j.core.Indicator;

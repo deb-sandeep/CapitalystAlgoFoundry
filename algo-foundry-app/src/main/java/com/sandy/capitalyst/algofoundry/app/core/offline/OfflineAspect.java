@@ -37,7 +37,8 @@ public class OfflineAspect {
         if( isOffline ) {
             if( !cacheFile.exists() ) {
                 throw new IllegalStateException( "Offline cache for " +
-                                           joinPointSignature + " not found" ) ;
+                                           joinPointSignature + " not found at " +
+                                           cacheFile.getAbsolutePath() ) ;
             }
             log.debug( "Loading cache for " + joinPointMarker ) ;
             returnValue = loadCacheContents( cacheFile ) ;

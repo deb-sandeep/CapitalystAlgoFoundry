@@ -2,8 +2,8 @@ package com.sandy.capitalyst.algofoundry.app.ui.indchart;
 
 import com.sandy.capitalyst.algofoundry.app.core.ui.UITheme;
 import com.sandy.capitalyst.algofoundry.app.ui.indchart.util.XCrosshairFollowingChart;
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.dayvalue.ADXDayValue;
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValue;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.dayvalue.ADXDayValue;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.DayValue;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.renderer.xy.XYAreaRenderer;
 import org.jfree.chart.renderer.xy.XYDifferenceRenderer;
@@ -15,7 +15,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import java.awt.*;
 import java.util.List;
 
-import static com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries.DayValueType;
+import static com.sandy.capitalyst.algofoundry.strategy.series.candleseries.CandleSeries.DayValueType;
 
 @Slf4j
 public class ADXChart extends XCrosshairFollowingChart {

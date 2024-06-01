@@ -1,24 +1,26 @@
 package com.sandy.capitalyst.algofoundry.app.ui.panel.sim;
 
+import com.sandy.capitalyst.algofoundry.app.AlgoFoundry;
 import com.sandy.capitalyst.algofoundry.app.apiclient.histeod.EquityHistEODAPIClient;
 import com.sandy.capitalyst.algofoundry.app.core.ui.SwingUtils;
 import com.sandy.capitalyst.algofoundry.app.ui.indchart.*;
 import com.sandy.capitalyst.algofoundry.app.ui.indchart.util.CrossHairMoveListener;
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries;
-import com.sandy.capitalyst.algofoundry.strategy.signal.AbstractZonedSignalStrategy;
-import com.sandy.capitalyst.algofoundry.strategy.signal.MySignalStrategy;
+import com.sandy.capitalyst.algofoundry.strategy.impl.MySignalStrategy;
+import com.sandy.capitalyst.algofoundry.strategy.impl.MyStrategyConfig;
+import com.sandy.capitalyst.algofoundry.strategy.impl.MyTradeBook;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.CandleSeries;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEventListener;
-import com.sandy.capitalyst.algofoundry.strategy.tradebook.DefaultTradeBook;
+import com.sandy.capitalyst.algofoundry.strategy.signal.ZonedSignalStrategy;
 import com.sandy.capitalyst.algofoundry.strategy.tradebook.TradeBook;
 import com.sandy.capitalyst.algofoundry.strategy.tradebook.TradeBookListener;
-import com.sandy.capitalyst.algofoundry.ui.indchart.*;
+import com.sandy.capitalyst.algofoundry.strategy.util.StrategyConfigUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 
-import static com.sandy.capitalyst.algofoundry.app.AlgoFoundry.* ;
+import static com.sandy.capitalyst.algofoundry.app.AlgoFoundry.getBean;
 
 @Slf4j
 public class SimPanel extends JPanel {
@@ -28,7 +30,7 @@ public class SimPanel extends JPanel {
     private static final int RSI_CHART_HEIGHT = 150 ;
     private static final int ADX_CHART_HEIGHT = 150 ;
     
-    private final Map<String, AbstractZonedSignalStrategy> tradeStrategyMap = new LinkedHashMap<>() ;
+    private final Map<String, ZonedSignalStrategy> tradeStrategyMap = new LinkedHashMap<>() ;
     
     private final CandleSeries history ;
     
@@ -44,16 +46,22 @@ public class SimPanel extends JPanel {
     
     private int curBarSeriesIndex = 0 ;
     
-    private AbstractZonedSignalStrategy tradeStrategy = null ;
+    private ZonedSignalStrategy tradeStrategy = null ;
     
-    private TradeBook tradeBook = new DefaultTradeBook() ;
+    private final TradeBook tradeBook ;
+    private final MyStrategyConfig config ;
     
     public SimPanel( String symbol ) throws Exception {
         
         EquityHistEODAPIClient apiClient = getBean( EquityHistEODAPIClient.class ) ;
         
+        this.config = new MyStrategyConfig() ;
+        StrategyConfigUtil.populateStrategyConfig( this.config, AlgoFoundry.getConfig() ) ;
+        
+        this.tradeBook = new MyTradeBook( config ) ;
         this.history = new CandleSeries( symbol,
-                                     apiClient.getHistoricCandles( symbol ) ) ;
+                                         apiClient.getHistoricCandles( symbol ),
+                                         config ) ;
         
         this.priceChart  = new PriceChart( symbol ) ;
         this.volumeChart = new VolumeChart( symbol ) ;
@@ -90,7 +98,7 @@ public class SimPanel extends JPanel {
     
     private void populateTradeStrategiesMap() {
         tradeStrategyMap.put( MySignalStrategy.NAME,
-                              new MySignalStrategy( history ) ) ;
+                              new MySignalStrategy( history, config ) ) ;
     }
     
     private void setUpUI() {

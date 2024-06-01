@@ -11,6 +11,7 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.26/lombok-1.18.26.jar" />
         </processorPath>
         <module name="algo-trade-strategy" />
+        <module name="algo-trade-strategy-impl" />
         <module name="algo-foundry-app" />
       </profile>
     </annotationProcessing>
@@ -20,6 +21,7 @@
       <module name="algo-foundry" options="-parameters" />
       <module name="algo-foundry-app" options="-parameters" />
       <module name="algo-trade-strategy" options="-parameters" />
+      <module name="algo-trade-strategy-impl" options="-parameters" />
     </option>
   </component>
 </project>

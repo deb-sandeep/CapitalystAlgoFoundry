@@ -1,9 +1,9 @@
 package com.sandy.capitalyst.algofoundry.app.ui.indchart;
 
 import com.sandy.capitalyst.algofoundry.app.core.ui.UITheme;
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValue;
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValueListener;
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.DayValue;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.DayValueListener;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.CandleSeries;
 import lombok.extern.slf4j.Slf4j;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;

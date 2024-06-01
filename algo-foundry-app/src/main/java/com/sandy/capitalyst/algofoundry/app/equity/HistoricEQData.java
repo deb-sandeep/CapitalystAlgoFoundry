@@ -1,6 +1,6 @@
 package com.sandy.capitalyst.algofoundry.app.equity;
 
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.Candle;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.Candle;
 import jakarta.persistence.*;
 import lombok.Data;
 

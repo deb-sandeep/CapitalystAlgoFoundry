@@ -1,6 +1,6 @@
 package com.sandy.capitalyst.algofoundry.strategy.signal.rule.atom.ema;
 
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.CandleSeries;
 import org.ta4j.core.Rule;
 import org.ta4j.core.rules.UnderIndicatorRule;
 

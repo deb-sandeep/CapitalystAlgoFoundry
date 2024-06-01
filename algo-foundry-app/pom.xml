@@ -116,5 +116,11 @@
             <artifactId>algo-trade-strategy</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.sandy.capitalyst</groupId>
+            <artifactId>algo-trade-strategy-impl</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>

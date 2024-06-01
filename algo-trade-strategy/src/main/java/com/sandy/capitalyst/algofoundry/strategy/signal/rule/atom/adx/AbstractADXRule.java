@@ -1,6 +1,6 @@
 package com.sandy.capitalyst.algofoundry.strategy.signal.rule.atom.adx;
 
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.CandleSeries;
 import com.sandy.capitalyst.algofoundry.strategy.signal.rule.AbstractSignalRule;
 import org.ta4j.core.Indicator;
 import org.ta4j.core.indicators.numeric.NumericIndicator;

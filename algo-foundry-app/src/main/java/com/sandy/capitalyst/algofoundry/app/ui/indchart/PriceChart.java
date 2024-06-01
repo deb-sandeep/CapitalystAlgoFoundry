@@ -3,10 +3,10 @@ package com.sandy.capitalyst.algofoundry.app.ui.indchart;
 import com.sandy.capitalyst.algofoundry.app.core.ui.UITheme;
 import com.sandy.capitalyst.algofoundry.app.ui.indchart.util.CircleAnnotationDrawable;
 import com.sandy.capitalyst.algofoundry.app.ui.indchart.util.CrossHairMoveListener;
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValue;
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.dayvalue.BollingerBandDayValue;
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.dayvalue.MADayValue;
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.dayvalue.OHLCVDayValue;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.DayValue;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.dayvalue.BollingerBandDayValue;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.dayvalue.MADayValue;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.dayvalue.OHLCVDayValue;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEvent;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEventListener;
 import com.sandy.capitalyst.algofoundry.strategy.signal.event.TradeSignalEvent;
@@ -43,7 +43,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static com.sandy.capitalyst.algofoundry.strategy.candleseries.CandleSeries.DayValueType;
+import static com.sandy.capitalyst.algofoundry.strategy.series.candleseries.CandleSeries.DayValueType;
 
 @Slf4j
 public class PriceChart extends IndicatorChart

@@ -1,9 +1,10 @@
 package com.sandy.capitalyst.algofoundry.strategy.tradebook;
 
-import com.sandy.capitalyst.algofoundry.strategy.numseries.NumberSeries;
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValue;
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.DayValueListener;
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.dayvalue.OHLCVDayValue;
+import com.sandy.capitalyst.algofoundry.strategy.StrategyConfig;
+import com.sandy.capitalyst.algofoundry.strategy.series.numseries.NumberSeries;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.DayValue;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.DayValueListener;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.dayvalue.OHLCVDayValue;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEvent;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEventListener;
 import com.sandy.capitalyst.algofoundry.strategy.signal.event.TradeSignalEvent;
@@ -39,6 +40,11 @@ public abstract class TradeBook
     private double recoveredCorpus = 0 ;
     
     protected final NumberSeries notionalProfitPctSeries = new NumberSeries() ;
+    protected final StrategyConfig config ;
+    
+    protected TradeBook( StrategyConfig config ) {
+        this.config = config ;
+    }
     
     public void clearState() {
         this.allTrades.clear() ;
@@ -155,7 +161,7 @@ public abstract class TradeBook
         double costPrice = sellPrice - sellTrade.getProfit() ;
         
         // Note that we may be in loss, thus cost price can be greater than the
-        // sell price. Hence we take the min of sell price and cost price.
+        // sell price. Hence, we take the min of sell price and cost price.
         recoveredCorpus += Math.min( sellPrice, costPrice ) ;
         totalSellProfit += sellTrade.getProfit() ;
         avgCostPrice     = computeAvgCostPrice() ;

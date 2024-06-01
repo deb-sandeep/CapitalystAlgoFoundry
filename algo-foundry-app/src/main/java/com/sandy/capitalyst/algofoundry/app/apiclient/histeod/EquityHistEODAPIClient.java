@@ -4,7 +4,7 @@ import com.sandy.capitalyst.algofoundry.app.equity.HistoricEQData;
 import com.sandy.capitalyst.algofoundry.app.equity.repo.HistoricEQDataRepo;
 import com.sandy.capitalyst.algofoundry.app.core.offline.Offline;
 import com.sandy.capitalyst.algofoundry.app.core.util.CapitalystServerUtil;
-import com.sandy.capitalyst.algofoundry.strategy.candleseries.Candle;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.Candle;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import lombok.extern.slf4j.Slf4j;
