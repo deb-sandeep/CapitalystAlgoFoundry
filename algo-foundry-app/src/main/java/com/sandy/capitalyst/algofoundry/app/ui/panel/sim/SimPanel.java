@@ -186,7 +186,10 @@ public class SimPanel extends JPanel {
     
     public void doPrePlayProcessing() {}
     
+    public void simulationEnded() { tradeBook.print() ; }
+
     public TradeBook getTradeBook() {
         return this.tradeBook ;
     }
+    
 }

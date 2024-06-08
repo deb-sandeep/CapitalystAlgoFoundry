@@ -60,6 +60,9 @@ public abstract class TradeBook
         this.holdingQty        = 0 ;
         this.avgCostPrice      = 0 ;
         
+        this.latestClosingPrice = 0 ;
+        this.recoveredCorpus = 0 ;
+        
         this.notionalProfitPctSeries.clear() ;
         
         notifyTradeBookUpdated() ;
@@ -122,7 +125,6 @@ public abstract class TradeBook
         computeProfit() ;
         listeners.forEach( l -> l.buyTradeExecuted( buyTrade ) ) ;
         notifyTradeBookUpdated() ;
-        print() ;
     }
     
     protected void processSellTrade( SellTrade sellTrade ) {
@@ -169,7 +171,6 @@ public abstract class TradeBook
         computeProfit() ;
         listeners.forEach( l -> l.sellTradeExecuted( sellTrade ) ) ;
         notifyTradeBookUpdated() ;
-        print() ;
     }
     
     private double computeAvgCostPrice() {

@@ -48,6 +48,7 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
                     if( playState == PlayState.PLAYING ) {
                         if( !simPanel.playCurrentBarSeriesData() ) {
                             playState = PlayState.ENDED ;
+                            simPanel.simulationEnded() ;
                             refreshControls() ;
                         }
                     }
@@ -62,7 +63,7 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
     
     private enum PlayState { YET_TO_START, PLAYING, PAUSED, ENDED }
     private static final int MIN_EMIT_DELAY = 0 ;
-    private static final int MAX_EMIT_DELAY = 1000 ;
+    private static final int MAX_EMIT_DELAY = 500 ;
     
     private static final Map<PlayState, boolean[]> BTN_ENABLE_STATES = new HashMap<>() ;
     static {
@@ -85,7 +86,7 @@ public class PlayCtrlWidget extends SimControlPanel.SimControlWidget
     private final ImageIcon pauseIcon ;
     
     private PlayState playState = PlayState.YET_TO_START;
-    private int emitDelayMs = 25 ;
+    private int emitDelayMs = 5 ;
     
     private Thread playDaemon ;
     

@@ -10,12 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
-
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-import static com.sandy.capitalyst.algofoundry.app.core.ui.SwingUtils.* ;
+import static com.sandy.capitalyst.algofoundry.app.core.ui.SwingUtils.initPanelUI;
 import static com.sandy.capitalyst.algofoundry.app.core.util.StringUtil.fmtDate;
 import static com.sandy.capitalyst.algofoundry.strategy.signal.event.CurrentSignalZoneEvent.MovementType.CURRENT;
 import static com.sandy.capitalyst.algofoundry.strategy.signal.event.CurrentSignalZoneEvent.MovementType.ENTRY;
@@ -53,6 +52,8 @@ public class LogDisplayWidget extends SimControlPanel.SimControlWidget
     }
     
     private JTextArea textArea = null ;
+    private JRadioButton enableButton = null ;
+    private boolean enableLogs = false ;
     
     public LogDisplayWidget( SimPanel simPanel ) {
         super( simPanel ) ;
@@ -78,16 +79,24 @@ public class LogDisplayWidget extends SimControlPanel.SimControlWidget
             }
         } ) ;
         
+        enableButton = new JRadioButton( "Elable logs" ) ;
+        enableButton.setForeground( Color.GRAY ) ;
+        enableButton.addActionListener( e -> enableLogs = enableButton.isEnabled() ); ;
+        
         JScrollPane sp = new JScrollPane( textArea ) ;
         sp.setBorder( BorderFactory.createLineBorder( Color.GRAY.darker(), 1 ) ) ;
         sp.getVerticalScrollBar().setUI( new ScrollBarUI() ) ;
         sp.getHorizontalScrollBar().setUI( new ScrollBarUI() ) ;
         sp.setDoubleBuffered( true ) ;
+        
         add( sp, BorderLayout.CENTER ) ;
+        add( enableButton, BorderLayout.SOUTH ) ;
     }
     
     @Override
     public void handleStrategyEvent( SignalStrategyEvent event ) {
+        
+        if( !enableLogs ) return ;
         
         String logMsg = null ;
         
