@@ -1,0 +1,84 @@
+package com.sandy.capitalyst.algofoundry.strategy.tuner;
+
+import com.sandy.capitalyst.algofoundry.app.core.AlgoFoundryConfig;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.BeansException;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Slf4j
+@SpringBootApplication
+public class AlgoTuner
+        implements ApplicationContextAware, WebMvcConfigurer {
+
+    private static ConfigurableApplicationContext APP_CTX = null ;
+    private static AlgoTuner                      APP     = null ;
+
+    public static AlgoTuner getApp() {
+        return APP;
+    }
+
+    public static ApplicationContext getAppCtx() {
+        return APP_CTX ;
+    }
+
+    public static <T> T getBean( Class<T> type ) {
+        return APP_CTX.getBean( type ) ;
+    }
+    
+    public static AlgoFoundryConfig getConfig() { return APP.config() ; }
+    
+    // ---------------- Instance methods start ---------------------------------
+
+    private AlgoFoundryConfig cfg = null ;
+
+    public AlgoTuner() {
+        APP = this;
+    }
+
+    @Override
+    public void setApplicationContext( @NotNull ApplicationContext applicationContext )
+            throws BeansException {
+        APP_CTX = ( ConfigurableApplicationContext )applicationContext;
+    }
+
+    public void initialize() {
+
+        log.debug( "## Initializing AlgoTuner app. >" ) ;
+        log.debug( "<< ## AlgoTuner initialization complete" ) ;
+    }
+
+    private AlgoFoundryConfig config() {
+        if( cfg == null ) {
+            if( APP_CTX != null ) {
+                cfg = ( AlgoFoundryConfig )APP_CTX.getBean("config");
+            }
+            else {
+                cfg = new AlgoFoundryConfig() ;
+            }
+        }
+        return cfg ;
+    }
+
+    // --------------------- Main method ---------------------------------------
+    public static void main( String[] args ) {
+
+        log.debug( "Starting Spring Booot..." ) ;
+
+        SpringApplication.run( AlgoTuner.class, args ) ;
+
+        log.debug( "Starting AlgoTuner.." ) ;
+        AlgoTuner app = AlgoTuner.getAppCtx().getBean( AlgoTuner.class ) ;
+        try {
+            app.initialize() ;
+        }
+        catch( Exception e ) {
+            log.error( "Exception while initializing AlgoTuner.", e ) ;
+        }
+    }
+}
