@@ -15,6 +15,7 @@
         <module>algo-foundry-app</module>
         <module>algo-trade-strategy</module>
         <module>algo-trade-strategy-impl</module>
+        <module>algo-trade-strategy-tuner</module>
     </modules>
 
     <parent>
