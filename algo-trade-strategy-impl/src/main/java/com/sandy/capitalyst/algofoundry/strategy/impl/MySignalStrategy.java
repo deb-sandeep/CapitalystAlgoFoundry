@@ -114,8 +114,8 @@ public class MySignalStrategy extends ZonedSignalStrategy {
     @Override
     protected boolean isBuyConditionMet( int index ) {
         
-        int     activationAge   = super.getNumDaysIntoEntryZone() ;
-        double  pctThreshold    = config.getEma5JumpForBuySignal() +
+        int     activationAge = super.getNumDaysIntoEntryZone() ;
+        double  pctThreshold  = config.getEma5JumpForBuySignal() +
                                   (activationAge-1)*config.getEma5JumpIncrementPerDayForBuySignal() ;
         
         boolean isADXUpTrending   = adxUpTrend.isTriggered( index ) ;

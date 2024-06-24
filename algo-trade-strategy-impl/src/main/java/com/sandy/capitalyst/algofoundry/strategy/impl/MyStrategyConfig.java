@@ -8,12 +8,6 @@ import lombok.EqualsAndHashCode;
 @Data
 public class MyStrategyConfig extends StrategyConfig {
     
-    /** A sell is triggered if profit dips below this threshold. */
-    private float minProfitThreshold = 15 ;
-    
-    /** A sell is triggered if loss dips below this threshold. */
-    private float maxLossThreshold   = -10 ;
-    
     /** Max amount of one investment. */
     private float investmentQuantum  = 25000 ;
     

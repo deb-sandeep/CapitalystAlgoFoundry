@@ -39,6 +39,7 @@ public abstract class TradeBook
     private double latestClosingPrice = 0 ;
     private double recoveredCorpus = 0 ;
     
+    protected final NumberSeries cpSeries = new NumberSeries() ;
     protected final NumberSeries notionalProfitPctSeries = new NumberSeries() ;
     protected final StrategyConfig config ;
     
@@ -102,6 +103,7 @@ public abstract class TradeBook
         if( dayValue instanceof OHLCVDayValue ohlc ) {
             latestClosingPrice = ohlc.getClose() ;
             computeProfit() ;
+            cpSeries.add( latestClosingPrice ) ;
             notionalProfitPctSeries.add( notionalProfitPct ) ;
             notifyTradeBookUpdated() ;
         }
@@ -129,8 +131,8 @@ public abstract class TradeBook
     
     protected void processSellTrade( SellTrade sellTrade ) {
         
-        int    sellQty          = sellTrade.getQuantity() ;
-        int    remainingSellQty = sellQty ;
+        int sellQty          = sellTrade.getQuantity() ;
+        int remainingSellQty = sellQty ;
         
         if( sellQty > holdingQty ) {
             throw new IllegalArgumentException(
