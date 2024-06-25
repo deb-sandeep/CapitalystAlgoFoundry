@@ -12,6 +12,26 @@ public class MyStrategyConfig extends StrategyConfig {
     private float investmentQuantum  = 25000 ;
     
     /**
+     * The percentage by which successive investments need to be reduced. For
+     * example, the first buy transaction starts with an upper cap of the
+     * amount specified with investmentQuantum amount. If there is another
+     * buy opportunity immediate following (without having a sell in between),
+     * the investment quantum will be reduced by this percentage, i.e.
+     * 0.9 * investmentQuantum, the successive one after that will be further
+     * reduced as 0.8 * investmentQuantum and so forth.
+     * <p>
+     * Why? For few reasons:
+     * <ul>
+     *     <li>If we are on an upswing, the higher we go, the more the
+     *     probability of the trend breaking</li>
+     *     <li>We need to limit our exposure in a bull cycle.</li>
+     *     <li>The earlier we buy, the better we can leverage the upswing</li>
+     * </ul>
+     * Note that the value of this configuration is from 0-100.
+     */
+    private float successiveInvestmentTaperPct = 10 ;
+    
+    /**
      * Number of days to cool off after a buy. In the cooloff period any buy
      * signals are ignored.
      */
@@ -78,4 +98,18 @@ public class MyStrategyConfig extends StrategyConfig {
      */
     private float ema5DipDecrementPerDayForSellSignal = -0.125f ;
     
+    /**
+     * If a SLTP strategy is employed, this configuration needs to provide
+     * a value between 0-100 representing the percentage of current price
+     * below which the SLTP is to be set.
+     * <p>
+     * Note that the trading algorithm keeps adjusting the trigger price
+     * as long as the new trigger price is higher than the old one. This is
+     * done to lock is as much profit as possible. However if the price is
+     * going down, the trigger price is left as is.
+     * <p>
+     * A value of 0 or negative number indicates that stop loss strategy
+     * is not to be employed.
+     */
+    private float sltpCurrentPricePct = 10 ;
 }

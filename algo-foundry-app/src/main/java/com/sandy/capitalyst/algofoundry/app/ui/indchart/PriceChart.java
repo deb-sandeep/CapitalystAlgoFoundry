@@ -306,15 +306,19 @@ public class PriceChart extends IndicatorChart
                                      TradeType tradeType ) {
         
         boolean fillAnnotation = annotationType == AnnotationType.SIGNAL ;
-        Color color = tradeType == TradeType.BUY ? Color.GREEN.darker().darker() :
-                                                   Color.RED.darker().darker() ;
+        Color color = tradeType == TradeType.BUY ? Color.GREEN.darker() :
+                                                   Color.RED.darker() ;
+        
         int sideLen = annotationType == AnnotationType.SIGNAL ? 7 : 15 ;
+        if( annotationType == AnnotationType.SIGNAL ) {
+            color = color.darker().darker() ;
+        }
         
         CircleAnnotationDrawable cd = new CircleAnnotationDrawable( color, fillAnnotation ) ;
         XYAnnotation annotation = new XYDrawableAnnotation(
                 date.getTime(), price, sideLen, sideLen, cd ) ;
         
         SwingUtilities.invokeLater( () -> plot.getRenderer()
-                .addAnnotation( annotation ) ) ;
+                       .addAnnotation( annotation ) ) ;
     }
 }
