@@ -5,6 +5,7 @@ import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.CandleSerie
 import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.DayValue;
 import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.DayValueListener;
 import com.sandy.capitalyst.algofoundry.strategy.signal.event.TradeSignalEvent;
+import lombok.Getter;
 import org.ta4j.core.Bar;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public abstract class SignalStrategy
     
     private final List<SignalStrategyEventListener> eventListeners = new ArrayList<>() ;
     
-    protected final CandleSeries candleSeries;
+    @Getter protected final CandleSeries candleSeries;
     
     protected int lastIndexEvaluated = -1 ;
     protected Date date = null ;

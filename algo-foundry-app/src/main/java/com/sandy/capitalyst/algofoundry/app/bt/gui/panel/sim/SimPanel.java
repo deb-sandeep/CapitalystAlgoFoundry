@@ -2,13 +2,16 @@ package com.sandy.capitalyst.algofoundry.app.bt.gui.panel.sim;
 
 import com.sandy.capitalyst.algofoundry.app.AlgoFoundry;
 import com.sandy.capitalyst.algofoundry.app.apiclient.histeod.EquityHistEODAPIClient;
+import com.sandy.capitalyst.algofoundry.app.bt.api.StrategyBacktester;
 import com.sandy.capitalyst.algofoundry.app.bt.gui.indchart.*;
 import com.sandy.capitalyst.algofoundry.app.core.ui.SwingUtils;
 import com.sandy.capitalyst.algofoundry.app.bt.gui.indchart.util.CrossHairMoveListener;
 import com.sandy.capitalyst.algofoundry.strategy.impl.MySignalStrategy;
 import com.sandy.capitalyst.algofoundry.strategy.impl.MyStrategyConfig;
 import com.sandy.capitalyst.algofoundry.strategy.impl.MyTradeBook;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.Candle;
 import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.CandleSeries;
+import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategy;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEventListener;
 import com.sandy.capitalyst.algofoundry.strategy.signal.ZonedSignalStrategy;
 import com.sandy.capitalyst.algofoundry.strategy.tradebook.TradeBook;
@@ -20,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 import static com.sandy.capitalyst.algofoundry.app.AlgoFoundry.getBean;
 
@@ -57,15 +61,14 @@ public class SimPanel extends JPanel {
     public SimPanel( String symbol ) throws Exception {
         
         EquityHistEODAPIClient apiClient = getBean( EquityHistEODAPIClient.class ) ;
+        List<Candle> candles = apiClient.getHistoricCandles( symbol ) ;
         
         this.symbol = symbol ;
         this.config = new MyStrategyConfig() ;
         StrategyConfigUtil.populateStrategyConfig( this.config, AlgoFoundry.getConfig() ) ;
         
-        this.tradeBook = new MyTradeBook( config ) ;
-        this.history = new CandleSeries( symbol,
-                                         apiClient.getHistoricCandles( symbol ),
-                                         config ) ;
+        this.tradeBook = new MyTradeBook( symbol, config ) ;
+        this.history = new CandleSeries( symbol, candles, config ) ;
         
         this.priceChart  = new PriceChart( symbol ) ;
         this.volumeChart = new VolumeChart( symbol ) ;
@@ -98,6 +101,15 @@ public class SimPanel extends JPanel {
         
         setUpUI() ;
         doPrePlayProcessing() ;
+        
+        log.info( "Backtesting" ) ;
+        CandleSeries hist = new CandleSeries( symbol, candles, config ) ;
+        SignalStrategy sigStrat = new MySignalStrategy( hist, config ) ;
+        TradeBook tb = new MyTradeBook( symbol, config ) ;
+        
+        StrategyBacktester backtester = new StrategyBacktester( symbol, sigStrat, tb ) ;
+        backtester.backtest() ;
+        log.info( "Finished backtesting" );
     }
     
     private void populateTradeStrategiesMap() {

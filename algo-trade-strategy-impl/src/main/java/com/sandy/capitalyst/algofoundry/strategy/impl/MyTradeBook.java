@@ -26,8 +26,8 @@ public class MyTradeBook extends TradeBook {
     
     private final MyStrategyConfig config ;
     
-    public MyTradeBook( MyStrategyConfig config ) {
-        super( config ) ;
+    public MyTradeBook( String symbol, MyStrategyConfig config ) {
+        super( symbol, config ) ;
         this.config = config ;
     }
     

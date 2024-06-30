@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.sandy.capitalyst.algofoundry.strategy.util.StringUtil.fmtDbl;
 import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.apache.commons.lang3.StringUtils.rightPad;
 
@@ -26,6 +27,8 @@ public abstract class TradeBook
     protected final List<SellTrade> sellTrades = new ArrayList<>() ;
     
     private final List<TradeBookListener> listeners = new ArrayList<>() ;
+    
+    @Getter private String symbol ;
     
     @Getter private double totalProfit       = 0 ;
     @Getter private double totalProfitPct    = 0 ;
@@ -43,7 +46,8 @@ public abstract class TradeBook
     protected final NumberSeries notionalProfitPctSeries = new NumberSeries() ;
     protected final StrategyConfig config ;
     
-    protected TradeBook( StrategyConfig config ) {
+    protected TradeBook( String symbol, StrategyConfig config ) {
+        this.symbol = symbol ;
         this.config = config ;
     }
     
@@ -230,6 +234,9 @@ public abstract class TradeBook
                        " + " + repeat( "-",  7 ) +
                        " + " ;
         
+        log.debug( " + " + repeat( "-", 47 ) + " + " ) ;
+        log.debug( rightPad( " | " + this.symbol + " :: Total profit = " + fmtDbl( this.totalProfitPct ) + "% ", 50 ) + " | " ) ;
+        log.debug( line ) ;
         log.debug( hdr ) ;
         log.debug( line ) ;
         allTrades.forEach( t -> log.debug( t.toString() ) ) ;

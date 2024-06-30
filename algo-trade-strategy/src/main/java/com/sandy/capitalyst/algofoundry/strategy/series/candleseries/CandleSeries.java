@@ -99,6 +99,10 @@ public class CandleSeries implements Serializable {
         dayValueListeners.remove( listener ) ;
     }
     
+    public void removeAllDayValueListeners() {
+        dayValueListeners.clear() ;
+    }
+    
     public int getBarCount() {
         return barSeries.getBarCount() ;
     }
