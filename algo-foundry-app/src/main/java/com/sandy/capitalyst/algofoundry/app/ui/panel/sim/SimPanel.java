@@ -14,6 +14,7 @@ import com.sandy.capitalyst.algofoundry.strategy.signal.ZonedSignalStrategy;
 import com.sandy.capitalyst.algofoundry.strategy.tradebook.TradeBook;
 import com.sandy.capitalyst.algofoundry.strategy.tradebook.TradeBookListener;
 import com.sandy.capitalyst.algofoundry.strategy.util.StrategyConfigUtil;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -51,10 +52,13 @@ public class SimPanel extends JPanel {
     private final TradeBook tradeBook ;
     private final MyStrategyConfig config ;
     
+    @Getter private final String symbol ;
+    
     public SimPanel( String symbol ) throws Exception {
         
         EquityHistEODAPIClient apiClient = getBean( EquityHistEODAPIClient.class ) ;
         
+        this.symbol = symbol ;
         this.config = new MyStrategyConfig() ;
         StrategyConfigUtil.populateStrategyConfig( this.config, AlgoFoundry.getConfig() ) ;
         
