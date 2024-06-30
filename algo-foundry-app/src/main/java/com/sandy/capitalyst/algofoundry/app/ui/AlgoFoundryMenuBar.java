@@ -1,11 +1,12 @@
 package com.sandy.capitalyst.algofoundry.app.ui;
 
-import com.sandy.capitalyst.algofoundry.app.core.ui.UITheme;
+import com.sandy.capitalyst.algofoundry.app.AlgoFoundry;
+import com.sandy.capitalyst.algofoundry.app.core.AlgoFoundryConfig;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,7 @@ public class AlgoFoundryMenuBar extends JMenuBar {
     
     private void setUpUI() {
         add( createFileMenu() ) ;
+        add( createOptionsMenu() ) ;
         add( createWindowsMenu() ) ;
     }
     
@@ -39,6 +41,20 @@ public class AlgoFoundryMenuBar extends JMenuBar {
         exitMI.addActionListener( e -> frame.exitApp() ) ;
         
         menu.add( exitMI ) ;
+        
+        return menu ;
+    }
+    
+    private JMenu createOptionsMenu() {
+        JMenu menu = new JMenu( "Options" ) ;
+        menu.setMnemonic( KeyEvent.VK_O ) ;
+        AlgoFoundryConfig config = AlgoFoundry.getConfig() ;
+        
+        JCheckBoxMenuItem offlineMI = new JCheckBoxMenuItem( "Offline enabled" ) ;
+        offlineMI.setState( config.isWorkOffline() ) ;
+        offlineMI.addChangeListener( e -> config.setWorkOffline( offlineMI.getState() ) );
+        
+        menu.add( offlineMI ) ;
         
         return menu ;
     }
