@@ -1,4 +1,4 @@
-package com.sandy.capitalyst.algofoundry.app.ui.indchart.util;
+package com.sandy.capitalyst.algofoundry.app.bt.gui.indchart.util;
 
 public interface CrossHairMoveListener {
     

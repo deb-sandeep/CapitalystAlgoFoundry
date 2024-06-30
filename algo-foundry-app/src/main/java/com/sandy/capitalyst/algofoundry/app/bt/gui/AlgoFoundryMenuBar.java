@@ -1,11 +1,9 @@
-package com.sandy.capitalyst.algofoundry.app.ui;
+package com.sandy.capitalyst.algofoundry.app.bt.gui;
 
 import com.sandy.capitalyst.algofoundry.app.AlgoFoundry;
 import com.sandy.capitalyst.algofoundry.app.core.AlgoFoundryConfig;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;

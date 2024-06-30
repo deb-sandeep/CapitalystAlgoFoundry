@@ -1,10 +1,10 @@
-package com.sandy.capitalyst.algofoundry.app.ui.panel.sim;
+package com.sandy.capitalyst.algofoundry.app.bt.gui.panel.sim;
 
 import com.sandy.capitalyst.algofoundry.app.AlgoFoundry;
 import com.sandy.capitalyst.algofoundry.app.apiclient.histeod.EquityHistEODAPIClient;
+import com.sandy.capitalyst.algofoundry.app.bt.gui.indchart.*;
 import com.sandy.capitalyst.algofoundry.app.core.ui.SwingUtils;
-import com.sandy.capitalyst.algofoundry.app.ui.indchart.*;
-import com.sandy.capitalyst.algofoundry.app.ui.indchart.util.CrossHairMoveListener;
+import com.sandy.capitalyst.algofoundry.app.bt.gui.indchart.util.CrossHairMoveListener;
 import com.sandy.capitalyst.algofoundry.strategy.impl.MySignalStrategy;
 import com.sandy.capitalyst.algofoundry.strategy.impl.MyStrategyConfig;
 import com.sandy.capitalyst.algofoundry.strategy.impl.MyTradeBook;

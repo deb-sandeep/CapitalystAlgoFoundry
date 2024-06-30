@@ -1,12 +1,12 @@
-package com.sandy.capitalyst.algofoundry.app.ui;
+package com.sandy.capitalyst.algofoundry.app.bt.gui;
 
 import com.sandy.capitalyst.algofoundry.app.AlgoFoundry;
+import com.sandy.capitalyst.algofoundry.app.bt.gui.panel.eqmeta.EquityMetaTablePanel;
+import com.sandy.capitalyst.algofoundry.app.bt.gui.panel.sim.SimPanel;
 import com.sandy.capitalyst.algofoundry.app.core.bus.Event;
 import com.sandy.capitalyst.algofoundry.app.core.bus.EventSubscriber;
 import com.sandy.capitalyst.algofoundry.app.core.ui.SwingUtils;
 import com.sandy.capitalyst.algofoundry.app.core.ui.UITheme;
-import com.sandy.capitalyst.algofoundry.app.ui.panel.eqmeta.EquityMetaTablePanel;
-import com.sandy.capitalyst.algofoundry.app.ui.panel.sim.SimPanel;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;

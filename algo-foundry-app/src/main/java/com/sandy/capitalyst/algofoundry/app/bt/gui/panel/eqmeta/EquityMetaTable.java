@@ -1,4 +1,4 @@
-package com.sandy.capitalyst.algofoundry.app.ui.panel.eqmeta;
+package com.sandy.capitalyst.algofoundry.app.bt.gui.panel.eqmeta;
 
 import com.sandy.capitalyst.algofoundry.app.AlgoFoundry;
 import com.sandy.capitalyst.algofoundry.app.apiclient.equitymeta.EquityMeta;
@@ -13,7 +13,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.List;
 
-import static com.sandy.capitalyst.algofoundry.app.ui.panel.eqmeta.EquityMetaTableModel.* ;
+import static com.sandy.capitalyst.algofoundry.app.bt.gui.panel.eqmeta.EquityMetaTableModel.* ;
 import static com.sandy.capitalyst.algofoundry.app.EventCatalog.* ;
 
 @Slf4j

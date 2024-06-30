@@ -1,4 +1,4 @@
-package com.sandy.capitalyst.algofoundry.app.ui.indchart.util;
+package com.sandy.capitalyst.algofoundry.app.bt.gui.indchart.util;
 
 import com.sandy.capitalyst.algofoundry.app.core.ui.UITheme;
 import org.jfree.ui.Drawable;

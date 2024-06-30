@@ -1,6 +1,6 @@
-package com.sandy.capitalyst.algofoundry.app.ui.indchart.util;
+package com.sandy.capitalyst.algofoundry.app.bt.gui.indchart.util;
 
-import com.sandy.capitalyst.algofoundry.app.ui.indchart.IndicatorChart;
+import com.sandy.capitalyst.algofoundry.app.bt.gui.indchart.IndicatorChart;
 import org.jfree.chart.panel.CrosshairOverlay;
 import org.jfree.chart.plot.Crosshair;
 

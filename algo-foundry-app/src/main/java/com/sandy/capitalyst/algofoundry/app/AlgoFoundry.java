@@ -3,7 +3,7 @@ package com.sandy.capitalyst.algofoundry.app;
 import com.sandy.capitalyst.algofoundry.app.core.AlgoFoundryConfig;
 import com.sandy.capitalyst.algofoundry.app.core.bus.Event;
 import com.sandy.capitalyst.algofoundry.app.core.bus.EventBus;
-import com.sandy.capitalyst.algofoundry.app.ui.AlgoFoundryFrame;
+import com.sandy.capitalyst.algofoundry.app.bt.gui.AlgoFoundryFrame;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;

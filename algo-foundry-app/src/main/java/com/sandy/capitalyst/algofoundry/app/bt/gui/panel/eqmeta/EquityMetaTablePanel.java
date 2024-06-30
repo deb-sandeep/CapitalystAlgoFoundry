@@ -1,4 +1,4 @@
-package com.sandy.capitalyst.algofoundry.app.ui.panel.eqmeta;
+package com.sandy.capitalyst.algofoundry.app.bt.gui.panel.eqmeta;
 
 import com.sandy.capitalyst.algofoundry.app.AlgoFoundry;
 import com.sandy.capitalyst.algofoundry.app.apiclient.equitymeta.EquityMeta;

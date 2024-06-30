@@ -1,4 +1,4 @@
-package com.sandy.capitalyst.algofoundry.app.ui.panel.eqmeta;
+package com.sandy.capitalyst.algofoundry.app.bt.gui.panel.eqmeta;
 
 import com.sandy.capitalyst.algofoundry.app.core.ui.UITheme;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.text.DecimalFormat;
 
-import static com.sandy.capitalyst.algofoundry.app.ui.panel.eqmeta.EquityMetaTableModel.* ;
+import static com.sandy.capitalyst.algofoundry.app.bt.gui.panel.eqmeta.EquityMetaTableModel.* ;
 
 @Slf4j
 public class EquityMetaTableCellRenderer extends DefaultTableCellRenderer {

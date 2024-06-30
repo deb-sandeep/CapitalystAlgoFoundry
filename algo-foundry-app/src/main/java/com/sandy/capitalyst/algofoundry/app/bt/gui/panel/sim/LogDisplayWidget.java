@@ -1,4 +1,4 @@
-package com.sandy.capitalyst.algofoundry.app.ui.panel.sim;
+package com.sandy.capitalyst.algofoundry.app.bt.gui.panel.sim;
 
 import com.sandy.capitalyst.algofoundry.app.core.ui.UITheme;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategyEvent;
