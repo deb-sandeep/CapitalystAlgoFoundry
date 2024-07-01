@@ -1,7 +1,7 @@
 package com.sandy.capitalyst.algofoundry.app.bt.gui;
 
 import com.sandy.capitalyst.algofoundry.app.AlgoFoundry;
-import com.sandy.capitalyst.algofoundry.app.core.AlgoFoundryConfig;
+import com.sandy.capitalyst.algofoundry.app.AlgoFoundryConfig;
 
 import javax.swing.*;
 import java.awt.*;

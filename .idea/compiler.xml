@@ -13,9 +13,11 @@
         <module name="algo-trade-strategy-impl" />
         <module name="algo-foundry-app" />
         <module name="algo-trade-strategy" />
-        <module name="algo-trade-strategy-tuner" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="algo-trade-strategy-tuner" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

@@ -1,6 +1,6 @@
 package com.sandy.capitalyst.algofoundry.app.core.offline;
 
-import com.sandy.capitalyst.algofoundry.app.core.AlgoFoundryConfig;
+import com.sandy.capitalyst.algofoundry.app.AlgoFoundryConfig;
 import com.sandy.capitalyst.algofoundry.app.core.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;

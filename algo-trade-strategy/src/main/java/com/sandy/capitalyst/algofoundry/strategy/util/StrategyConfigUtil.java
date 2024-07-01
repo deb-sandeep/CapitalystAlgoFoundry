@@ -9,7 +9,6 @@ public class StrategyConfigUtil {
     
     public static void populateStrategyConfig( StrategyConfig cfg, Object source )
             throws InvocationTargetException, IllegalAccessException {
-        
         BeanUtilsBean.getInstance().copyProperties( cfg, source ) ;
     }
 }

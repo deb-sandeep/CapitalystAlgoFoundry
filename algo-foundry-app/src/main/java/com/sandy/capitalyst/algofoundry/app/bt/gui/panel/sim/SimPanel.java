@@ -26,6 +26,7 @@ import java.util.*;
 import java.util.List;
 
 import static com.sandy.capitalyst.algofoundry.app.AlgoFoundry.getBean;
+import static com.sandy.capitalyst.algofoundry.strategy.util.StrategyConfigUtil.populateStrategyConfig;
 
 @Slf4j
 public class SimPanel extends JPanel {
@@ -65,7 +66,7 @@ public class SimPanel extends JPanel {
         
         this.symbol = symbol ;
         this.config = new MyStrategyConfig() ;
-        StrategyConfigUtil.populateStrategyConfig( this.config, AlgoFoundry.getConfig() ) ;
+        populateStrategyConfig( this.config, AlgoFoundry.getConfig() ) ;
         
         this.tradeBook = new MyTradeBook( symbol, config ) ;
         this.history = new CandleSeries( symbol, candles, config ) ;
@@ -103,11 +104,7 @@ public class SimPanel extends JPanel {
         doPrePlayProcessing() ;
         
         log.info( "Backtesting" ) ;
-        CandleSeries hist = new CandleSeries( symbol, candles, config ) ;
-        SignalStrategy sigStrat = new MySignalStrategy( hist, config ) ;
-        TradeBook tb = new MyTradeBook( symbol, config ) ;
-        
-        StrategyBacktester backtester = new StrategyBacktester( symbol, sigStrat, tb ) ;
+        StrategyBacktester backtester = new StrategyBacktester( symbol, candles, config ) ;
         backtester.backtest() ;
         log.info( "Finished backtesting" );
     }

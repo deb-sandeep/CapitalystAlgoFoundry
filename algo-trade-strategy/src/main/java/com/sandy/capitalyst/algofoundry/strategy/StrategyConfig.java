@@ -1,9 +1,12 @@
 package com.sandy.capitalyst.algofoundry.strategy;
 
+import com.sandy.capitalyst.algofoundry.strategy.util.HParameter;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class StrategyConfig {
+public class StrategyConfig implements Serializable {
 
     // Configuration values for technical indicators
     private int macdShortWindow  = 12 ;
@@ -25,6 +28,7 @@ public class StrategyConfig {
      * The number of days the buy/sell zone will stay active once triggered.
      * Used by the ZonedSignalStrategy class
      */
+    //@HParameter( min=1, max=10 )
     private int activeZoneMaxAge = 5 ;
     
     /**

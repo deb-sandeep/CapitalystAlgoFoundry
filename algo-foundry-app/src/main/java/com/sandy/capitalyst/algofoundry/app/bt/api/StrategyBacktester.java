@@ -1,44 +1,46 @@
 package com.sandy.capitalyst.algofoundry.app.bt.api;
 
-import com.sandy.capitalyst.algofoundry.strategy.StrategyConfig;
+import com.sandy.capitalyst.algofoundry.strategy.impl.MySignalStrategy;
+import com.sandy.capitalyst.algofoundry.strategy.impl.MyStrategyConfig;
+import com.sandy.capitalyst.algofoundry.strategy.impl.MyTradeBook;
+import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.Candle;
 import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.CandleSeries;
 import com.sandy.capitalyst.algofoundry.strategy.signal.SignalStrategy;
 import com.sandy.capitalyst.algofoundry.strategy.tradebook.TradeBook;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
+@Slf4j
 public class StrategyBacktester {
     
-    @Getter private final String    symbol ;
-    @Getter private final TradeBook tradeBook ;
+    @Getter private final String       symbol ;
+    @Getter private final List<Candle> candles ;
     
-    private final SignalStrategy signalStrategy ;
+    private final MyStrategyConfig config;
     
-    public StrategyBacktester( String symbol,
-                               SignalStrategy signalStrategy,
-                               TradeBook tradeBook ) {
-        
-        this.symbol         = symbol ;
-        this.signalStrategy = signalStrategy ;
-        this.tradeBook      = tradeBook ;
+    public StrategyBacktester( String symbol, List<Candle> candles, MyStrategyConfig config ) {
+        this.symbol = symbol ;
+        this.config = config ;
+        this.candles = candles ;
     }
     
     public TradeBook backtest() {
         
-        final CandleSeries history = this.signalStrategy.getCandleSeries() ;
-        history.removeAllDayValueListeners() ;
+        CandleSeries   candleSeries   = new CandleSeries( symbol, candles, config ) ;
+        SignalStrategy signalStrategy = new MySignalStrategy( candleSeries, config ) ;
+        TradeBook      tradeBook      = new MyTradeBook( symbol, config ) ;
+
+        signalStrategy.addStrategyEventListener( tradeBook ) ;
         
-        this.tradeBook.clearState() ;
-        this.signalStrategy.clear() ;
-        this.signalStrategy.addStrategyEventListener( this.tradeBook ) ;
+        candleSeries.addDayValueListener( signalStrategy ) ;
+        candleSeries.addDayValueListener( tradeBook ) ;
         
-        history.addDayValueListener( signalStrategy ) ;
-        history.addDayValueListener( tradeBook ) ;
-        
-        for( int i=0; i<history.getBarCount(); i++ ) {
-            history.emitValue( i, CandleSeries.DayValueType.OHLCV ) ;
+        for( int i=0; i<candleSeries.getBarCount(); i++ ) {
+            candleSeries.emitValue( i, CandleSeries.DayValueType.OHLCV ) ;
         }
-        
-        this.tradeBook.print() ;
-        return this.tradeBook ;
+        tradeBook.print() ;
+        return tradeBook ;
     }
 }

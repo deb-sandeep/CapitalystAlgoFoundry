@@ -54,6 +54,7 @@ public class CandleSeries implements Serializable {
     
     @Getter private final BarSeries barSeries ;
     @Getter private final String symbol ;
+    @Getter private final StrategyConfig config ;
     
     @Setter private int maxSeriesLength = Integer.MAX_VALUE ;
     
@@ -62,8 +63,6 @@ public class CandleSeries implements Serializable {
     private final Map<Integer, StandardDeviationIndicator> stDevCache = new HashMap<>() ;
 
     private final Set<DayValueListener> dayValueListeners = new HashSet<>() ;
-    
-    private final StrategyConfig config ;
     
     public CandleSeries( String symbol, List<Candle> candles, StrategyConfig config ) {
         this.config = config ;

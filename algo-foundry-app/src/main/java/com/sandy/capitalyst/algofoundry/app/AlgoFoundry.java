@@ -1,6 +1,5 @@
 package com.sandy.capitalyst.algofoundry.app;
 
-import com.sandy.capitalyst.algofoundry.app.core.AlgoFoundryConfig;
 import com.sandy.capitalyst.algofoundry.app.core.bus.Event;
 import com.sandy.capitalyst.algofoundry.app.core.bus.EventBus;
 import com.sandy.capitalyst.algofoundry.app.bt.gui.AlgoFoundryFrame;

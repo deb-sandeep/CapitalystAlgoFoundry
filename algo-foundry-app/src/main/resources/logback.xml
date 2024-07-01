@@ -26,6 +26,7 @@
     -->
 
     <logger name="com.sandy.capitalyst.algofoundry.core.net" level="INFO"></logger>
+    <logger name="com.sandy.capitalyst.algofoundry.app.tuner.HyperParameterGroup" level="INFO"></logger>
 
     <root level="debug">
         <appender-ref ref="STDOUT"/>
