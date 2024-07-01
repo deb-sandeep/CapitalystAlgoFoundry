@@ -33,11 +33,18 @@ public class AlgoFoundryMenuBar extends JMenuBar {
         JMenu menu = new JMenu( "File" ) ;
         menu.setMnemonic( KeyEvent.VK_F ) ;
         
+        JMenuItem tunerMI = new JMenuItem( "Tune Hyperparameters", KeyEvent.VK_T ) ;
+        KeyStroke tunerMIAccl = KeyStroke.getKeyStroke( "meta pressed T" ) ;
+        tunerMI.setAccelerator( tunerMIAccl ) ;
+        tunerMI.addActionListener( e -> frame.showTunerFrame() ) ;
+        
         JMenuItem exitMI = new JMenuItem( "Exit", KeyEvent.VK_X ) ;
         KeyStroke exitMIAccl = KeyStroke.getKeyStroke( "meta pressed Q" ) ;
         exitMI.setAccelerator( exitMIAccl ) ;
         exitMI.addActionListener( e -> frame.exitApp() ) ;
         
+        menu.add( tunerMI ) ;
+        menu.addSeparator() ;
         menu.add( exitMI ) ;
         
         return menu ;

@@ -3,6 +3,7 @@ package com.sandy.capitalyst.algofoundry.app.bt.gui;
 import com.sandy.capitalyst.algofoundry.app.AlgoFoundry;
 import com.sandy.capitalyst.algofoundry.app.bt.gui.panel.eqmeta.EquityMetaTablePanel;
 import com.sandy.capitalyst.algofoundry.app.bt.gui.panel.sim.SimPanel;
+import com.sandy.capitalyst.algofoundry.app.bt.gui.tuner.HyperparameterTunerFrame;
 import com.sandy.capitalyst.algofoundry.app.core.bus.Event;
 import com.sandy.capitalyst.algofoundry.app.core.bus.EventSubscriber;
 import com.sandy.capitalyst.algofoundry.app.core.ui.SwingUtils;
@@ -24,6 +25,8 @@ public class AlgoFoundryFrame extends JFrame implements EventSubscriber {
     private EquityMetaTablePanel recoPanel ;
     
     private final Map<String, SimPanel> simPanels = new HashMap<>() ;
+    
+    private HyperparameterTunerFrame tunerFrame = null ;
 
     public AlgoFoundryFrame() {
         super() ;
@@ -39,6 +42,7 @@ public class AlgoFoundryFrame extends JFrame implements EventSubscriber {
         
         setResizable( true ) ;
         setTitle( "Capitalyst Algo Foundry" ) ;
+        setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE ) ;
         
         Container contentPane = super.getContentPane() ;
         
@@ -117,5 +121,19 @@ public class AlgoFoundryFrame extends JFrame implements EventSubscriber {
     
     public void showSimPanel( String symbol ) {
         tabbedPane.setSelectedComponent( simPanels.get( symbol ) ) ;
+    }
+    
+    public void showTunerFrame() {
+        try {
+            if( tunerFrame == null || !tunerFrame.isDisplayable() ) {
+                tunerFrame = new HyperparameterTunerFrame( recoPanel.getMetaList() ) ;
+            }
+            else {
+                tunerFrame.toFront() ;
+            }
+        }
+        catch( Exception e ) {
+            log.error( "Could not create tuner frame.", e ) ;
+        }
     }
 }

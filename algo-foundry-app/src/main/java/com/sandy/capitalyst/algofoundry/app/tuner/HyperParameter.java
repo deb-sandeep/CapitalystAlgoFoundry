@@ -10,7 +10,7 @@ public class HyperParameter {
     @Getter private final float step ;
     @Getter private final int numSteps ;
     
-    @Getter private float currentStep = 0 ;
+    @Getter private int currentStep = -1 ;
     
     public HyperParameter( String fName, float min, float max, float step ) {
         assert min <= max ;

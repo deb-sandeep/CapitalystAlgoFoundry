@@ -28,7 +28,7 @@ public class StrategyConfig implements Serializable {
      * The number of days the buy/sell zone will stay active once triggered.
      * Used by the ZonedSignalStrategy class
      */
-    //@HParameter( min=1, max=10 )
+    @HParameter( min=1, max=10 )
     private int activeZoneMaxAge = 5 ;
     
     /**

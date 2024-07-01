@@ -5,6 +5,7 @@ import com.sandy.capitalyst.algofoundry.app.apiclient.equitymeta.EquityMeta;
 import com.sandy.capitalyst.algofoundry.app.apiclient.equitymeta.EquityMetaAPIClient;
 import com.sandy.capitalyst.algofoundry.app.apiclient.histeod.EquityHistEODAPIClient;
 import com.sandy.capitalyst.algofoundry.app.core.ui.UITheme;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -18,12 +19,12 @@ public class EquityMetaTablePanel extends JPanel {
     
     private EquityMetaTable table ;
     
+    @Getter private List<EquityMeta> metaList ;
+    
     public EquityMetaTablePanel() {
         
         EquityMetaAPIClient    apiClient  = getBean( EquityMetaAPIClient.class ) ;
         EquityHistEODAPIClient histClient = getBean( EquityHistEODAPIClient.class ) ;
-        
-        List<EquityMeta> metaList ;
         
         try{
             log.debug( "Creating reco table panel" ) ;

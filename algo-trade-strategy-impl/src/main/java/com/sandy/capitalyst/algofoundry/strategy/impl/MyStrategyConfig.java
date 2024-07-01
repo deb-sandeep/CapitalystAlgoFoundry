@@ -33,14 +33,14 @@ public class MyStrategyConfig extends StrategyConfig
      * </ul>
      * Note that the value of this configuration is from 0-100.
      */
-    //@HParameter( min=0, max=50, step=5 )
+    @HParameter( min=0, max=30, step=10 )
     private float successiveInvestmentTaperPct = 10 ;
     
     /**
      * Number of days to cool off after a buy. In the cooloff period any buy
      * signals are ignored.
      */
-    //@HParameter( min=0, max=20, step=2 )
+    @HParameter( min=0, max=20, step=4 )
     private int buyCooloffDuration = 6 ;
     
     /** If true, strategy decisions will be logged. */
@@ -50,7 +50,7 @@ public class MyStrategyConfig extends StrategyConfig
      * The gap in number of days across which indicators (EMA/SMA) is
      * compared to check against a threshold value.
      */
-    //@HParameter( min=1, max=5 )
+    @HParameter( min=1, max=5 )
     private int zoneActivationTestGap = 3 ;
     
     /**
@@ -59,7 +59,7 @@ public class MyStrategyConfig extends StrategyConfig
      * test gap. So, with the default setting if the EMA 20 value jumps
      * more than 1% in 3 days, it triggers a buy zone activation.
      */
-    //@HParameter( min=0.1F, max=5F, step=0.5F )
+    @HParameter( min=0.1F, max=5F, step=0.5F )
     private float ema20JumpForBuyZoneActivation = 1 ;
     
     /**
@@ -70,7 +70,7 @@ public class MyStrategyConfig extends StrategyConfig
      * <p>
      * NOTE: This value should be specified as negative.
      */
-    //@HParameter( min=-5F, max=-0.1F, step=0.5F )
+    @HParameter( min=-5F, max=-0.1F, step=0.5F )
     private float ema20DipForSellZoneActivation = -1 ;
     
     /**
@@ -82,14 +82,14 @@ public class MyStrategyConfig extends StrategyConfig
      * This value is enhanced with the ema5JumpIncrementPerDayForBuySignal
      * parameter.
      */
-    //@HParameter( min=0.1F, max=5F, step=0.5F )
+    @HParameter( min=0.1F, max=2.5F, step=0.5F )
     private float ema5JumpForBuySignal = 1 ;
     
     /**
      * The percentage by which the EMA5 should increase per day within the
      * buy zone to positively contribute towards generating a buy signal.
      */
-    //@HParameter( min=0.05F, max=2.5F, step=0.5F )
+    @HParameter( min=0.05F, max=2.5F, step=0.5F )
     private float ema5JumpIncrementPerDayForBuySignal = 0.125f ;
     
     /**
@@ -101,14 +101,14 @@ public class MyStrategyConfig extends StrategyConfig
      * This value is enhanced with the ema5DipIncrementPerDayForSellSignal
      * parameter.
      */
-    //@HParameter( min=-5F, max=-0.1F, step=0.5F )
+    @HParameter( min=-2.5F, max=-0.1F, step=0.5F )
     private float ema5DipForSellSignal = -1 ;
     
     /**
      * The percentage by which the EMA5 should dip per day within the
      * sell zone to positively contribute towards generating a sell signal.
      */
-    //@HParameter( min=-2.5F, max=-0.05F, step=0.5F )
+    @HParameter( min=-2.5F, max=-0.05F, step=0.5F )
     private float ema5DipDecrementPerDayForSellSignal = -0.125f ;
     
     /**
@@ -124,6 +124,6 @@ public class MyStrategyConfig extends StrategyConfig
      * A value of 0 or negative number indicates that stop loss strategy
      * is not to be employed.
      */
-    @HParameter( min=1, max=20 )
+    @HParameter( min=1, max=20, step=2 )
     private float sltpCurrentPricePct = 10 ;
 }

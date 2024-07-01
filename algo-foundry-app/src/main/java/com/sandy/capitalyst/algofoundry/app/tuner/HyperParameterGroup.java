@@ -1,12 +1,16 @@
 package com.sandy.capitalyst.algofoundry.app.tuner;
 
 import com.sandy.capitalyst.algofoundry.strategy.impl.MyStrategyConfig;
+import com.sandy.capitalyst.algofoundry.strategy.impl.util.StringUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 public class HyperParameterGroup {
@@ -16,8 +20,18 @@ public class HyperParameterGroup {
     private int activeParamIndex = 0 ;
     private boolean traversalComplete = false ;
     
+    private Map<String, Boolean> probedGridPoints = new TreeMap<>() ;
+    
     public HyperParameterGroup( List<HyperParameter> parameters ) {
         this.parameters = parameters ;
+    }
+    
+    public long getTotalCombinations() {
+        long total = 1 ;
+        for( HyperParameter p : parameters ) {
+            total *= p.getNumSteps() ;
+        }
+        return total ;
     }
     
     public boolean isGridExplorationComplete() {
@@ -29,12 +43,21 @@ public class HyperParameterGroup {
         return true ;
     }
     
-    public void populateNextGridValue( MyStrategyConfig config )
+    public int getNumParameters() {
+        return parameters.size() ;
+    }
+    
+    public HyperParameter getParameter( int index ) {
+        return parameters.get( index ) ;
+    }
+    
+    public boolean populateNextSequentialGridValue( MyStrategyConfig config )
         throws Exception {
+        traversalComplete = incrementGridPoint( 0 ) ;
         for( HyperParameter p : parameters ) {
             BeanUtils.setProperty( config, p.getFieldName(), p.currentVal() ) ;
         }
-        traversalComplete = incrementGridPoint( 0 ) ;
+        return true ;
     }
     
     private static String ident( int spaces ) {
@@ -73,6 +96,9 @@ public class HyperParameterGroup {
             // If the step count of the parameters below has been incremented
             // we bubble up. No further step increments are needed.
             if( nextParamIncremented ) {
+                if( p.getCurrentStep() == -1 ) {
+                    p.incrementStep() ;
+                }
                 return true ;
             }
             else {
@@ -88,7 +114,7 @@ public class HyperParameterGroup {
                 // it has to increment its step count and reset the ones below it.
                 if( p.hasNextVal() ) {
                     p.incrementStep() ;
-                    log.info( "{} {} = {}",
+                    log.debug( "{} {} = {}",
                                ident( paramIndex ), p.getFieldName(), p.currentVal() ) ;
                     resetGridPoint( paramIndex+1 ) ;
                     return  true ;
@@ -98,6 +124,51 @@ public class HyperParameterGroup {
         }
     }
     
+    public boolean randomizeGridPoint( MyStrategyConfig config )
+        throws Exception {
+        int[] newIndexes = getUniqueParameterValueCombination() ;
+        if( newIndexes != null ) {
+            for( int i=0; i<parameters.size(); i++ ) {
+                HyperParameter p = parameters.get( i ) ;
+                p.setCurrentStep( newIndexes[i] ) ;
+                BeanUtils.setProperty( config, p.getFieldName(), p.currentVal() ) ;
+            }
+            return true ;
+        }
+        return false ;
+    }
+    
+    private int[] getUniqueParameterValueCombination() {
+        
+        String gridRefStr ;
+        int numIter = 0 ;
+        
+        final int[] newIndexes = new int[parameters.size()] ;
+        final char[] hashChars = new char[parameters.size()] ;
+
+        do {
+            for( int i=0; i<parameters.size(); i++ ) {
+                HyperParameter p = parameters.get( i ) ;
+                int randomIndex = ThreadLocalRandom.current().nextInt( 0, p.getNumSteps() ) ;
+                newIndexes[i] = randomIndex ;
+                hashChars[i] = (char)('a' + randomIndex) ;
+            }
+            numIter++ ;
+            gridRefStr = String.valueOf( hashChars ) ;
+        }
+        while( probedGridPoints.containsKey( gridRefStr ) && numIter <= 10000 ) ;
+        
+        if( !probedGridPoints.containsKey( gridRefStr ) ) {
+            
+            probedGridPoints.put( gridRefStr, true ) ;
+            if( probedGridPoints.size() % 10000 == 0 ) {
+                log.info( "Grid points evaluated = {}", probedGridPoints.size() ) ;
+            }
+            return newIndexes ;
+        }
+        return null ;
+    }
+    
     private void resetGridPoint( int paramIndex ) {
         if( paramIndex < parameters.size() ) {
             HyperParameter p = parameters.get( paramIndex ) ;
@@ -105,4 +176,5 @@ public class HyperParameterGroup {
             resetGridPoint( paramIndex+1 ) ;
         }
     }
+    
 }
