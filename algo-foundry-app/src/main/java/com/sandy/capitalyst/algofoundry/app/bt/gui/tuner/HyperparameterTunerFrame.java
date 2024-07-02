@@ -12,11 +12,14 @@ import com.sandy.capitalyst.algofoundry.strategy.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
+
+import static javax.swing.BorderFactory.createLineBorder;
 
 @Slf4j
 public class HyperparameterTunerFrame extends JFrame
@@ -24,6 +27,9 @@ public class HyperparameterTunerFrame extends JFrame
     
     public static final Font PARAM_VALUE_LABEL_FONT = new Font( "Courier New", Font.PLAIN,  16 ) ;
     public static final Font PARAM_NAME_LABEL_FONT  = new Font( "Courier New", Font.PLAIN,  10 ) ;
+    
+    private static final Color GOLDEN_TILE_BORDER_COLOR = Color.YELLOW.darker().darker() ;
+    private static final Color NORMAL_TILE_BORDER_COLOR = Color.DARK_GRAY.darker() ;
     
     private final List<EquityMeta> metaList ;
     private final GridSearch gridSearch ;
@@ -89,9 +95,25 @@ public class HyperparameterTunerFrame extends JFrame
         highlitedTilesIndexes[paramIndex] = highlight ? valueIndex : -1 ;
     }
     
+    private void markTileAsGolden( int paramIndex, int goldenVIndex ) {
+        
+        List<JLabel> valueTiles = paramValueTiles.get( paramIndex ) ;
+        for( int vIndex=0; vIndex<valueTiles.size(); vIndex++ ) {
+            JLabel tile = valueTiles.get( vIndex ) ;
+            if( vIndex == goldenVIndex ) {
+                tile.setBorder( createLineBorder( GOLDEN_TILE_BORDER_COLOR, 1 ) ) ;
+            }
+            else {
+                tile.setBorder( createLineBorder( NORMAL_TILE_BORDER_COLOR, 1 ) ) ;
+            }
+            tile.revalidate() ;
+        }
+    }
+    
     private void setUpUI() {
         
         toolBar = new TunerToolBar( this ) ;
+        gridSearch.addListener( toolBar ) ;
         
         Container contentPane = super.getContentPane() ;
         contentPane.setLayout( new BorderLayout() ) ;
@@ -156,7 +178,7 @@ public class HyperparameterTunerFrame extends JFrame
         label.setBackground( Color.BLACK ) ;
         label.setForeground( Color.DARK_GRAY ) ;
         label.setFont( PARAM_VALUE_LABEL_FONT ) ;
-        label.setBorder( BorderFactory.createLineBorder( Color.DARK_GRAY.darker(), 1 ) ) ;
+        label.setBorder( createLineBorder( NORMAL_TILE_BORDER_COLOR, 1 ) ) ;
         return label ;
     }
     
@@ -194,6 +216,18 @@ public class HyperparameterTunerFrame extends JFrame
             SwingUtilities.invokeLater( () ->
                 setTileHighlight( finalParamIdx, curValueStep, true )
             ) ;
+        }
+    }
+    
+    @Override
+    public void goldenParametersFound( double mktProfit,
+                                       HyperParameterGroup parameters,
+                                       MyStrategyConfig cfg ) {
+        
+        for( int pIndex=0; pIndex<parameters.getNumParameters(); pIndex++ ) {
+            HyperParameter p = parameters.getParameter( pIndex ) ;
+            int stepIndex = p.getCurrentStep() ;
+            markTileAsGolden( pIndex, stepIndex ) ;
         }
     }
 }

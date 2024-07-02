@@ -40,7 +40,6 @@ public class StrategyBacktester {
         for( int i=0; i<candleSeries.getBarCount(); i++ ) {
             candleSeries.emitValue( i, CandleSeries.DayValueType.OHLCV ) ;
         }
-        tradeBook.print() ;
         return tradeBook ;
     }
 }
