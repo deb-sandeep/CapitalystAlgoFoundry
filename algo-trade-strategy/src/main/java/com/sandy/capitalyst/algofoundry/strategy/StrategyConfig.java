@@ -2,8 +2,11 @@ package com.sandy.capitalyst.algofoundry.strategy;
 
 import com.sandy.capitalyst.algofoundry.strategy.util.HParameter;
 import lombok.Data;
+import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Data
 public class StrategyConfig implements Serializable {
@@ -16,6 +19,15 @@ public class StrategyConfig implements Serializable {
     private int adxWindow        = 14 ;
     private int adxDIWindow      = 14 ;
     private int bollingerWindow  = 20 ;
+    
+    private String dateWindowType = "NUM_LAST_DAYS" ;
+    //private String dateWindowType = "DATE_RANGE" ;
+    
+    @DateTimeFormat( pattern="yyyy-MM-dd" )
+    private Date dateWindowStart = null ;
+    
+    @DateTimeFormat( pattern="yyyy-MM-dd" )
+    private Date dateWindowEnd = null ;
     
     /**
      * Maximum number of candle series data points to be considered for
@@ -37,4 +49,18 @@ public class StrategyConfig implements Serializable {
      * size is achieved.
      */
     private int initialBlackoutNumDays = 20 ;
+    
+    public Date getDateWindowStart() {
+        if( dateWindowStart == null ) {
+            dateWindowStart = DateUtils.addYears( getDateWindowEnd(), -1 ) ;
+        }
+        return dateWindowStart;
+    }
+    
+    public Date getDateWindowEnd() {
+        if( dateWindowEnd == null ) {
+            dateWindowEnd = new Date() ;
+        }
+        return dateWindowEnd;
+    }
 }

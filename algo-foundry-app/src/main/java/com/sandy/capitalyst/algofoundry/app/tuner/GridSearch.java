@@ -2,7 +2,7 @@ package com.sandy.capitalyst.algofoundry.app.tuner;
 
 import com.sandy.capitalyst.algofoundry.app.apiclient.equitymeta.EquityMeta;
 import com.sandy.capitalyst.algofoundry.app.apiclient.histeod.EquityHistEODAPIClient;
-import com.sandy.capitalyst.algofoundry.app.bt.api.StrategyBacktester;
+import com.sandy.capitalyst.algofoundry.app.backtester.api.StrategyBacktester;
 import com.sandy.capitalyst.algofoundry.strategy.impl.MyStrategyConfig;
 import com.sandy.capitalyst.algofoundry.strategy.series.candleseries.Candle;
 import com.sandy.capitalyst.algofoundry.strategy.tradebook.TradeBook;
@@ -25,13 +25,14 @@ import static com.sandy.capitalyst.algofoundry.app.core.util.StringUtil.fmtDbl;
 public class GridSearch {
     
     public interface GridSearchListener {
-        default void parametersUpdated() {} ;
-        default void candleLoadingStarted( int numSymbols ) {} ;
-        default void loadingCandles( int index, int numSymbols, String symbol ) {} ;
-        default void candleLoadingEnded() {} ;
+        default void parametersUpdated() {}
+        default void candleLoadingStarted( int numSymbols ) {}
+        default void loadingCandles( int index, int numSymbols, String symbol ) {}
+        default void candleLoadingEnded() {}
         default void goldenParametersFound( double mktProfit,
                                             HyperParameterGroup parameters,
-                                            MyStrategyConfig cfg ) {} ;
+                                            MyStrategyConfig cfg,
+                                            List<TradeBook> tradeBooks ) {}
     }
     
     private final MyStrategyConfig baseConfig;
@@ -48,8 +49,7 @@ public class GridSearch {
     private final Map<String, List<Candle>> stockCandlesMap = new LinkedHashMap<>() ;
     
     public GridSearch( List<EquityMeta> equityMetaList, MyStrategyConfig baseConfig,
-                       GridSearchListener listener )
-        throws Exception {
+                       GridSearchListener listener ) {
         
         this.baseConfig = baseConfig;
         this.equityMetaList = equityMetaList ;
@@ -68,7 +68,7 @@ public class GridSearch {
                                                         this.baseConfig.getClass() ) ;
         for( Field hpField : hpFields ) {
             HParameter     hp     = hpField.getAnnotation( HParameter.class ) ;
-            HyperParameter hParam = new HyperParameter( hpField.getName(), hp.min(), hp.max(), hp.step() ) ;
+            HyperParameter hParam = new HyperParameter( hpField.getName(), hpField.getType(), hp.min(), hp.max(), hp.step() ) ;
             hParamList.add( hParam ) ;
         }
         return hParamList ;
@@ -93,9 +93,7 @@ public class GridSearch {
         killSwitchFlag = true ;
     }
     
-    public MyStrategyConfig tuneHyperParameters() throws Exception {
-        
-        MyStrategyConfig goldenConfig = null ;
+    public void tuneHyperParameters() throws Exception {
         
         loadCandles() ;
         
@@ -107,6 +105,7 @@ public class GridSearch {
         long iterationNo = 1 ;
         
         while( !hyperParameters.isGridExplorationComplete() && !killSwitchFlag ) {
+            
             if( !hyperParameters.randomizeGridPoint( cfgClone ) ) {
                 killSwitchFlag = true ;
                 log.debug( "Could not find a fresh grid point." ) ;
@@ -126,7 +125,6 @@ public class GridSearch {
                     tb = bt.backtest() ;
                     
                     //log.debug( "I{} - {} - {}", iterationNo, symbol, fmtDbl( tb.getTotalProfitPct() ) ) ;
-                    
                     tradeBooks.add( tb ) ;
                 }
                 
@@ -134,12 +132,11 @@ public class GridSearch {
                 //log.debug( "I-{} - Profit = {}%", iterationNo, fmtDbl( mktProfit ) );
                 if( mktProfit > bestMarketProfit ) {
                     bestMarketProfit = mktProfit ;
-                    goldenConfig = cfgClone ;
                     log.debug( "\tGolden configuration found. {}", fmtDbl( mktProfit ) ) ;
                     
                     MyStrategyConfig finalCfgClone = cfgClone;
                     listeners.forEach( l -> l.goldenParametersFound(
-                            mktProfit, hyperParameters, finalCfgClone
+                            mktProfit, hyperParameters, finalCfgClone, tradeBooks
                     ) );
                 }
                 
@@ -149,7 +146,6 @@ public class GridSearch {
             }
         }
         killSwitchFlag = false ;
-        return goldenConfig ;
     }
     
     private double getMarketProfit( List<TradeBook> tradeBooks ) {
@@ -180,9 +176,8 @@ public class GridSearch {
             int idx = i + 1 ;
             listeners.forEach( l -> l.loadingCandles( idx, equityMetaList.size(), symbol ) ) ;
             equityCandles.put( meta.getSymbol(), candles ) ;
-            Thread.sleep( 50 ) ;
+            Thread.sleep( 5 ) ;
         }
         listeners.forEach( GridSearchListener::candleLoadingEnded ) ;
     }
-    
 }

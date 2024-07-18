@@ -73,6 +73,20 @@ public abstract class TradeBook
         notifyTradeBookUpdated() ;
     }
     
+    public int getNumBuyTrades() {
+        int numBuyTrades = 0 ;
+        for( Trade trade : allTrades )  {
+            if( trade instanceof BuyTrade ) {
+                numBuyTrades++ ;
+            }
+        }
+        return numBuyTrades ;
+    }
+    
+    public int getNumSellTrades() {
+        return this.sellTrades.size() ;
+    }
+    
     public void addListener( TradeBookListener listener ) {
         this.listeners.add( listener ) ;
     }
@@ -218,7 +232,7 @@ public abstract class TradeBook
     
     protected abstract SellTrade handleSellSignal( TradeSignalEvent te ) ;
     
-    public void print() {
+    public String toString() {
         
         String hdr = " | " + rightPad( " ", 5 ) +
                      " | " + rightPad( "Date", 10 ) +
@@ -234,12 +248,14 @@ public abstract class TradeBook
                        " + " + repeat( "-",  7 ) +
                        " + " ;
         
-        log.debug( " + " + repeat( "-", 47 ) + " + " ) ;
-        log.debug( rightPad( " | " + this.symbol + " :: Total profit = " + fmtDbl( this.totalProfitPct ) + "% ", 50 ) + " | " ) ;
-        log.debug( line ) ;
-        log.debug( hdr ) ;
-        log.debug( line ) ;
-        allTrades.forEach( t -> log.debug( t.toString() ) ) ;
-        log.debug( line ) ;
+        StringBuilder sb = new StringBuilder() ;
+        sb.append( " + " + repeat( "-", 47 ) + " + \n" ) ;
+        sb.append( rightPad( " | " + this.symbol + " :: Total profit = " + fmtDbl( this.totalProfitPct ) + "% ", 50 ) + " | \n" ) ;
+        sb.append( line + "\n" ) ;
+        sb.append( hdr + "\n"  ) ;
+        sb.append( line + "\n"  ) ;
+        allTrades.forEach( t -> sb.append( t.toString() + "\n" ) ) ;
+        sb.append( line + "\n"  ) ;
+        return sb.toString() ;
     }
 }

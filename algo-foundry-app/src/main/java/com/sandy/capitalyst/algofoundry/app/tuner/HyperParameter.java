@@ -5,6 +5,7 @@ import lombok.Getter;
 public class HyperParameter {
     
     @Getter private final String fieldName ;
+    @Getter private final Class<?> fieldType ;
     @Getter private final float min ;
     @Getter private final float max ;
     @Getter private final float step ;
@@ -12,11 +13,12 @@ public class HyperParameter {
     
     @Getter private int currentStep = -1 ;
     
-    public HyperParameter( String fName, float min, float max, float step ) {
+    public HyperParameter( String fName, Class<?> fType, float min, float max, float step ) {
         assert min <= max ;
         assert step >= 0 ;
 
         this.fieldName = fName ;
+        this.fieldType = fType ;
         this.min = min ;
         this.max = max ;
         this.step = step ;

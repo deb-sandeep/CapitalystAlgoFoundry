@@ -72,7 +72,7 @@ public class CandleSeries implements Serializable {
     
     private BarSeries buildBarSeries( List<Candle> candles ) {
         
-        while( candles.size() > config.getMaxCandleSeriesSize() ) { candles.remove( 0 ) ; }
+        filterCandles( candles ) ;
         
         BarSeries series = new BaseBarSeries( symbol ) ;
         candles.forEach( c -> {
@@ -88,6 +88,22 @@ public class CandleSeries implements Serializable {
             }
         } ) ;
         return series ;
+    }
+    
+    private void filterCandles( List<Candle> candles ) {
+        String dateWindowType = config.getDateWindowType() ;
+        if( dateWindowType.equalsIgnoreCase( "NUM_LAST_DAYS" ) ) {
+            while( candles.size() > config.getMaxCandleSeriesSize() ) {
+                candles.remove( 0 ) ;
+            }
+        }
+        else {
+            Date startDate = config.getDateWindowStart() ;
+            Date endDate = config.getDateWindowEnd() ;
+            
+            candles.removeIf( c -> c.getDate().before( startDate ) ||
+                                   c.getDate().after( endDate ) ) ;
+        }
     }
     
     public void addDayValueListener( DayValueListener listener ) {
